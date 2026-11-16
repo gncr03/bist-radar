@@ -10,8 +10,7 @@ h1{font-size:24px;line-height:1.2}.sub{color:#9fb3c8;font-size:14px}
 .top3{background:linear-gradient(135deg,#052e16,#14532d);border:2px solid #22c55e;border-radius:16px;padding:16px;margin:16px 0}
 .top3 h2{margin:0 0 10px 0;font-size:18px;color:#bbf7d0}
 .top-item{background:rgba(255,255,255,.08);border-radius:10px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.top-item b{font-size:18px}.top-item span{font-size:13px;color:#d1fae5}
-.rank{font-size:22px}
+.top-item b{font-size:18px}.top-item span{font-size:13px;color:#d1fae5}.rank{font-size:22px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
 .card{background:#1a2b42;border-radius:12px;padding:14px;border:1px solid #2a3f5c}
 .card small{color:#9fb3c8}.card b{font-size:28px}
@@ -22,24 +21,26 @@ th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:
 .buy{color:#22c55e;font-weight:700}.sell{color:#ef4444;font-weight:700}.watch{color:#f59e0b;font-weight:700}
 .tabs{display:flex;gap:8px;margin:12px 0}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;border:1px solid #2a3f5c;cursor:pointer}.tab.on{background:#2563eb}
 #status{font-size:13px;color:#fbbf24;margin:8px 0}
+.live{color:#22c55e}.closed{color:#f59e0b}
 </style>
 </head>
 <body>
 <h1>📊 BIST RADAR & Doğru Alış Sinyalleri</h1>
-<div class="sub">CANLI - Stooq / BIST Verisi | RSI(14) + Hacim + ATR Planı | <span id="mod">● CANLI DENENİYOR...</span></div>
-<div id="status">Veriler yükleniyor, lütfen 20 saniye bekleyin...</div>
+<div class="sub">GERÇEK VERİ - Yahoo Finance / BIST | RSI(14) | <span id="mod">● BAĞLANILIYOR...</span></div>
+<div id="status">Gerçek fiyatlar çekiliyor, 20-30 saniye bekleyin...</div>
+<div id="updateTime" style="font-size:12px;color:#9fb3c8;margin:6px 0"></div>
 
 <div class="top3">
 <h2>🏆 BUGÜNÜN EN İYİ 3 ALIM FIRSATI</h2>
-<div id="top3list"><p style="color:#bbf7d0">Hesaplanıyor...</p></div>
+<div id="top3list"><p style="color:#bbf7d0">Gerçek veriler çekiliyor...</p></div>
 <p style="font-size:11px;color:#86efac;margin:6px 0 0 0">RSI en düşük + dipte olanlar seçilir. Kademeli al, tek hisseye tüm paranı yatırma.</p>
 </div>
 
 <div class="grid">
-<div class="card"><small>TARANAN HİSSE</small><br><b id="c1">0</b></div>
-<div class="card"><small>GÜÇLÜ AL</small><br><b id="c2" style="color:#22c55e">0</b></div>
-<div class="card"><small>DİP / İZLEME</small><br><b id="c3" style="color:#f59e0b">0</b></div>
-<div class="card"><small>AŞIRI ALIM RSI≥70</small><br><b id="c4" style="color:#ef4444">0</b></div>
+<div class="card"><small>TARANAN HİSSE</small><br><b id="c1">-</b></div>
+<div class="card"><small>GÜÇLÜ AL</small><br><b id="c2" style="color:#22c55e">-</b></div>
+<div class="card"><small>DİP / İZLEME</small><br><b id="c3" style="color:#f59e0b">-</b></div>
+<div class="card"><small>AŞIRI ALIM RSI≥70</small><br><b id="c4" style="color:#ef4444">-</b></div>
 </div>
 <h3>⭐ Öne Çıkan Doğru Alış Sinyalleri</h3>
 <div class="tabs">
@@ -47,101 +48,18 @@ th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:
 <div class="tab" onclick="setFilter('BIST100',this)">BIST 100</div>
 <div class="tab" onclick="setFilter('ALL',this)">Tümü</div>
 </div>
-<button class="btn" onclick="loadLive()">🔄 Canlı Fiyatları Çek</button>
-<button class="btn btn2" onclick="loadDemo()">🎲 Demo Veriyle Göster</button>
-<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>RSI</th><th>SİNYAL</th><th>PLAN</th></tr></thead><tbody id="tbody"></tbody></table>
-<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. RSI 30 altı dip, 30-45 toplama bölgesi, 70 üstü aşırı alım kabul edilir. Her zaman kademeli alım + stop kullanın.</p>
+<button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek</button>
+<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>SİNYAL</th><th>PLAN</th></tr></thead><tbody id="tbody"><tr><td colspan="6">Yükleniyor...</td></tr></tbody></table>
+<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. Fiyatlar Yahoo Finance'den alınır, 15 dk gecikmeli olabilir. Borsa kapalıyken son kapanış fiyatı gösterilir. RSI 30 altı dip, 70 üstü aşırı alım kabul edilir.</p>
 <script>
 const STOCKS=[
-{name:"THYAO",stooq:"thybk.is",grp:"BIST30",base:310},
-{name:"ASELS",stooq:"asels.is",grp:"BIST30",base:145},
-{name:"KCHOL",stooq:"kchol.is",grp:"BIST30",base:180},
-{name:"AKBNK",stooq:"akbnk.is",grp:"BIST30",base:62},
-{name:"EREGL",stooq:"eregl.is",grp:"BIST30",base:52},
-{name:"SISE",stooq:"sise.is",grp:"BIST30",base:42},
-{name:"TUPRS",stooq:"tuprs.is",grp:"BIST30",base:175},
-{name:"BIMAS",stooq:"bimas.is",grp:"BIST30",base:520},
-{name:"SAHOL",stooq:"sahol.is",grp:"BIST30",base:95},
-{name:"GARAN",stooq:"garant.is",grp:"BIST30",base:135},
-{name:"YKBNK",stooq:"ykbnk.is",grp:"BIST30",base:32},
-{name:"PETKM",stooq:"petkm.is",grp:"BIST30",base:19},
-{name:"PGSUS",stooq:"pgsus.is",grp:"BIST30",base:230},
-{name:"ENKAI",stooq:"enkai.is",grp:"BIST30",base:68},
-{name:"FROTO",stooq:"froto.is",grp:"BIST30",base:950},
-{name:"TCELL",stooq:"tcell.is",grp:"BIST100",base:98},
-{name:"KOZAL",stooq:"kozal.is",grp:"BIST100",base:24},
-{name:"SASA",stooq:"sasa.is",grp:"BIST100",base:4.2},
-{name:"HEKTS",stooq:"hekts.is",grp:"BIST100",base:15},
-{name:"EKGYO",stooq:"ekgyo.is",grp:"BIST100",base:13},
-];
-let currentFilter='BIST30';let data=[];
-function calcRSI(prices){
-  if(prices.length<15) return 50;
-  let gains=0,losses=0;
-  for(let i=1;i<15;i++){let d=prices[i]-prices[i-1]; if(d>0) gains+=d; else losses+=-d;}
-  let avgG=gains/14, avgL=losses/14;
-  for(let i=15;i<prices.length;i++){let d=prices[i]-prices[i-1]; if(d>0){avgG=(avgG*13+d)/14; avgL=(avgL*13)/14;} else {avgG=(avgG*13)/14; avgL=(avgL*13-d)/14;}}
-  if(avgL===0) return 85; let rs=avgG/avgL; return Math.round(100-(100/(1+rs)));
-}
-function signalFor(rsi,price){
-  if(rsi<30) return {t:"GÜÇLÜ AL",c:"buy",plan:"Kademeli al, Stop % -"+(price*0.04).toFixed(1)};
-  if(rsi<45) return {t:"DİP / İZLE",c:"watch",plan:"Küçük al, bekle"};
-  if(rsi>=70) return {t:"AŞIRI ALIM",c:"sell",plan:"Alma, bekle"};
-  if(rsi>=60) return {t:"İZLE",c:"watch",plan:"Kâr al bölgesi"};
-  return {t:"NÖTR",c:"",plan:"Bekle"};
-}
-function renderTop3(){
-  if(!data.length) return;
-  let sorted=[...data].sort((a,b)=>a.rsi-b.rsi);
-  let top=sorted.slice(0,3);
-  let medals=["🥇","🥈","🥉"];
-  let html="";
-  top.forEach((d,i)=>{
-    let reason=d.rsi<30?"RSI çok düşük, dip bölgesi":d.rsi<45?"RSI düşük, toplama bölgesi":"RSI en düşük 3 içinde";
-    html+=`<div class="top-item"><div><span class="rank">${medals[i]}</span> <b>${d.name}</b><br><span>${reason} • RSI ${d.rsi}</span></div><div style="text-align:right"><b>${d.price.toFixed(2)} ₺</b><br><span style="color:#22c55e;font-weight:700">${d.sig.t}</span></div></div>`;
-  });
-  document.getElementById('top3list').innerHTML=html;
-}
-function render(){
-  let filtered=data;
-  if(currentFilter==='BIST30') filtered=data.filter(d=>d.grp==='BIST30');
-  if(currentFilter==='ALL') filtered=data;
-  document.getElementById('c1').innerText=filtered.length;
-  document.getElementById('c2').innerText=filtered.filter(d=>d.sig.t==='GÜÇLÜ AL').length;
-  document.getElementById('c3').innerText=filtered.filter(d=>d.sig.t==='DİP / İZLE').length;
-  document.getElementById('c4').innerText=filtered.filter(d=>d.sig.t==='AŞIRI ALIM').length;
-  let html='';
-  filtered.forEach(d=>{html+=`<tr><td><b>${d.name}</b></td><td>${d.price.toFixed(2)} ₺</td><td>${d.rsi}</td><td class="${d.sig.c}">${d.sig.t}</td><td style="font-size:11px">${d.sig.plan}</td></tr>`;});
-  document.getElementById('tbody').innerHTML=html||'<tr><td colspan="5">Veri yok</td></tr>';
-  renderTop3();
-}
-function setFilter(f,el){currentFilter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');render();}
-function makeDemo(){
-  data=STOCKS.map(s=>{let prices=[];let p=s.base;for(let i=0;i<40;i++){p=p*(1+(Math.random()-0.49)*0.02);prices.push(p);}let price=prices[prices.length-1];let rsi=calcRSI(prices);return {name:s.name,grp:s.grp,price,rsi,sig:signalFor(rsi,price)};});
-  document.getElementById('mod').innerText='● DEMO VERİ';document.getElementById('mod').style.color='#fbbf24';
-  document.getElementById('status').innerText='Demo veri gösteriliyor. Canlı için Canlı Fiyatları Çek butonuna basın.';render();
-}
-function loadDemo(){makeDemo();}
-async function loadLive(){
-  document.getElementById('status').innerText='Canlı çekiliyor... 20-30 saniye bekleyin...';
-  document.getElementById('mod').innerText='● CANLI ÇEKİLİYOR...';
-  let ok=0;let newData=[];
-  for(let s of STOCKS){
-    try{
-      let url='https://stooq.com/q/d/l/?s='+s.stooq+'&i=d';
-      let proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
-      let res=await fetch(proxy);let txt=await res.text();let lines=txt.trim().split('\n');
-      if(lines.length>15){let closes=lines.slice(1).map(l=>parseFloat(l.split(',')[4])).filter(n=>!isNaN(n));let last=closes[closes.length-1];let rsi=calcRSI(closes);newData.push({name:s.name,grp:s.grp,price:last,rsi,sig:signalFor(rsi,last)});ok++;}
-      else {let prices=[];let p=s.base;for(let i=0;i<40;i++){p=p*(1+(Math.random()-0.49)*0.02);prices.push(p);}let rsi=calcRSI(prices);newData.push({name:s.name,grp:s.grp,price:prices[prices.length-1],rsi,sig:signalFor(rsi,prices[prices.length-1])});}
-    }catch(e){let prices=[];let p=s.base;for(let i=0;i<40;i++){p=p*(1+(Math.random()-0.49)*0.02);prices.push(p);}let rsi=calcRSI(prices);newData.push({name:s.name,grp:s.grp,price:prices[prices.length-1],rsi,sig:signalFor(rsi,prices[prices.length-1])});}
-    await new Promise(r=>setTimeout(r,150));
-  }
-  data=newData;
-  if(ok>3){document.getElementById('mod').innerText='● CANLI VERİ ('+ok+' hisse)';document.getElementById('mod').style.color='#22c55e';document.getElementById('status').innerText=ok+' hisse canlı çekildi.';}
-  else {document.getElementById('mod').innerText='● DEMO VERİ (Stooq engelledi)';document.getElementById('mod').style.color='#fbbf24';document.getElementById('status').innerText='Stooq telefondan engelledi, demo gösteriliyor.';}
-  render();
-}
-makeDemo();loadLive();
-</script>
-</body>
-</html>
+{name:"THYAO",yahoo:"THYAO.IS",grp:"BIST30"},
+{name:"ASELS",yahoo:"ASELS.IS",grp:"BIST30"},
+{name:"KCHOL",yahoo:"KCHOL.IS",grp:"BIST30"},
+{name:"AKBNK",yahoo:"AKBNK.IS",grp:"BIST30"},
+{name:"EREGL",yahoo:"EREGL.IS",grp:"BIST30"},
+{name:"SISE",yahoo:"SISE.IS",grp:"BIST30"},
+{name:"TUPRS",yahoo:"TUPRS.IS",grp:"BIST30"},
+{name:"BIMAS",yahoo:"BIMAS.IS",grp:"BIST30"},
+{name:"SAHOL",yahoo:"SAHOL.IS",grp:"BIST30"},
+{name:"GARAN",yahoo:"G
