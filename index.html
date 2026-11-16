@@ -153,29 +153,4 @@ function renderApp(){
  document.getElementById('statWatchCount').innerText=stocks.filter(s=>s.r>=30&&s.r<=45).length;
  document.getElementById('statSellCount').innerText=stocks.filter(s=>s.r>=70).length;
  const top=[...stocks].sort((a,b)=>calculateSignal(b).score-calculateSignal(a).score).slice(0,3);
- document.getElementById('topSignalsGrid').innerHTML=top.map(st=>{const sig=calculateSignal(st);return `<div class="signal-card" onclick="openDetailModal('${st.s}')"><div class="signal-header"><span class="signal-symbol">${st.s} ${st.live?'🟢':''}</span><span class="signal-score">Skor: ${sig.score}/100</span></div><div class="signal-details"><span>Kapanış: ₺${(st.prevClose||st.p).toFixed(2)} | Son: ₺${st.p.toFixed(2)} (${st.c>=0?'+':''}${st.c}%)</span><span>RSI: ${st.r} | Hacim: %${st.v}</span><strong style="color:var(--green)">${sig.status}</strong></div></div>`}).join('');
- document.getElementById('chartContainer').innerHTML=filtered.slice(0,30).map(st=>{let col=st.r<=30?"var(--green)":st.r>=70?"var(--red)":"#64748b";return `<div class="bar-row" onclick="openDetailModal('${st.s}')"><div class="bar-label">${st.s}</div><div class="bar-track"><div class="bar-fill" style="width:${st.r}%;background:${col}"></div><div class="bar-text">₺${st.p.toFixed(2)} (${st.c>=0?'+':''}${st.c}%) | RSI ${st.r} | Hacim %${st.v}</div></div></div>`}).join('');
- document.getElementById('stockTableBody').innerHTML=filtered.map(st=>{const sig=calculateSignal(st);return `<tr onclick="openDetailModal('${st.s}')"><td><strong>${st.s}</strong> <span style="font-size:.75rem;color:var(--sec)">${st.n}</span></td><td>₺${(st.prevClose||st.p).toFixed(2)}</td><td>₺${st.p.toFixed(2)}</td><td style="color:${st.c>=0?'var(--green)':'var(--red)'};font-weight:700">${st.c>=0?'+':''}${st.c}%</td><td><strong>${st.r}</strong></td><td>%${st.v}</td><td><span class="badge ${sig.badgeClass}">${sig.status}</span></td><td><strong>${sig.score}</strong></td></tr>`}).join('');
-}
-function openDetailModal(sym){
- const st=rawStocks.find(x=>x.s===sym);if(!st)return;
- const sig=calculateSignal(st);const atr=st.p*0.035;
- document.getElementById('modalSymbol').innerText=st.s+(st.live?" 🟢 CANLI":"");
- document.getElementById('modalName').innerText=st.n;
- document.getElementById('modalPrev').innerText=`₺${(st.prevClose||st.p).toFixed(2)}`;
- document.getElementById('modalPrice').innerText=`₺${st.p.toFixed(2)} (${st.c>=0?'+':''}${st.c}%)`;
- document.getElementById('modalScore').innerText=`${sig.score} / 100`;
- document.getElementById('modalRsi').innerText=st.r;
- document.getElementById('modalVol').innerText=`%${st.v}`;
- document.getElementById('modalDate').innerText=st.lastDate||"-";
- document.getElementById('modalEntry').innerText=`₺${st.p.toFixed(2)}`;
- document.getElementById('modalStop').innerText=`₺${(st.p-atr).toFixed(2)} (-%3.5)`;
- document.getElementById('modalTarget').innerText=`₺${(st.p+atr*2).toFixed(2)} (+%7.0)`;
- document.getElementById('modalTechDesc').innerHTML=`<strong>Teknik Özet:</strong> ${st.s} ${st.trend} eğiliminde. Dün kapanış <strong>₺${(st.prevClose||st.p).toFixed(2)}</strong>, son fiyat <strong>₺${st.p.toFixed(2)}</strong>. RSI <strong>${st.r}</strong>, Hacim <strong>%${st.v}</strong>. Durum: <b>${sig.status}</b>. ${st.live?"Veri Stooq/BIST'ten canlı çekildi.":"Veri demo, Canlı butonuna bas."}`;
- document.getElementById('detailModal').classList.add('active');
-}
-function closeModal(){document.getElementById('detailModal').classList.remove('active');}
-window.onload=()=>{renderApp(); fetchLiveMarketData();}
-</script>
-</body>
-</html>
+ document.getElementBy
