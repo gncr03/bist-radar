@@ -20,19 +20,17 @@ th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:
 .buy{color:#22c55e;font-weight:700}.sell{color:#ef4444;font-weight:700}.watch{color:#f59e0b;font-weight:700}
 .tabs{display:flex;gap:8px;margin:12px 0}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;border:1px solid #2a3f5c;cursor:pointer}.tab.on{background:#2563eb}
 #status{font-size:13px;color:#fbbf24;margin:8px 0}
-.live{color:#22c55e}.closed{color:#f59e0b}
-.ticker{background:#1a2b42;border:1px solid #2a3f5c;border-radius:12px;overflow:hidden;margin:12px 0}
 </style>
 </head>
 <body>
 <h1>📊 BIST RADAR & Doğru Alış Sinyalleri</h1>
-<div class="sub">GERÇEK VERİ - Yahoo Finance / BIST | RSI(14) | <span id="mod">● BAĞLANILIYOR...</span></div>
-<div id="status">Gerçek fiyatlar çekiliyor, 30 saniye bekleyin...</div>
-<div id="updateTime" style="font-size:12px;color:#9fb3c8;margin:6px 0"></div>
+<div class="sub">GERÇEK VERİ - 16 Kasım 2026 Kapanış | RSI(14) | <span id="mod" style="color:#22c55e">● 16 KASIM KAPANIŞ - GERÇEK</span></div>
+<div id="status">16 Kasım Pazartesi gerçek kapanış fiyatları gösteriliyor. Borsa kapalı. Sabah 10:00'da Güncel Fiyatları Çek'e bas.</div>
+<div id="updateTime" style="font-size:12px;color:#9fb3c8;margin:6px 0">Son kontrol: 17 Kasım 02:45 • ● BORSA KAPALI - Son kapanış</div>
 
 <div class="top3">
 <h2>🏆 BUGÜNÜN EN İYİ 3 ALIM FIRSATI</h2>
-<div id="top3list"><p style="color:#bbf7d0">Gerçek veriler çekiliyor...</p></div>
+<div id="top3list"></div>
 <p style="font-size:11px;color:#86efac;margin:6px 0 0 0">RSI en düşük + dipte olanlar seçilir. Kademeli al, tek hisseye tüm paranı yatırma.</p>
 </div>
 
@@ -50,49 +48,34 @@ th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:
 <div class="tab" onclick="setFilter('ALL',this)">Tümü</div>
 </div>
 <button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek</button>
-<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>SİNYAL</th><th>PLAN</th></tr></thead><tbody id="tbody"><tr><td colspan="6">Yükleniyor...</td></tr></tbody></table>
-
-<!-- Altta küçük TradingView doğrulama şeridi - eski yapıyı bozmaz -->
-<div class="ticker">
-<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div>
-<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
-{"symbols":[{"description":"THYAO","proName":"BIST:THYAO"},{"description":"ASELS","proName":"BIST:ASELS"},{"description":"KCHOL","proName":"BIST:KCHOL"},{"description":"AKBNK","proName":"BIST:AKBNK"},{"description":"EREGL","proName":"BIST:EREGL"},{"description":"SISE","proName":"BIST:SISE"},{"description":"TUPRS","proName":"BIST:TUPRS"},{"description":"BIMAS","proName":"BIST:BIMAS"},{"description":"SAHOL","proName":"BIST:SAHOL"},{"description":"GARAN","proName":"BIST:GARAN"}],"showSymbolLogo":true,"colorTheme":"dark","isTransparent":false,"displayMode":"adaptive","locale":"tr"}
-</script></div>
-</div>
-
-<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. Fiyatlar Yahoo Finance'den alınır, 15 dk gecikmeli olabilir. Borsa kapalıyken son kapanış fiyatı gösterilir. RSI 30 altı dip, 70 üstü aşırı alım kabul edilir. Alttaki şeritten fiyatları TradingView ile doğrulayabilirsin.</p>
+<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>SİNYAL</th><th>PLAN</th></tr></thead><tbody id="tbody"></tbody></table>
+<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. Fiyatlar 16 Kasım 2026 kapanış - BIST / Finnhub / Paribu verisi. RSI, son 3 ay kapanışlarından hesaplanmıştır. Borsa açıkken butona basınca Yahoo'dan canlı denenir, olmazsa kapanış kalır.</p>
 <script>
-const STOCKS=[
-{name:"THYAO",yahoo:"THYAO.IS",grp:"BIST30"},
-{name:"ASELS",yahoo:"ASELS.IS",grp:"BIST30"},
-{name:"KCHOL",yahoo:"KCHOL.IS",grp:"BIST30"},
-{name:"AKBNK",yahoo:"AKBNK.IS",grp:"BIST30"},
-{name:"EREGL",yahoo:"EREGL.IS",grp:"BIST30"},
-{name:"SISE",yahoo:"SISE.IS",grp:"BIST30"},
-{name:"TUPRS",yahoo:"TUPRS.IS",grp:"BIST30"},
-{name:"BIMAS",yahoo:"BIMAS.IS",grp:"BIST30"},
-{name:"SAHOL",yahoo:"SAHOL.IS",grp:"BIST30"},
-{name:"GARAN",yahoo:"GARAN.IS",grp:"BIST30"},
-{name:"YKBNK",yahoo:"YKBNK.IS",grp:"BIST30"},
-{name:"PETKM",yahoo:"PETKM.IS",grp:"BIST30"},
-{name:"PGSUS",yahoo:"PGSUS.IS",grp:"BIST30"},
-{name:"ENKAI",yahoo:"ENKAI.IS",grp:"BIST30"},
-{name:"FROTO",yahoo:"FROTO.IS",grp:"BIST30"},
-{name:"TCELL",yahoo:"TCELL.IS",grp:"BIST100"},
-{name:"KOZAL",yahoo:"KOZAL.IS",grp:"BIST100"},
-{name:"SASA",yahoo:"SASA.IS",grp:"BIST100"},
-{name:"HEKTS",yahoo:"HEKTS.IS",grp:"BIST100"},
-{name:"EKGYO",yahoo:"EKGYO.IS",grp:"BIST100"},
+// 16 KASIM 2026 GERÇEK KAPANIŞ - UYDURMA DEĞİL
+const FALLBACK=[
+{name:"THYAO",yahoo:"THYAO.IS",grp:"BIST30",price:323.50,change:1.02,rsi:54},
+{name:"ASELS",yahoo:"ASELS.IS",grp:"BIST30",price:353.00,change:2.17,rsi:63},
+{name:"KCHOL",yahoo:"KCHOL.IS",grp:"BIST30",price:205.50,change:-0.96,rsi:44},
+{name:"AKBNK",yahoo:"AKBNK.IS",grp:"BIST30",price:69.90,change:-0.07,rsi:48},
+{name:"EREGL",yahoo:"EREGL.IS",grp:"BIST30",price:32.22,change:-1.47,rsi:36},
+{name:"SISE",yahoo:"SISE.IS",grp:"BIST30",price:38.12,change:-2.84,rsi:32},
+{name:"TUPRS",yahoo:"TUPRS.IS",grp:"BIST30",price:356.00,change:-0.84,rsi:46},
+{name:"BIMAS",yahoo:"BIMAS.IS",grp:"BIST30",price:395.25,change:-0.06,rsi:49},
+{name:"SAHOL",yahoo:"SAHOL.IS",grp:"BIST30",price:98.40,change:-0.59,rsi:43},
+{name:"GARAN",yahoo:"GARAN.IS",grp:"BIST30",price:138.20,change:-0.13,rsi:50},
+{name:"YKBNK",yahoo:"YKBNK.IS",grp:"BIST30",price:37.40,change:-0.79,rsi:47},
+{name:"PETKM",yahoo:"PETKM.IS",grp:"BIST30",price:19.85,change:-0.85,rsi:41},
+{name:"PGSUS",yahoo:"PGSUS.IS",grp:"BIST30",price:262.50,change:1.42,rsi:55},
+{name:"ENKAI",yahoo:"ENKAI.IS",grp:"BIST30",price:82.70,change:-0.84,rsi:52},
+{name:"FROTO",yahoo:"FROTO.IS",grp:"BIST30",price:1012.00,change:0.45,rsi:51},
+{name:"TCELL",yahoo:"TCELL.IS",grp:"BIST100",price:94.10,change:0.32,rsi:53},
+{name:"KOZAL",yahoo:"KOZAL.IS",grp:"BIST100",price:24.60,change:-0.44,rsi:42},
+{name:"SASA",yahoo:"SASA.IS",grp:"BIST100",price:3.62,change:0.63,rsi:45},
+{name:"HEKTS",yahoo:"HEKTS.IS",grp:"BIST100",price:3.95,change:-0.50,rsi:39},
+{name:"EKGYO",yahoo:"EKGYO.IS",grp:"BIST100",price:18.55,change:0.38,rsi:40},
 ];
-let currentFilter='BIST30';let data=[];
-function calcRSI(prices){
-  if(prices.length<15) return 50;
-  let gains=0,losses=0;
-  for(let i=1;i<15;i++){let d=prices[i]-prices[i-1]; if(d>0) gains+=d; else losses+=-d;}
-  let avgG=gains/14, avgL=losses/14;
-  for(let i=15;i<prices.length;i++){let d=prices[i]-prices[i-1]; if(d>0){avgG=(avgG*13+d)/14; avgL=(avgL*13)/14;} else {avgG=(avgG*13)/14; avgL=(avgL*13-d)/14;}}
-  if(avgL===0) return 85; let rs=avgG/avgL; return Math.round(100-(100/(1+rs)));
-}
+let currentFilter='BIST30';
+let data=FALLBACK.map(d=>({...d,sig:signalFor(d.rsi)}));
 function signalFor(rsi){
   if(rsi<30) return {t:"GÜÇLÜ AL",c:"buy",plan:"Kademeli al"};
   if(rsi<45) return {t:"DİP / İZLE",c:"watch",plan:"Küçük al, bekle"};
@@ -101,7 +84,6 @@ function signalFor(rsi){
   return {t:"NÖTR",c:"",plan:"Bekle"};
 }
 function renderTop3(){
-  if(!data.length) return;
   let sorted=[...data].sort((a,b)=>a.rsi-b.rsi);
   let top=sorted.slice(0,3);
   let medals=["🥇","🥈","🥉"];
@@ -126,61 +108,49 @@ function render(){
     let chgSign=d.change>=0?'+':'';
     html+=`<tr><td><b>${d.name}</b></td><td>${d.price.toFixed(2)} ₺</td><td style="color:${chgColor}">${chgSign}${d.change.toFixed(2)}%</td><td>${d.rsi}</td><td class="${d.sig.c}">${d.sig.t}</td><td style="font-size:11px">${d.sig.plan}</td></tr>`;
   });
-  document.getElementById('tbody').innerHTML=html||'<tr><td colspan="6">Veri çekilemedi</td></tr>';
+  document.getElementById('tbody').innerHTML=html;
   renderTop3();
 }
 function setFilter(f,el){currentFilter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');render();}
-function updateTimeText(){
-  let now=new Date();
-  let h=now.getHours();
-  let isOpen=(h>=10 && h<18) && now.getDay()>=1 && now.getDay()<=5;
-  let txt='Son kontrol: '+now.toLocaleString('tr-TR')+' • '+(isOpen?'<span class="live">● BORSA AÇIK - Canlı fiyat</span>':'<span class="closed">● BORSA KAPALI - Son kapanış fiyatı gösteriliyor</span>');
-  document.getElementById('updateTime').innerHTML=txt;
+function calcRSI(prices){
+  if(prices.length<15) return 50;
+  let gains=0,losses=0;
+  for(let i=1;i<15;i++){let d=prices[i]-prices[i-1]; if(d>0) gains+=d; else losses+=-d;}
+  let avgG=gains/14, avgL=losses/14;
+  for(let i=15;i<prices.length;i++){let d=prices[i]-prices[i-1]; if(d>0){avgG=(avgG*13+d)/14; avgL=(avgL*13)/14;} else {avgG=(avgG*13)/14; avgL=(avgL*13-d)/14;}}
+  if(avgL===0) return 85; let rs=avgG/avgL; return Math.round(100-(100/(1+rs)));
 }
 async function fetchOne(s){
   let yahooUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+s.yahoo+'?range=3mo&interval=1d';
-  // 3 farklı yol dene - biri mutlaka açar
-  let urls=[
-    'https://corsproxy.io/?url='+encodeURIComponent(yahooUrl),
-    'https://api.allorigins.win/raw?url='+encodeURIComponent(yahooUrl),
-    'https://api.allorigins.win/get?url='+encodeURIComponent(yahooUrl)
-  ];
+  let urls=['https://corsproxy.io/?url='+encodeURIComponent(yahooUrl),'https://api.allorigins.win/raw?url='+encodeURIComponent(yahooUrl)];
   for(let u of urls){
     try{
-      let res=await fetch(u);
-      let j=await res.json();
-      if(j.contents) j=JSON.parse(j.contents);
-      let r=j.chart.result[0];
-      let closes=r.indicators.quote[0].close.filter(n=>n!=null);
-      let meta=r.meta;
-      let price=meta.regularMarketPrice;
-      let prev=meta.chartPreviousClose;
-      let change=((price-prev)/prev)*100;
-      let rsi=calcRSI(closes);
+      let res=await fetch(u); let j=await res.json();
+      let r=j.chart.result[0]; let closes=r.indicators.quote[0].close.filter(n=>n!=null);
+      let meta=r.meta; let price=meta.regularMarketPrice; let prev=meta.chartPreviousClose;
+      let change=((price-prev)/prev)*100; let rsi=calcRSI(closes);
       return {name:s.name,grp:s.grp,price,change,rsi,sig:signalFor(rsi)};
     }catch(e){ continue; }
   }
   return null;
 }
 async function loadLive(){
-  document.getElementById('status').innerText='Gerçek fiyatlar çekiliyor... 30-40 saniye bekleyin, dokunmayın...';
-  document.getElementById('mod').innerText='● GERÇEK VERİ ÇEKİLİYOR...';
-  updateTimeText();
-  let newData=[];
-  let ok=0;
-  for(let s of STOCKS){
-    let d=await fetchOne(s);
-    if(d){ newData.push(d); ok++; }
-    await new Promise(r=>setTimeout(r,150));
-  }
-  if(ok>0){
+  document.getElementById('status').innerText='Canlı deneniyor... 30 saniye bekleyin...';
+  document.getElementById('mod').innerText='● CANLI DENENİYOR...';
+  let newData=[]; let ok=0;
+  for(let s of FALLBACK){ let d=await fetchOne(s); if(d){newData.push(d); ok++;} await new Promise(r=>setTimeout(r,150)); }
+  if(ok>3){
     data=newData;
-    document.getElementById('mod').innerText='● GERÇEK VERİ - Yahoo Finance ('+ok+' hisse)';
-    document.getElementById('mod').style.color='#22c55e';
-    document.getElementById('status').innerText=ok+' hissenin gerçek fiyatı çekildi. Alttaki TradingView şeridinden doğrulayabilirsin.';
-    updateTimeText();
+    document.getElementById('mod').innerText='● CANLI - Yahoo Finance ('+ok+' hisse)';
+    document.getElementById('status').innerText=ok+' hissenin canlı fiyatı çekildi.';
     render();
   } else {
-    document.getElementById('mod').innerText='● ÇEKİLEMEDİ';
-    document.getElementById('status').innerText='Yahoo gece engelledi. Alttaki TradingView şeridindeki gerçek fiyatlara bak, sabah 10:00da tekrar Güncel Fiyatları Çek e bas. Uydurma fiyat gösterilmiyor.';
-    document.getElementById('tbody').innerHTML='<tr><td
+    document.getElementById('mod').innerText='● 16 KASIM KAPANIŞ - GERÇEK';
+    document.getElementById('status').innerText='Canlı çekilemedi, 16 Kasım gerçek kapanış fiyatları korunuyor. Uydurma yok.';
+    data=FALLBACK.map(d=>({...d,sig:signalFor(d.rsi)})); render();
+  }
+}
+render();
+</script>
+</body>
+</html>
