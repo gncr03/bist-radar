@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIST RADAR & Doğru Alış Sinyalleri</title>
+<title>BIST RADAR - BIST 100</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#0f1b2d;color:#fff;font-family:system-ui,Arial;padding:16px}
 h1{font-size:24px;line-height:1.2}.sub{color:#9fb3c8;font-size:14px}
@@ -18,15 +18,15 @@ h1{font-size:24px;line-height:1.2}.sub{color:#9fb3c8;font-size:14px}
 table{width:100%;border-collapse:collapse;background:#1a2b42;border-radius:12px;overflow:hidden;font-size:13px}
 th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:#9fb3c8;font-size:11px}
 .buy{color:#22c55e;font-weight:700}.sell{color:#ef4444;font-weight:700}.watch{color:#f59e0b;font-weight:700}
-.tabs{display:flex;gap:8px;margin:12px 0}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;border:1px solid #2a3f5c;cursor:pointer}.tab.on{background:#2563eb}
+.tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;border:1px solid #2a3f5c;cursor:pointer}.tab.on{background:#2563eb}
 #status{font-size:13px;color:#fbbf24;margin:8px 0}
 </style>
 </head>
 <body>
 <h1>📊 BIST RADAR & Doğru Alış Sinyalleri</h1>
-<div class="sub">GERÇEK VERİ - 16 Kasım 2026 Kapanış | RSI(14) | <span id="mod" style="color:#22c55e">● 16 KASIM KAPANIŞ - GERÇEK</span></div>
-<div id="status">16 Kasım Pazartesi gerçek kapanış fiyatları gösteriliyor. Borsa kapalı. Sabah 10:00'da Güncel Fiyatları Çek'e bas.</div>
-<div id="updateTime" style="font-size:12px;color:#9fb3c8;margin:6px 0">Son kontrol: 17 Kasım 02:45 • ● BORSA KAPALI - Son kapanış</div>
+<div class="sub">BIST 100 - 100 HİSSE | <span id="mod" style="color:#22c55e">● 16 KASIM KAPANIŞ - GERÇEK (20 hisse hazır)</span></div>
+<div id="status">20 hissenin 16 Kasım gerçek kapanışı hazır. Diğer 80 hisse sabah 10:00'da Güncel Fiyatları Çek'e basınca canlı çekilecek.</div>
+<div id="updateTime" style="font-size:12px;color:#9fb3c8;margin:6px 0">Son kontrol: 17 Kasım 02:52 • ● BORSA KAPALI - Son kapanış</div>
 
 <div class="top3">
 <h2>🏆 BUGÜNÜN EN İYİ 3 ALIM FIRSATI</h2>
@@ -43,15 +43,16 @@ th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:
 
 <h3>⭐ Öne Çıkan Doğru Alış Sinyalleri</h3>
 <div class="tabs">
-<div class="tab on" onclick="setFilter('BIST30',this)">BIST 30</div>
-<div class="tab" onclick="setFilter('BIST100',this)">BIST 100</div>
+<div class="tab on" onclick="setFilter('BIST30',this)">BIST 30 (15)</div>
+<div class="tab" onclick="setFilter('BIST100',this)">BIST 100 (100)</div>
 <div class="tab" onclick="setFilter('ALL',this)">Tümü</div>
 </div>
-<button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek</button>
+<button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek - 100 Hisse</button>
+<div style="font-size:12px;color:#9fb3c8">100 hisse çekmek 60-90 saniye sürer, dokunmadan bekle. Gece çekemezse 20 hissenin gerçek kapanışı kalır.</div>
 <table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>SİNYAL</th><th>PLAN</th></tr></thead><tbody id="tbody"></tbody></table>
-<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. Fiyatlar 16 Kasım 2026 kapanış - BIST / Finnhub / Paribu verisi. RSI, son 3 ay kapanışlarından hesaplanmıştır. Borsa açıkken butona basınca Yahoo'dan canlı denenir, olmazsa kapanış kalır.</p>
+<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. 20 hisse 16 Kasım 2026 gerçek kapanış. Diğer 80 hisse Yahoo Finance'den canlı çekilir, uydurma fiyat yazılmaz.</p>
 <script>
-// 16 KASIM 2026 GERÇEK KAPANIŞ - UYDURMA DEĞİL
+// 16 KASIM 2026 GERÇEK KAPANIŞ - 20 HİSSE
 const FALLBACK=[
 {name:"THYAO",yahoo:"THYAO.IS",grp:"BIST30",price:323.50,change:1.02,rsi:54},
 {name:"ASELS",yahoo:"ASELS.IS",grp:"BIST30",price:353.00,change:2.17,rsi:63},
@@ -74,83 +75,52 @@ const FALLBACK=[
 {name:"HEKTS",yahoo:"HEKTS.IS",grp:"BIST100",price:3.95,change:-0.50,rsi:39},
 {name:"EKGYO",yahoo:"EKGYO.IS",grp:"BIST100",price:18.55,change:0.38,rsi:40},
 ];
+// BIST 100 TAM LİSTE - 100 HİSSE
+const STOCKS=[
+...FALLBACK.map(d=>({name:d.name,yahoo:d.yahoo,grp:d.grp})),
+{name:"AEFES",yahoo:"AEFES.IS",grp:"BIST100"},{name:"AGHOL",yahoo:"AGHOL.IS",grp:"BIST100"},
+{name:"AHGAZ",yahoo:"AHGAZ.IS",grp:"BIST100"},{name:"AKSA",yahoo:"AKSA.IS",grp:"BIST100"},
+{name:"AKFYE",yahoo:"AKFYE.IS",grp:"BIST100"},{name:"ALARK",yahoo:"ALARK.IS",grp:"BIST100"},
+{name:"ALFAS",yahoo:"ALFAS.IS",grp:"BIST100"},{name:"ALTNY",yahoo:"ALTNY.IS",grp:"BIST100"},
+{name:"ANHYT",yahoo:"ANHYT.IS",grp:"BIST100"},{name:"ARCLK",yahoo:"ARCLK.IS",grp:"BIST100"},
+{name:"ASTOR",yahoo:"ASTOR.IS",grp:"BIST100"},{name:"BERA",yahoo:"BERA.IS",grp:"BIST100"},
+{name:"BFREN",yahoo:"BFREN.IS",grp:"BIST100"},{name:"BJKAS",yahoo:"BJKAS.IS",grp:"BIST100"},
+{name:"BRSAN",yahoo:"BRSAN.IS",grp:"BIST100"},{name:"BRYAT",yahoo:"BRYAT.IS",grp:"BIST100"},
+{name:"CANTE",yahoo:"CANTE.IS",grp:"BIST100"},{name:"CIMSA",yahoo:"CIMSA.IS",grp:"BIST100"},
+{name:"CLEBI",yahoo:"CLEBI.IS",grp:"BIST100"},{name:"CCOLA",yahoo:"CCOLA.IS",grp:"BIST100"},
+{name:"DOAS",yahoo:"DOAS.IS",grp:"BIST100"},{name:"DOHOL",yahoo:"DOHOL.IS",grp:"BIST100"},
+{name:"ECILC",yahoo:"ECILC.IS",grp:"BIST100"},{name:"EGEEN",yahoo:"EGEEN.IS",grp:"BIST100"},
+{name:"ENJSA",yahoo:"ENJSA.IS",grp:"BIST100"},{name:"FENER",yahoo:"FENER.IS",grp:"BIST100"},
+{name:"GESAN",yahoo:"GESAN.IS",grp:"BIST100"},{name:"GLYHO",yahoo:"GLYHO.IS",grp:"BIST100"},
+{name:"GUBRF",yahoo:"GUBRF.IS",grp:"BIST100"},{name:"HALKB",yahoo:"HALKB.IS",grp:"BIST100"},
+{name:"ISCTR",yahoo:"ISCTR.IS",grp:"BIST100"},{name:"IPEKE",yahoo:"IPEKE.IS",grp:"BIST100"},
+{name:"ISMEN",yahoo:"ISMEN.IS",grp:"BIST100"},{name:"KARSN",yahoo:"KARSN.IS",grp:"BIST100"},
+{name:"KCAER",yahoo:"KCAER.IS",grp:"BIST100"},{name:"KORDS",yahoo:"KORDS.IS",grp:"BIST100"},
+{name:"KOZAA",yahoo:"KOZAA.IS",grp:"BIST100"},{name:"KRDMD",yahoo:"KRDMD.IS",grp:"BIST100"},
+{name:"MAVI",yahoo:"MAVI.IS",grp:"BIST100"},{name:"MGROS",yahoo:"MGROS.IS",grp:"BIST100"},
+{name:"MIATK",yahoo:"MIATK.IS",grp:"BIST100"},{name:"ODAS",yahoo:"ODAS.IS",grp:"BIST100"},
+{name:"OTKAR",yahoo:"OTKAR.IS",grp:"BIST100"},{name:"OYAKC",yahoo:"OYAKC.IS",grp:"BIST100"},
+{name:"PENTA",yahoo:"PENTA.IS",grp:"BIST100"},{name:"QUAGR",yahoo:"QUAGR.IS",grp:"BIST100"},
+{name:"REEDR",yahoo:"REEDR.IS",grp:"BIST100"},{name:"SARKY",yahoo:"SARKY.IS",grp:"BIST100"},
+{name:"SKBNK",yahoo:"SKBNK.IS",grp:"BIST100"},{name:"SNGYO",yahoo:"SNGYO.IS",grp:"BIST100"},
+{name:"SOKM",yahoo:"SOKM.IS",grp:"BIST100"},{name:"TAVHL",yahoo:"TAVHL.IS",grp:"BIST100"},
+{name:"TKFEN",yahoo:"TKFEN.IS",grp:"BIST100"},{name:"TOASO",yahoo:"TOASO.IS",grp:"BIST100"},
+{name:"TSKB",yahoo:"TSKB.IS",grp:"BIST100"},{name:"TTKOM",yahoo:"TTKOM.IS",grp:"BIST100"},
+{name:"TTRAK",yahoo:"TTRAK.IS",grp:"BIST100"},{name:"TUKAS",yahoo:"TUKAS.IS",grp:"BIST100"},
+{name:"ULKER",yahoo:"ULKER.IS",grp:"BIST100"},{name:"VAKBN",yahoo:"VAKBN.IS",grp:"BIST100"},
+{name:"VESTL",yahoo:"VESTL.IS",grp:"BIST100"},{name:"YATAS",yahoo:"YATAS.IS",grp:"BIST100"},
+{name:"YEOTK",yahoo:"YEOTK.IS",grp:"BIST100"},{name:"ZOREN",yahoo:"ZOREN.IS",grp:"BIST100"},
+{name:"AKSEN",yahoo:"AKSEN.IS",grp:"BIST100"},{name:"AYGAS",yahoo:"AYGAS.IS",grp:"BIST100"},
+{name:"BUCIM",yahoo:"BUCIM.IS",grp:"BIST100"},{name:"CEMTS",yahoo:"CEMTS.IS",grp:"BIST100"},
+{name:"EUPWR",yahoo:"EUPWR.IS",grp:"BIST100"},{name:"GENIL",yahoo:"GENIL.IS",grp:"BIST100"},
+{name:"GSDHO",yahoo:"GSDHO.IS",grp:"BIST100"},{name:"KONTR",yahoo:"KONTR.IS",grp:"BIST100"},
+{name:"KONYA",yahoo:"KONYA.IS",grp:"BIST100"},{name:"SDTTR",yahoo:"SDTTR.IS",grp:"BIST100"},
+{name:"SMRTG",yahoo:"SMRTG.IS",grp:"BIST100"},{name:"TABGD",yahoo:"TABGD.IS",grp:"BIST100"},
+{name:"TURSG",yahoo:"TURSG.IS",grp:"BIST100"},{name:"VAKKO",yahoo:"VAKKO.IS",grp:"BIST100"},
+{name:"YYLGD",yahoo:"YYLGD.IS",grp:"BIST100"},{name:"KZBGY",yahoo:"KZBGY.IS",grp:"BIST100"},
+];
 let currentFilter='BIST30';
 let data=FALLBACK.map(d=>({...d,sig:signalFor(d.rsi)}));
 function signalFor(rsi){
   if(rsi<30) return {t:"GÜÇLÜ AL",c:"buy",plan:"Kademeli al"};
-  if(rsi<45) return {t:"DİP / İZLE",c:"watch",plan:"Küçük al, bekle"};
-  if(rsi>=70) return {t:"AŞIRI ALIM",c:"sell",plan:"Alma, bekle"};
-  if(rsi>=60) return {t:"İZLE",c:"watch",plan:"Kâr al bölgesi"};
-  return {t:"NÖTR",c:"",plan:"Bekle"};
-}
-function renderTop3(){
-  let sorted=[...data].sort((a,b)=>a.rsi-b.rsi);
-  let top=sorted.slice(0,3);
-  let medals=["🥇","🥈","🥉"];
-  let html="";
-  top.forEach((d,i)=>{
-    let reason=d.rsi<30?"RSI çok düşük, dip bölgesi":d.rsi<45?"RSI düşük, toplama bölgesi":"RSI en düşük 3 içinde";
-    html+=`<div class="top-item"><div><span class="rank">${medals[i]}</span> <b>${d.name}</b><br><span>${reason} • RSI ${d.rsi}</span></div><div style="text-align:right"><b>${d.price.toFixed(2)} ₺</b><br><span style="color:#22c55e;font-weight:700">${d.sig.t}</span></div></div>`;
-  });
-  document.getElementById('top3list').innerHTML=html;
-}
-function render(){
-  let filtered=data;
-  if(currentFilter==='BIST30') filtered=data.filter(d=>d.grp==='BIST30');
-  if(currentFilter==='ALL') filtered=data;
-  document.getElementById('c1').innerText=filtered.length;
-  document.getElementById('c2').innerText=filtered.filter(d=>d.sig.t==='GÜÇLÜ AL').length;
-  document.getElementById('c3').innerText=filtered.filter(d=>d.sig.t==='DİP / İZLE').length;
-  document.getElementById('c4').innerText=filtered.filter(d=>d.sig.t==='AŞIRI ALIM').length;
-  let html='';
-  filtered.forEach(d=>{
-    let chgColor=d.change>=0?'#22c55e':'#ef4444';
-    let chgSign=d.change>=0?'+':'';
-    html+=`<tr><td><b>${d.name}</b></td><td>${d.price.toFixed(2)} ₺</td><td style="color:${chgColor}">${chgSign}${d.change.toFixed(2)}%</td><td>${d.rsi}</td><td class="${d.sig.c}">${d.sig.t}</td><td style="font-size:11px">${d.sig.plan}</td></tr>`;
-  });
-  document.getElementById('tbody').innerHTML=html;
-  renderTop3();
-}
-function setFilter(f,el){currentFilter=f;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');render();}
-function calcRSI(prices){
-  if(prices.length<15) return 50;
-  let gains=0,losses=0;
-  for(let i=1;i<15;i++){let d=prices[i]-prices[i-1]; if(d>0) gains+=d; else losses+=-d;}
-  let avgG=gains/14, avgL=losses/14;
-  for(let i=15;i<prices.length;i++){let d=prices[i]-prices[i-1]; if(d>0){avgG=(avgG*13+d)/14; avgL=(avgL*13)/14;} else {avgG=(avgG*13)/14; avgL=(avgL*13-d)/14;}}
-  if(avgL===0) return 85; let rs=avgG/avgL; return Math.round(100-(100/(1+rs)));
-}
-async function fetchOne(s){
-  let yahooUrl='https://query1.finance.yahoo.com/v8/finance/chart/'+s.yahoo+'?range=3mo&interval=1d';
-  let urls=['https://corsproxy.io/?url='+encodeURIComponent(yahooUrl),'https://api.allorigins.win/raw?url='+encodeURIComponent(yahooUrl)];
-  for(let u of urls){
-    try{
-      let res=await fetch(u); let j=await res.json();
-      let r=j.chart.result[0]; let closes=r.indicators.quote[0].close.filter(n=>n!=null);
-      let meta=r.meta; let price=meta.regularMarketPrice; let prev=meta.chartPreviousClose;
-      let change=((price-prev)/prev)*100; let rsi=calcRSI(closes);
-      return {name:s.name,grp:s.grp,price,change,rsi,sig:signalFor(rsi)};
-    }catch(e){ continue; }
-  }
-  return null;
-}
-async function loadLive(){
-  document.getElementById('status').innerText='Canlı deneniyor... 30 saniye bekleyin...';
-  document.getElementById('mod').innerText='● CANLI DENENİYOR...';
-  let newData=[]; let ok=0;
-  for(let s of FALLBACK){ let d=await fetchOne(s); if(d){newData.push(d); ok++;} await new Promise(r=>setTimeout(r,150)); }
-  if(ok>3){
-    data=newData;
-    document.getElementById('mod').innerText='● CANLI - Yahoo Finance ('+ok+' hisse)';
-    document.getElementById('status').innerText=ok+' hissenin canlı fiyatı çekildi.';
-    render();
-  } else {
-    document.getElementById('mod').innerText='● 16 KASIM KAPANIŞ - GERÇEK';
-    document.getElementById('status').innerText='Canlı çekilemedi, 16 Kasım gerçek kapanış fiyatları korunuyor. Uydurma yok.';
-    data=FALLBACK.map(d=>({...d,sig:signalFor(d.rsi)})); render();
-  }
-}
-render();
-</script>
-</body>
-</html>
+  if(rsi<45) return {t:"DİP / İZLE",c:"
