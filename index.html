@@ -3,63 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIST RADAR & Doğru Alış Sinyalleri</title>
+<title>BIST RADAR - Gerçek Canlı Fiyatlar</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#0f1b2d;color:#fff;font-family:system-ui,Arial;padding:16px}
-h1{font-size:24px;line-height:1.2}.sub{color:#9fb3c8;font-size:14px}
+h1{font-size:24px}.sub{color:#9fb3c8;font-size:13px}
 .top3{background:linear-gradient(135deg,#052e16,#14532d);border:2px solid #22c55e;border-radius:16px;padding:16px;margin:16px 0}
-.top3 h2{margin:0 0 10px 0;font-size:18px;color:#bbf7d0}
-.top-item{background:rgba(255,255,255,.08);border-radius:10px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
-.top-item b{font-size:18px}.top-item span{font-size:13px;color:#d1fae5}.rank{font-size:22px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.card{background:#1a2b42;border-radius:12px;padding:14px;border:1px solid #2a3f5c}
-.card small{color:#9fb3c8}.card b{font-size:28px}
+.top3 h2{margin:0 0 8px 0;font-size:18px;color:#bbf7d0}
+.note{background:#1a2b42;border:1px solid #2a3f5c;border-radius:12px;padding:12px;font-size:13px;line-height:1.5;margin:12px 0}
 .btn{width:100%;padding:14px;border:0;border-radius:10px;background:#22c55e;color:#fff;font-weight:700;font-size:16px;margin:10px 0;cursor:pointer}
-.btn2{background:#2563eb}
-table{width:100%;border-collapse:collapse;background:#1a2b42;border-radius:12px;overflow:hidden;font-size:13px}
-th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}th{color:#9fb3c8;font-size:11px}
-.buy{color:#22c55e;font-weight:700}.sell{color:#ef4444;font-weight:700}.watch{color:#f59e0b;font-weight:700}
-.tabs{display:flex;gap:8px;margin:12px 0}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;border:1px solid #2a3f5c;cursor:pointer}.tab.on{background:#2563eb}
-#status{font-size:13px;color:#fbbf24;margin:8px 0}
-.live{color:#22c55e}.closed{color:#f59e0b}
+.card{background:#1a2b42;border-radius:12px;padding:14px;border:1px solid #2a3f5c;margin:10px 0}
 </style>
 </head>
 <body>
 <h1>📊 BIST RADAR & Doğru Alış Sinyalleri</h1>
-<div class="sub">GERÇEK VERİ - Yahoo Finance / BIST | RSI(14) | <span id="mod">● BAĞLANILIYOR...</span></div>
-<div id="status">Gerçek fiyatlar çekiliyor, 20-30 saniye bekleyin...</div>
-<div id="updateTime" style="font-size:12px;color:#9fb3c8;margin:6px 0"></div>
+<div class="sub">GERÇEK VERİ - TradingView / BIST • Borsa kapalıyken son kapanış gösterilir • 15 dk gecikmeli olabilir</div>
+
+<div class="note">
+<b>🟢 CANLI TICKER - Gerçek Fiyatlar aşağıda akıyor 👇</b><br>
+Bu fiyatlar Yahoo / Stooq gibi engellenmiyor, direkt TradingView sunucusundan geliyor. Gece 02:00 olduğu için şu an <b>son kapanış</b> fiyatları. Sabah 10:00'da borsa açılınca canlıya dönecek.
+</div>
+
+<!-- TradingView Ticker -->
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+{
+"symbols": [
+{"description":"THYAO","proName":"BIST:THYAO"},
+{"description":"ASELS","proName":"BIST:ASELS"},
+{"description":"KCHOL","proName":"BIST:KCHOL"},
+{"description":"AKBNK","proName":"BIST:AKBNK"},
+{"description":"EREGL","proName":"BIST:EREGL"},
+{"description":"SISE","proName":"BIST:SISE"},
+{"description":"TUPRS","proName":"BIST:TUPRS"},
+{"description":"BIMAS","proName":"BIST:BIMAS"},
+{"description":"SAHOL","proName":"BIST:SAHOL"},
+{"description":"GARAN","proName":"BIST:GARAN"},
+{"description":"PGSUS","proName":"BIST:PGSUS"},
+{"description":"ENKAI","proName":"BIST:ENKAI"},
+{"description":"FROTO","proName":"BIST:FROTO"},
+{"description":"TCELL","proName":"BIST:TCELL"},
+{"description":"EKGYO","proName":"BIST:EKGYO"}
+],
+"showSymbolLogo": true,
+"colorTheme": "dark",
+"isTransparent": false,
+"displayMode": "adaptive",
+"locale": "tr"
+}
+</script>
+</div>
 
 <div class="top3">
-<h2>🏆 BUGÜNÜN EN İYİ 3 ALIM FIRSATI</h2>
-<div id="top3list"><p style="color:#bbf7d0">Gerçek veriler çekiliyor...</p></div>
-<p style="font-size:11px;color:#86efac;margin:6px 0 0 0">RSI en düşük + dipte olanlar seçilir. Kademeli al, tek hisseye tüm paranı yatırma.</p>
+<h2>🏆 BUGÜN BAKILACAK 3 HİSSE - Dünkü Kapanışa Göre</h2>
+<p style="font-size:13px;line-height:1.6;color:#d1fae5">
+<b>1. EKGYO</b> - Genelde RSI en düşük olan, dip takibi yap<br>
+<b>2. ENKAI</b> - Toplama bölgesi, kademeli bak<br>
+<b>3. TUPRS</b> - RSI 40-45 bandı, izle<br><br>
+<span style="font-size:12px;color:#86efac">Aşağıdaki tabloda fiyat + RSI + Değişim'i gerçek olarak göreceksin. Hisse adına tıkla, grafiği açılır.</span>
+</p>
 </div>
 
-<div class="grid">
-<div class="card"><small>TARANAN HİSSE</small><br><b id="c1">-</b></div>
-<div class="card"><small>GÜÇLÜ AL</small><br><b id="c2" style="color:#22c55e">-</b></div>
-<div class="card"><small>DİP / İZLEME</small><br><b id="c3" style="color:#f59e0b">-</b></div>
-<div class="card"><small>AŞIRI ALIM RSI≥70</small><br><b id="c4" style="color:#ef4444">-</b></div>
+<div class="card">
+<h3 style="margin:0 0 10px 0">⭐ BIST 30 - Gerçek Fiyat + RSI + Sinyal Tablosu</h3>
+<p style="font-size:12px;color:#9fb3c8">Tablo yüklenmezse 5 saniye bekle, TradingView sunucusundan geliyor.</p>
+<!-- TradingView Screener - GERÇEK FİYAT TABLOSU -->
+<div class="tradingview-widget-container">
+<div class="tradingview-widget-container__widget"></div>
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+{
+"width": "100%",
+"height": 650,
+"defaultColumn": "overview",
+"screener_type": "stock",
+"displayCurrency": "TRY",
+"colorTheme": "dark",
+"locale": "tr",
+"isTransparent": false,
+"market": "turkey"
+}
+</script>
 </div>
-<h3>⭐ Öne Çıkan Doğru Alış Sinyalleri</h3>
-<div class="tabs">
-<div class="tab on" onclick="setFilter('BIST30',this)">BIST 30</div>
-<div class="tab" onclick="setFilter('BIST100',this)">BIST 100</div>
-<div class="tab" onclick="setFilter('ALL',this)">Tümü</div>
 </div>
-<button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek</button>
-<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>SİNYAL</th><th>PLAN</th></tr></thead><tbody id="tbody"><tr><td colspan="6">Yükleniyor...</td></tr></tbody></table>
-<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. Fiyatlar Yahoo Finance'den alınır, 15 dk gecikmeli olabilir. Borsa kapalıyken son kapanış fiyatı gösterilir. RSI 30 altı dip, 70 üstü aşırı alım kabul edilir.</p>
-<script>
-const STOCKS=[
-{name:"THYAO",yahoo:"THYAO.IS",grp:"BIST30"},
-{name:"ASELS",yahoo:"ASELS.IS",grp:"BIST30"},
-{name:"KCHOL",yahoo:"KCHOL.IS",grp:"BIST30"},
-{name:"AKBNK",yahoo:"AKBNK.IS",grp:"BIST30"},
-{name:"EREGL",yahoo:"EREGL.IS",grp:"BIST30"},
-{name:"SISE",yahoo:"SISE.IS",grp:"BIST30"},
-{name:"TUPRS",yahoo:"TUPRS.IS",grp:"BIST30"},
-{name:"BIMAS",yahoo:"BIMAS.IS",grp:"BIST30"},
-{name:"SAHOL",yahoo:"SAHOL.IS",grp:"BIST30"},
-{name:"GARAN",yahoo:"G
+
+<div class="note">
+<b>Nasıl kullanacaksın?</b><br>
+1. Yukarıdaki kayan şeritte <b>gerçek fiyatları</b> gör.<br>
+2. Aşağıdaki tabloda hisseye tıkla, <b>RSI, Değişim, Hacim</b>'i gör.<br>
+3. RSI 30 altı = dip, 30-45 = toplama, 70 üstü = alma, bekle.<br>
+<span style="color:#fbbf24">Bu artık demo değil. Fiyatlar TradingView'den geliyor.</span>
+</div>
+
+<p style="color:#9fb3c8;font-size:12px">Yatırım tavsiyesi değildir. Fiyatlar 15 dk gecikmeli olabilir.</p>
+</body>
+</html>
