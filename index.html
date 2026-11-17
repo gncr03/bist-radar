@@ -1,23 +1,82 @@
-<!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BIST RADAR AI PRO • Midas</title>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIST RADAR AI PRO</title>
 <style>
-:root{--bg:#080d18;--panel:#111c2d;--panel2:#17263c;--line:#2a3b55;--txt:#edf4ff;--muted:#9aabc2;--green:#22d6a0;--red:#ff657d;--yellow:#ffc857;--blue:#68aaff}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 12% 0,#172b4b 0,transparent 36%),var(--bg);color:var(--txt);font:14px system-ui,Arial,sans-serif}header{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#18c996,#2678ff);display:grid;place-items:center;font-weight:900;color:#061322;font-size:22px}h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:var(--muted);font-size:12px}.wrap{max-width:1500px;margin:auto;padding:16px}.bar,.panel,.stat{background:linear-gradient(145deg,var(--panel),#0d1727);border:1px solid var(--line);border-radius:14px}.bar{padding:12px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px}button,input,select{background:#0a1423;color:var(--txt);border:1px solid #344967;border-radius:9px;padding:10px 12px;font:inherit}button{cursor:pointer;font-weight:700}button.primary{background:linear-gradient(100deg,#087e69,#1769c5);border:0}button:disabled{opacity:.55;cursor:wait}.status{margin-left:auto;color:var(--muted);font-size:12px}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:6px}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:12px}.stat{padding:13px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:23px;margin-top:7px}.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:12px}.panel{padding:14px;min-width:0}.panel h2{font-size:15px;margin:0 0 12px}.tablewrap{overflow:auto;max-height:620px}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{padding:9px 8px;border-bottom:1px solid #203047;text-align:right;font-size:12px}th{position:sticky;top:0;background:#17263c;color:#afc0d8;z-index:1}td:first-child,th:first-child{text-align:left}.sym{font-weight:800}.tag{padding:4px 7px;border-radius:6px;font-weight:800}.buy{background:#123d35;color:var(--green)}.sell{background:#482331;color:var(--red)}.hold{background:#46391f;color:var(--yellow)}.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}.item{padding:10px;border:1px solid var(--line);border-radius:10px;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px}.item small{display:block;color:var(--muted);margin-top:4px}.notice{background:#302818;border-left:3px solid var(--yellow);padding:10px 12px;border-radius:7px;color:#f4dfa8;font-size:12px;line-height:1.55;margin:10px 0}.goodnote{background:#102b2a;border-left:3px solid var(--green);padding:10px 12px;border-radius:7px;color:#b6f3df;font-size:12px;line-height:1.55;margin:10px 0}.muted{color:var(--muted)}.bottom{margin-top:12px}.foot{padding:18px;text-align:center;color:#71839d;font-size:11px}.detail{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.detail div{background:#0b1626;padding:10px;border-radius:8px}.detail small{color:var(--muted);display:block}.detail b{display:block;margin-top:4px}.hide{display:none!important}@media(max-width:950px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.wrap{padding:9px}.stats{grid-template-columns:repeat(2,1fr)}.stat strong{font-size:19px}.status{width:100%;margin:0}.detail{grid-template-columns:repeat(2,1fr)}}
-</style></head><body>
-<header><div class="brand"><div class="logo">R</div><div><h1>BIST RADAR <span style="color:#55d9b3">AI PRO</span></h1><p>Yahoo gerçek veri • RSI + Para Girişi • 15 dk gecikmeli • Otomatik emir yok</p></div></div><span class="muted">HTML • v3 DÜZELTİLDİ</span></header>
+body{margin:0;background:#080d18;color:#edf4ff;font-family:system-ui,Arial,sans-serif;padding:0}
+header{padding:16px 20px;border-bottom:1px solid #2a3b55}
+h1{margin:0;font-size:22px}
+header p{color:#9aabc2;font-size:12px;margin:4px 0 0}
+.wrap{max-width:1200px;margin:auto;padding:14px}
+.bar{background:#111c2d;border:1px solid #2a3b55;border-radius:14px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button{background:#0a1423;color:#fff;border:1px solid #344967;border-radius:9px;padding:11px 14px;font-weight:700}
+button.primary{background:#1769c5;border:0}
+select,input{background:#0a1423;color:#fff;border:1px solid #344967;border-radius:9px;padding:10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:#111c2d;border:1px solid #2a3b55;border-radius:14px;padding:13px}
+.stat small{color:#9aabc2}.stat strong{display:block;font-size:23px;margin-top:6px}
+.panel{background:#111c2d;border:1px solid #2a3b55;border-radius:14px;padding:14px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+th,td{padding:9px 8px;border-bottom:1px solid #203047;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:#afc0d8}
+.buy{color:#22d6a0;font-weight:800}.sell{color:#ff657d;font-weight:800}.hold{color:#ffc857;font-weight:800}
+.item{padding:10px;border:1px solid #2a3b55;border-radius:10px;margin-bottom:7px}
+.muted{color:#9aabc2}
+</style>
+</head>
+<body>
+<header><h1>BIST RADAR <span style="color:#55d9b3">AI PRO</span></h1><p>Yahoo gercek veri - RSI + Para Girisi - Otomatik emir yok</p></header>
 <div class="wrap">
-<div class="bar"><button class="primary" id="scan">↻ TÜM BIST'İ TARA</button><button id="auto">▶ Otomatik yenileme: Kapalı</button><select id="mins"><option value="1">1 dakika</option><option value="5" selected>5 dakika</option><option value="15">15 dakika</option></select><select id="filter"><option value="ALL">Tüm sinyaller</option><option value="AL">AL</option><option value="SAT">SAT</option><option value="BEKLE">BEKLE</option></select><input id="search" placeholder="Hisse ara" style="width:130px"><span class="status"><i class="dot" id="dot"></i><span id="status">Hazır - 20 hisse kapanış yüklü</span></span></div>
-<div class="stats"><div class="stat"><small>Alınan hisse</small><strong id="total">—</strong></div><div class="stat"><small>AL adayı</small><strong id="buys" style="color:var(--green)">—</strong></div><div class="stat"><small>SAT adayı</small><strong id="sells" style="color:var(--red)">—</strong></div><div class="stat"><small>Ortalama skor</small><strong id="avg">—</strong></div><div class="stat"><small>Veri zamanı</small><strong id="time" style="font-size:15px">—</strong></div></div>
-<div class="grid">
-<section class="panel"><h2>📈 Tüm hisseler <span class="muted" style="font-weight:400">/ AI puanına göre</span></h2><div class="tablewrap"><table><thead><tr><th>Hisse</th><th>Son</th><th>Değişim</th><th>RSI</th><th>MFI</th><th>💰 Para</th><th>Skor</th><th>Sinyal</th><th>Stop*</th><th>Hedef 1*</th></tr></thead><tbody id="rows"></tbody></table></div></section>
-<section class="panel"><h2>🏅 En güçlü adaylar</h2><div class="cols"><div><div class="muted" style="font-size:11px;margin-bottom:7px">İLK 10 AL</div><div id="topBuy"></div></div><div><div class="muted" style="font-size:11px;margin-bottom:7px">İLK 10 SAT</div><div id="topSell"></div></div></div><div class="notice">Skor = RSI %50 + Para Girişi (MFI+Hacim) %30 + Düşüş %20. RSI dipte + para girişi varsa skor yükselir. Yatırım tavsiyesi değildir.</div></section>
+<div id="status" style="color:#ffc857;font-size:13px;margin-bottom:10px">Yukleniyor...</div>
+<div class="bar">
+<button class="primary" onclick="scan()">TUM BISTI TARA</button>
+<select id="filter" onchange="render()"><option value="ALL">Tum sinyaller</option><option value="AL">AL</option><option value="SAT">SAT</option><option value="BEKLE">BEKLE</option></select>
+<input id="search" placeholder="Hisse ara" oninput="render()">
 </div>
-<section class="panel bottom"><h2>🔎 Seçili hisse analizi</h2><div id="detail" class="muted">Tablodan bir hisse seçerek mevcut veri alanlarını inceleyebilirsiniz.</div></section>
-<section class="panel bottom"><h2>⚙️ Veri kaynağı ve ayarlar</h2>
-<div class="goodnote"><b>Kaynak:</b> Yahoo Finance gerçek fiyat + hacim verisi. Canlı çekilemezse 16 Kasım kapanış verisi gösterilir, boş kalmaz.</div>
-<div class="bar" style="padding:0;border:0;background:none;margin:8px 0"><button id="csv">CSV indir</button></div>
-<div id="diag" class="muted" style="font-size:12px;white-space:pre-wrap"></div>
-<p class="muted" style="font-size:12px;line-height:1.55">* Stop ve hedef, fiyattan %1 stop / %1,5 hedef ile hesaplanan yaklaşık izleme seviyeleridir.</p>
-</section></div><div class="foot">BIST RADAR AI PRO • Yatırım tavsiyesi değildir • Otomatik emir göndermez.</div>
+<div class="stats">
+<div class="stat"><small>Alinan hisse</small><strong id="total">-</strong></div>
+<div class="stat"><small>AL adayi</small><strong id="buys">-</strong></div>
+<div class="stat"><small>SAT adayi</small><strong id="sells">-</strong></div>
+<div class="stat"><small>Ortalama skor</small><strong id="avg">-</strong></div>
+</div>
+<div class="panel"><h2>En guclu adaylar - ILK 5 AL</h2><div id="topBuy">Yukleniyor...</div></div>
+<div class="panel"><h2>Tum hisseler - AI puanina gore</h2>
+<div style="overflow:auto"><table><thead><tr><th>Hisse</th><th>Son</th><th>Degisim</th><th>RSI</th><th>MFI</th><th>Para</th><th>Skor</th><th>Sinyal</th><th>Stop</th><th>Hedef</th></tr></thead><tbody id="rows"><tr><td colspan="10">Yukleniyor...</td></tr></tbody></table></div>
+</div>
+<div class="panel"><h2>Secili hisse</h2><div id="detail" class="muted">Tablodan bir hisseye dokun.</div></div>
+<p class="muted" style="font-size:12px">Skor = RSI + Para Girisi (MFI + Hacim). Yatirim tavsiyesi degildir.</p>
+</div>
 <script>
-const $=x=>document.getElementById(x);
+function get(id){return document.getElementById(id);}
+window.onerror=function(m){get('status').innerHTML='HATA: '+m;};
+var FALLBACK=[
+{s:"SISE",p:38.12,c:-2.84,rsi:32,mfi:35,vol:1.6},
+{s:"EREGL",p:32.22,c:-1.47,rsi:36,mfi:38,vol:1.3},
+{s:"HEKTS",p:3.95,c:-0.50,rsi:39,mfi:37,vol:1.4},
+{s:"PETKM",p:19.85,c:-0.85,rsi:41,mfi:39,vol:1.2},
+{s:"SAHOL",p:98.40,c:-0.59,rsi:43,mfi:40,vol:0.9},
+{s:"KCHOL",p:205.50,c:-0.96,rsi:44,mfi:42,vol:0.9},
+{s:"TUPRS",p:356.00,c:-0.84,rsi:46,mfi:45,vol:0.8},
+{s:"YKBNK",p:37.40,c:-0.79,rsi:47,mfi:44,vol:1.0},
+{s:"AKBNK",p:69.90,c:-0.07,rsi:48,mfi:48,vol:1.0},
+{s:"BIMAS",p:395.25,c:-0.06,rsi:49,mfi:50,vol:1.0},
+{s:"GARAN",p:138.20,c:-0.13,rsi:50,mfi:52,vol:1.1},
+{s:"FROTO",p:1012.00,c:0.45,rsi:51,mfi:53,vol:1.0},
+{s:"ENKAI",p:82.70,c:-0.84,rsi:52,mfi:49,vol:0.9},
+{s:"TCELL",p:94.10,c:0.32,rsi:53,mfi:54,vol:1.0},
+{s:"THYAO",p:323.50,c:1.02,rsi:54,mfi:55,vol:1.1},
+{s:"PGSUS",p:262.50,c:1.42,rsi:55,mfi:58,vol:1.2},
+{s:"ASELS",p:353.00,c:2.17,rsi:63,mfi:62,vol:1.4},
+{s:"KOZAL",p:24.60,c:-0.44,rsi:42,mfi:41,vol:1.1},
+{s:"SASA",p:3.62,c:0.63,rsi:45,mfi:46,vol:1.3},
+{s:"EKGYO",p:18.55,c:0.38,rsi:40,mfi:43,vol:1.0}
+];
+function calcScore(d){
+var r=50;
+if(d.rsi<35) r=92; else if(d.rsi<40) r=82; else if(d.rsi<45) r=70; else if(d.rsi<50) r=55; else if(d.rsi>=70) r=15; else if(d.rsi>=60) r=35;
+var m=50;
+if(d.mfi<30) m=88; else if(d.mfi<40) m=72; else if(d.mfi<50) m=55; else if(d.mfi>=70) m=25;
+if(d.vol>=1.5) m=m
