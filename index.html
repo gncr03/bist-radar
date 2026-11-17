@@ -1,18 +1,281 @@
-<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BIST RADAR AI PRO</title>
-<style>body{margin:0;background:#080d18;color:#fff;font-family:Arial;padding:14px}h1{font-size:22px}button{background:#1769c5;color:#fff;border:0;padding:12px 16px;border-radius:10px;font-weight:700;width:100%;font-size:16px}select,input{background:#0a1423;color:#fff;border:1px solid #344967;border-radius:9px;padding:10px;width:100%;margin-top:8px}.c{background:#111c2d;border:1px solid #2a3b55;border-radius:14px;padding:13px;margin:10px 0}.b{font-size:22px}.g{color:#22d6a0}.r{color:#ff657d}.y{color:#ffc857}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #203047;text-align:right}th:first-child,td:first-child{text-align:left}.m{color:#9aabc2;font-size:12px}</style></head>
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIST RADAR AI PRO • Midas</title>
+<style>
+:root{--bg:#070b14;--panel:#0e1726;--panel2:#142136;--line:#1f314f;--txt:#e3edf9;--muted:#899bb5;--green:#10b981;--red:#f43f5e;--yellow:#fbbf24;--blue:#3b82f6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#13233f 0,transparent 40%),var(--bg);color:var(--txt);font:14px/1.5 system-ui,-apple-system,sans-serif}
+header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(14,23,38,0.7);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#10b981,#3b82f6);display:grid;place-items:center;font-weight:900;color:#040d1a;font-size:20px;box-shadow:0 4px 12px rgba(16,185,129,0.2)}
+h1{font-size:18px;margin:0;letter-spacing:-0.3px}header p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.wrap{max-width:1500px;margin:auto;padding:20px}
+.bar,.panel,.stat{background:linear-gradient(145deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.25)}
+.bar{padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+button,input,select{background:#09101d;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:inherit;transition:all .2s}
+button:hover{border-color:#3b82f6}button{cursor:pointer;font-weight:600}
+button.primary{background:linear-gradient(135deg,#059669,#2563eb);border:0;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
+button.primary:hover{opacity:.9}button:disabled{opacity:.5;cursor:wait}
+.status{margin-left:auto;color:var(--muted);font-size:12px;display:flex;align-items:center}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:8px;box-shadow:0 0 8px var(--yellow)}
+.dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}.dot.bad{background:var(--red);box-shadow:0 0 8px var(--red)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.stat{padding:16px}.stat small{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:22px;margin-top:4px;letter-spacing:-0.5px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.panel{padding:18px;min-width:0}.panel h2{font-size:15px;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between}
+.tablewrap{overflow:auto;max-height:600px;border-radius:8px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;font-size:12.5px}
+th{position:sticky;top:0;background:#111c2e;color:var(--muted);z-index:2;font-weight:600}
+td:first-child,th:first-child{text-align:left}.sym{font-weight:700;color:#fff}
+tr:hover td{background:rgba(59,130,246,0.04)}
+.tag{padding:3px 8px;border-radius:6px;font-weight:700;font-size:11px}
+.buy{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
+.sell{background:rgba(244,63,94,0.15);color:var(--red);border:1px solid rgba(244,63,94,0.3)}
+.hold{background:rgba(251,191,36,0.15);color:var(--yellow);border:1px solid rgba(251,191,36,0.3)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.item{padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:rgba(9,16,29,0.5)}
+.item small{display:block;color:var(--muted);margin-top:2px;font-size:11px}
+.notice{background:rgba(251,191,36,0.08);border-left:3px solid var(--yellow);padding:12px;border-radius:6px;color:#fde68a;font-size:12px;line-height:1.5;margin:12px 0}
+.goodnote{background:rgba(16,185,129,0.08);border-left:3px solid var(--green);padding:12px;border-radius:6px;color:#a7f3d0;font-size:12px;line-height:1.5;margin:12px 0}
+.muted{color:var(--muted)}.bottom{margin-top:16px}
+.foot{padding:24px;text-align:center;color:var(--muted);font-size:12px}
+.detail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.detail div{background:#09101d;padding:12px;border-radius:8px;border:1px solid var(--line)}
+.detail small{color:var(--muted);display:block;font-size:11px}.detail b{display:block;margin-top:4px;font-size:13px}
+.hide{display:none!important}
+@media(max-width:1024px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.wrap{padding:10px}.stats{grid-template-columns:repeat(2,1fr)}.detail{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
 <body>
-<h1>BIST RADAR <span style="color:#55d9b3">AI PRO</span></h1><p class="m">RSI + Para Girisi - Otomatik emir yok</p>
-<div id="status" style="color:#ffc857">Yukleniyor...</div>
-<button onclick="scan()">TUM BISTI TARA - CANLI</button>
-<select id="f" onchange="render()"><option value="ALL">Tumu</option><option value="AL">Sadece AL</option><option value="GIRIS">Sadece Para Girisi</option></select>
-<input id="q" placeholder="Hisse ara: SISE" oninput="render()">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="c">AL adayi<div class="b g" id="buys">-</div></div><div class="c">Para Girisi<div class="b" id="mg">-</div></div></div>
-<div class="c"><b>EN IYI 5</b><div id="top"></div></div>
-<div class="c"><b>TUM HISSELER</b><div style="overflow:auto"><table><tr><th>Hisse</th><th>Fiyat</th><th>Deg</th><th>RSI</th><th>Para</th><th>AI</th><th>Sinyal</th></tr><tbody id="rows"></tbody></table></div></div>
-<div id="det" class="c m">Bir hisseye dokun, detay gor.</div>
-<p class="m">Skor: RSI dipte + Para girisi = yuksek. Yatirim tavsiyesi degildir.</p>
+
+<header>
+  <div class="brand">
+    <div class="logo">R</div>
+    <div>
+      <h1>BIST RADAR <span style="color:#10b981">AI PRO</span></h1>
+      <p>Midas açık veri • 15 dk gecikmeli • Otomatik emir yok</p>
+    </div>
+  </div>
+  <span class="muted" style="font-size:12px">HTML • v2.2 Modern Görünüm</span>
+</header>
+
+<div class="wrap">
+  <div class="bar">
+    <button class="primary" id="scan">↻ TÜM BIST'İ TARA</button>
+    <button id="auto">▶ Otomatik yenileme: Kapalı</button>
+    <select id="mins">
+      <option value="1">1 dakika</option>
+      <option value="5" selected>5 dakika</option>
+      <option value="15">15 dakika</option>
+    </select>
+    <select id="filter">
+      <option value="ALL">Tüm sinyaller</option>
+      <option value="AL">AL</option>
+      <option value="SAT">SAT</option>
+      <option value="BEKLE">BEKLE</option>
+    </select>
+    <input id="search" placeholder="Hisse ara..." style="width:140px">
+    <span class="status"><i class="dot" id="dot"></i><span id="status">Midas bağlantısı bekleniyor</span></span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><small>Alınan hisse</small><strong id="total">—</strong></div>
+    <div class="stat"><small>AL adayı</small><strong id="buys" style="color:var(--green)">—</strong></div>
+    <div class="stat"><small>SAT adayı</small><strong id="sells" style="color:var(--red)">—</strong></div>
+    <div class="stat"><small>Ortalama skor</small><strong id="avg">—</strong></div>
+    <div class="stat"><small>Veri zamanı</small><strong id="time" style="font-size:15px">—</strong></div>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>📈 Tüm hisseler <span class="muted" style="font-size:12px;font-weight:400">/ sinyal puanına göre</span></h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Hisse</th>
+              <th>Son</th>
+              <th>Değişim</th>
+              <th>Hacim TL</th>
+              <th>Gün içi konum</th>
+              <th>Skor</th>
+              <th>Sinyal</th>
+              <th>Stop*</th>
+              <th>Hedef 1*</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="9" style="text-align:center;padding:40px" class="muted">Tarama başlatmak için üstteki düğmeye basın.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>🏅 En güçlü adaylar</h2>
+      <div class="cols">
+        <div>
+          <div class="muted" style="font-size:11px;margin-bottom:8px;font-weight:600">İLK 10 AL</div>
+          <div id="topBuy"></div>
+        </div>
+        <div>
+          <div class="muted" style="font-size:11px;margin-bottom:8px;font-weight:600">İLK 10 SAT</div>
+          <div id="topSell"></div>
+        </div>
+      </div>
+      <div class="notice">Skor, Midas ekranındaki günlük fiyat/hacim alanlarından türetilen tarama puanıdır; kesin getiri olasılığı değildir. Geçmiş mum, RSI ve MACD verileri bu anlık listeye dahil edilmez.</div>
+    </section>
+  </div>
+
+  <section class="panel bottom">
+    <h2>🔎 Seçili hisse analizi</h2>
+    <div id="detail" class="muted" style="padding:8px 0">Tablodan bir hisse seçerek mevcut veri alanlarını inceleyebilirsiniz.</div>
+  </section>
+
+  <section class="panel bottom">
+    <h2>⚙️ Veri kaynağı ve ayarlar</h2>
+    <div class="goodnote"><b>Kaynak:</b> Midas'ın herkese açık Borsa ekranı 15 dakika gecikmeli veriyi gösterir. Kaynak: <a href="https://www.getmidas.com/canli-borsa/" target="_blank" rel="noopener" style="color:var(--blue)">Midas Canlı Borsa</a>.</div>
+    <div class="notice"><b>Teknik Sınır:</b> Bu sürüm Midas kaynaklı verileri sunan bir ara servis kullanır. Tarayıcı CORS politikaları nedeniyle doğrudan erişim kısıtlanabilir.</div>
+    <label class="muted" style="font-size:12px">Veri bağlantı uç noktası (Endpoint)</label>
+    <input id="endpoint" style="width:100%;margin:8px 0" value="https://api.asenax.com/bist/list">
+    <div class="bar" style="padding:0;border:0;background:none;margin:8px 0">
+      <button id="save">Ayarı kaydet</button>
+      <button id="raw">Son ham yanıtı göster</button>
+      <button id="csv">CSV indir</button>
+    </div>
+    <div id="diag" class="muted" style="font-size:12px;white-space:pre-wrap"></div>
+    <pre id="rawbox" class="hide" style="white-space:pre-wrap;overflow:auto;max-height:260px;background:#050a14;padding:12px;border-radius:8px;color:#93c5fd;border:1px solid var(--line)"></pre>
+    <p class="muted" style="font-size:11.5px;line-height:1.6;margin-top:12px">* Stop ve hedef alanları günlük değişim ve aralıktan türetilen yaklaşık izleme seviyeleridir; gerçek ATR veya destek/direnç seviyesi değildir.</p>
+  </section>
+</div>
+
+<div class="foot">BIST RADAR AI PRO • Yatırım tavsiyesi değildir • Otomatik emir göndermez.</div>
+
 <script>
-function G(i){return document.getElementById(i);}
-var F=[
-["SISE",38.12,-2.84,32,35,1.6],["EREGL",32.22,-1.47,36,38,1.3],["HEKTS",3.95,-0.50,39,37,1.4],["PETKM",19.85,-0.85,41,39,1.2],["SAHOL",98.40,-0.59,43,40,0.9],["KCHOL",205.50,-0.96,44,42,0.9],["TUPRS",356.00,-0.84,46,45,0.8],["YKBNK",37.40,-0.79,47,44,1.0],["AKBNK",69.90,-0.07,48,48,1.0],["BIMAS",395.25,-0.06,49,50,1.0],["GARAN",138.20,-0.13,50,52,1.1],["FROTO",1012.00,0.45,51,53,1.0],["ENKAI",82.70,-0.84,52,49,0.9],["TCELL",94.10,0.32,53,54,1.0],["THYAO",323.50,1.02,54,55,1.1],["PGSUS",262.50,1.42,55,58,1.2],["ASELS",353.00,2.17,63,62,1.4],["KOZAL",24.60,-0.44,42,41,1.1],["SASA",3.62,0.63,45,46,1.3],["EKGYO",18.55,0.38,40,43,1.0
+const $=x=>document.getElementById(x);
+let data=[],rawLast=null,auto=false,timer=null,busy=false;
+const aliases={
+  symbol:['code','symbol','ticker','stock_code','hisse_kodu','sembol','short_name'],
+  name:['name','title','stock_name','hisse_adi','company'],
+  price:['last','last_price','price','current','current_price','son','son_fiyat','close','kapanis'],
+  change:['dailychangepercent','daily_change_percent','change_percent','changePercent','percent','percentage','change','daily_change','fark_yuzde','degisim','yuzde'],
+  volume:['volume_tl','volume','turnover','traded_value','hacim','hacim_tl','total_volume'],
+  low:['low','day_low','lowest','en_dusuk','dusuk'],
+  high:['high','day_high','highest','en_yuksek','yuksek'],
+  bid:['bid','buy','alis','alis_fiyati'],
+  ask:['ask','sell','satis','satis_fiyati']
+};
+
+function norm(s){return String(s??'').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/İ/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]/g,'')}
+function num(v){if(typeof v==='number')return v;if(v==null)return NaN;let s=String(v).trim().replace(/\s/g,'').replace(/₺|TL/gi,'');if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');else if(s.includes(','))s=s.replace(',','.');return Number(s.replace(/%/g,''))}
+function pick(o,keys){if(!o||typeof o!=='object')return undefined;let m={};for(const [k,v] of Object.entries(o))m[norm(k)]=v;for(const k of keys){let v=m[norm(k)];if(v!==undefined)return v}return undefined}
+function deepRows(obj){if(Array.isArray(obj)){if(obj.length&&typeof obj[0]==='object')return obj;for(const x of obj){let r=deepRows(x);if(r)return r}}else if(obj&&typeof obj==='object'){for(const k of ['data','stocks','items','results','rows','table','list','hisseler','response']){let v=obj[k];if(v){let r=deepRows(v);if(r)return r}}for(const v of Object.values(obj)){let r=deepRows(v);if(r)return r}}return null}
+function decodePayload(j){let x=j;for(let i=0;i<3&&typeof x==='string';i++){try{x=JSON.parse(x)}catch(e){break}}return x}
+
+function normalizeRow(o){
+  let symbol=pick(o,aliases.symbol);if(!symbol)return null;
+  let price=num(pick(o,aliases.price)),change=num(pick(o,aliases.change)),volume=num(pick(o,aliases.volume)),low=num(pick(o,aliases.low)),high=num(pick(o,aliases.high)),bid=num(pick(o,aliases.bid)),ask=num(pick(o,aliases.ask));
+  if(!Number.isFinite(price)||price<=0)return null;
+  let range=Number.isFinite(low)&&Number.isFinite(high)&&high>low?Math.max(0,Math.min(1,(price-low)/(high-low))):.5;
+  let volScore=Number.isFinite(volume)&&volume>0?Math.min(15,Math.log10(volume+1)*1.7):0;
+  let spread=Number.isFinite(bid)&&Number.isFinite(ask)&&ask>0?(ask-bid)/ask*100:NaN;
+  let score=50+(Number.isFinite(change)?Math.max(-22,Math.min(22,change*3)):0)+(range-.5)*18+volScore-(Number.isFinite(spread)?Math.min(8,spread*4):0);
+  score=Math.max(0,Math.min(100,Math.round(score)));
+  let signal=score>=72?'AL':score<=35?'SAT':'BEKLE';
+  let risk=Math.max(price*.015,Number.isFinite(high-low)?(high-low)*.55:price*.02);
+  return {symbol:String(symbol).toUpperCase().replace(/\.IS$/,''),name:pick(o,aliases.name)||'',price,change,volume,low,high,bid,ask,spread,range,score,signal,stop:price-risk,t1:price+risk*1.5,raw:o};
+}
+
+function fmt(n,d=2){return Number.isFinite(n)?n.toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'}
+
+async function fetchMidas(){
+  const url=$('endpoint').value.trim();
+  if(!url)throw Error('Veri bağlantısı adresi boş.');
+  let res;
+  if(url.includes('getmidas.com')){
+    const u=url.includes('?')?url+'&sortId=&return=table':url+'?sortId=&return=table';
+    res=await fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Accept':'application/json'},body:'sortId=&return=table',cache:'no-store'});
+  }else{
+    res=await fetch(url+(url.includes('?')?'&':'?')+'_='+Date.now(),{method:'GET',headers:{'Accept':'application/json'},cache:'no-store'});
+  }
+  if(!res.ok)throw Error('Veri sunucusu HTTP '+res.status);
+  let body=await res.text();let j;try{j=JSON.parse(body)}catch(e){throw Error('Sunucu JSON yanıtı döndürmedi.');}
+  rawLast=j;let x=decodePayload(j);let rows=deepRows(x);if(!rows&&Array.isArray(x))rows=x;
+  if(!rows)throw Error('Hisse listesi çözümlenemedi.');
+  let parsed=rows.map(normalizeRow).filter(Boolean);
+  if(!parsed.length)throw Error('Fiyat alanları tanınamadı.');
+  let seen=new Set();return parsed.filter(x=>!seen.has(x.symbol)&&seen.add(x.symbol));
+}
+
+async function scan(){
+  if(busy)return;busy=true;
+  $('scan').disabled=true;
+  $('dot').className='dot';
+  $('status').textContent='BIST verisi isteniyor…';
+  $('diag').textContent='BIST veri servisine bağlanılıyor…';
+  try{
+    data=await fetchMidas();
+    data.sort((a,b)=>b.score-a.score);
+    render();
+    $('total').textContent=data.length;
+    $('buys').textContent=data.filter(x=>x.signal==='AL').length;
+    $('sells').textContent=data.filter(x=>x.signal==='SAT').length;
+    $('avg').textContent=data.length?fmt(data.reduce((s,x)=>s+x.score,0)/data.length,0)+'/100':'—';
+    $('time').textContent=new Date().toLocaleTimeString('tr-TR');
+    $('dot').className='dot ok';
+    $('status').textContent='Veri alındı • '+data.length+' hisse';
+    $('diag').textContent='Son başarılı yanıt: '+new Date().toLocaleString('tr-TR')+'\nHisse sayısı: '+data.length;
+  }catch(e){
+    $('dot').className='dot bad';
+    $('status').textContent='Bağlantı başarısız';
+    $('diag').textContent='Hata: '+e.message;
+    data=[];render();
+    $('total').textContent='—';$('buys').textContent='—';$('sells').textContent='—';$('avg').textContent='—';$('time').textContent='—';
+  }finally{
+    busy=false;$('scan').disabled=false;
+  }
+}
+
+function render(){
+  let f=$('filter').value,q=$('search').value.toUpperCase();
+  let arr=data.filter(x=>(f==='ALL'||x.signal===f)&&x.symbol.includes(q));
+  $('rows').innerHTML=arr.map(x=>`<tr data-s="${x.symbol}"><td class="sym">${x.symbol}</td><td>${fmt(x.price,3)}</td><td style="color:${x.change>=0?'var(--green)':'var(--red)'}">${fmt(x.change)}%</td><td>${fmt(x.volume,0)}</td><td>${fmt(x.range*100,0)}%</td><td><b>${x.score}</b></td><td><span class="tag ${x.signal==='AL'?'buy':x.signal==='SAT'?'sell':'hold'}">${x.signal}</span></td><td style="color:var(--red)">${fmt(x.stop,3)}</td><td style="color:var(--green)">${fmt(x.t1,3)}</td></tr>`).join('')||'<tr><td colspan="9" style="text-align:center;padding:32px" class="muted">Gösterilecek veri yok.</td></tr>';
+  
+  const card=x=>`<div class="item"><div><b>${x.symbol} <span class="tag ${x.signal==='AL'?'buy':'sell'}">${x.signal}</span></b><small>${fmt(x.price,3)} TL • ${fmt(x.change)}%</small></div><b>${x.score}/100</b></div>`;
+  $('topBuy').innerHTML=data.filter(x=>x.signal==='AL').slice(0,10).map(card).join('')||'<p class="muted" style="font-size:12px">AL adayı yok.</p>';
+  $('topSell').innerHTML=data.filter(x=>x.signal==='SAT').sort((a,b)=>a.score-b.score).slice(0,10).map(card).join('')||'<p class="muted" style="font-size:12px">SAT adayı yok.</p>';
+}
+
+$('rows').addEventListener('click',e=>{
+  let tr=e.target.closest('tr[data-s]');if(!tr)return;
+  let x=data.find(z=>z.symbol===tr.dataset.s);if(!x)return;
+  $('detail').innerHTML=`<div class="detail"><div><small>Hisse</small><b>${x.symbol}</b></div><div><small>Son fiyat</small><b>${fmt(x.price,3)} TL</b></div><div><small>Günlük değişim</small><b>${fmt(x.change)}%</b></div><div><small>Hacim</small><b>${fmt(x.volume,0)} TL</b></div><div><small>Gün içi düşük / yüksek</small><b>${fmt(x.low,3)} / ${fmt(x.high,3)}</b></div><div><small>Alış / satış</small><b>${fmt(x.bid,3)} / ${fmt(x.ask,3)}</b></div><div><small>Teknik skor</small><b>${x.score}/100 • ${x.signal}</b></div><div><small>Stop / hedef</small><b>${fmt(x.stop,3)} / ${fmt(x.t1,3)}</b></div></div>`;
+});
+
+$('scan').onclick=scan;
+$('filter').onchange=render;
+$('search').oninput=render;
+$('auto').onclick=()=>{
+  auto=!auto;
+  $('auto').textContent=auto?'Ⅱ Otomatik yenileme: Açık':'▶ Otomatik yenileme: Kapalı';
+  if(timer)clearInterval(timer);
+  if(auto){scan();timer=setInterval(scan,Number($('mins').value)*60000)}
+};
+$('mins').onchange=()=>{if(auto){clearInterval(timer);timer=setInterval(scan,Number($('mins').value)*60000)}};
+$('save').onclick=()=>{try{localStorage.setItem('bistMidasEndpoint',$('endpoint').value);alert('Uç nokta kaydedildi.')}catch(e){alert('Kaydedilemedi.')}};
+$('raw').onclick=()=>{$('rawbox').classList.toggle('hide');$('rawbox').textContent=rawLast?JSON.stringify(rawLast,null,2):'Henüz ham yanıt yok.'};
+$('csv').onclick=()=>{
+  if(!data.length){alert('Önce veri alın.');return}
+  let rows=[['Hisse','Fiyat','Günlük %','Hacim TL','Skor','Sinyal','Stop','Hedef1'],...data.map(x=>[x.symbol,x.price,x.change,x.volume,x.score,x.signal,x.stop,x.t1])];
+  let csv=rows.map(r=>r.join(';')).join('\n');
+  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='BIST_RADAR_AI_PRO_MIDAS.csv';a.click();URL.revokeObjectURL(a.href);
+};
+
+try{let ep=localStorage.getItem('bistMidasEndpoint');if(ep)$('endpoint').value=ep}catch(e){}
+</script>
+</body>
+</html>
