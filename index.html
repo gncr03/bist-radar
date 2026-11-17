@@ -3,50 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BIST RADAR AI PRO • Midas</title>
+<title>BIST RADAR AI PRO • 15 Dk Gecikmeli Terminal</title>
 <style>
-:root{--bg:#070b14;--panel:#0e1726;--panel2:#142136;--line:#1f314f;--txt:#e3edf9;--muted:#899bb5;--green:#10b981;--red:#f43f5e;--yellow:#fbbf24;--blue:#3b82f6}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#13233f 0,transparent 40%),var(--bg);color:var(--txt);font:14px/1.5 system-ui,-apple-system,sans-serif}
-header{padding:16px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:rgba(14,23,38,0.7);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
-.brand{display:flex;align-items:center;gap:12px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#10b981,#3b82f6);display:grid;place-items:center;font-weight:900;color:#040d1a;font-size:20px;box-shadow:0 4px 12px rgba(16,185,129,0.2)}
-h1{font-size:18px;margin:0;letter-spacing:-0.3px}header p{margin:2px 0 0;color:var(--muted);font-size:11px}
-.wrap{max-width:1500px;margin:auto;padding:20px}
-.bar,.panel,.stat{background:linear-gradient(145deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.25)}
-.bar{padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-button,input,select{background:#09101d;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font:inherit;transition:all .2s}
-button:hover{border-color:#3b82f6}button{cursor:pointer;font-weight:600}
-button.primary{background:linear-gradient(135deg,#059669,#2563eb);border:0;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
-button.primary:hover{opacity:.9}button:disabled{opacity:.5;cursor:wait}
-.status{margin-left:auto;color:var(--muted);font-size:12px;display:flex;align-items:center}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:8px;box-shadow:0 0 8px var(--yellow)}
-.dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}.dot.bad{background:var(--red);box-shadow:0 0 8px var(--red)}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
-.stat{padding:16px}.stat small{color:var(--muted);font-size:12px}.stat strong{display:block;font-size:22px;margin-top:4px;letter-spacing:-0.5px}
-.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
-.panel{padding:18px;min-width:0}.panel h2{font-size:15px;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between}
-.tablewrap{overflow:auto;max-height:600px;border-radius:8px;border:1px solid var(--line)}
-table{width:100%;border-collapse:collapse;white-space:nowrap}
-th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;font-size:12.5px}
-th{position:sticky;top:0;background:#111c2e;color:var(--muted);z-index:2;font-weight:600}
-td:first-child,th:first-child{text-align:left}.sym{font-weight:700;color:#fff}
-tr:hover td{background:rgba(59,130,246,0.04)}
-.tag{padding:3px 8px;border-radius:6px;font-weight:700;font-size:11px}
-.buy{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
-.sell{background:rgba(244,63,94,0.15);color:var(--red);border:1px solid rgba(244,63,94,0.3)}
-.hold{background:rgba(251,191,36,0.15);color:var(--yellow);border:1px solid rgba(251,191,36,0.3)}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.item{padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:rgba(9,16,29,0.5)}
-.item small{display:block;color:var(--muted);margin-top:2px;font-size:11px}
-.notice{background:rgba(251,191,36,0.08);border-left:3px solid var(--yellow);padding:12px;border-radius:6px;color:#fde68a;font-size:12px;line-height:1.5;margin:12px 0}
-.goodnote{background:rgba(16,185,129,0.08);border-left:3px solid var(--green);padding:12px;border-radius:6px;color:#a7f3d0;font-size:12px;line-height:1.5;margin:12px 0}
-.muted{color:var(--muted)}.bottom{margin-top:16px}
-.foot{padding:24px;text-align:center;color:var(--muted);font-size:12px}
-.detail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.detail div{background:#09101d;padding:12px;border-radius:8px;border:1px solid var(--line)}
-.detail small{color:var(--muted);display:block;font-size:11px}.detail b{display:block;margin-top:4px;font-size:13px}
-.hide{display:none!important}
-@media(max-width:1024px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:540px){.wrap{padding:10px}.stats{grid-template-columns:repeat(2,1fr)}.detail{grid-template-columns:repeat(2,1fr)}}
+  :root{--bg:#070b14;--panel:#0e1726;--panel2:#142136;--line:#1f314f;--txt:#e3edf9;--muted:#899bb5;--green:#10b981;--red:#f43f5e;--yellow:#fbbf24;--blue:#3b82f6}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.4 system-ui,-apple-system,sans-serif}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:#0b1220;flex-wrap:wrap;gap:10px}
+  .brand{display:flex;align-items:center;gap:10px}.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#10b981,#3b82f6);display:grid;place-items:center;font-weight:900;color:#040d1a;font-size:18px}
+  h1{font-size:16px;margin:0}header p{margin:2px 0 0;color:var(--muted);font-size:11px}
+  .wrap{max-width:1550px;margin:auto;padding:14px}
+  .bar{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  button,select,input{background:#080e1a;color:var(--txt);border:1px solid var(--line);border-radius:7px;padding:8px 12px;font:inherit}
+  button{cursor:pointer;font-weight:600}button.primary{background:linear-gradient(135deg,#059669,#2563eb);border:0}
+  button:disabled{opacity:.5;cursor:wait}
+  .status{margin-left:auto;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+  .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+  .panel h2{font-size:14px;margin:0 0 12px;display:flex;justify-content:space-between;color:#fff}
+  .tablewrap{overflow:auto;max-height:540px;border:1px solid var(--line);border-radius:8px}
+  table{width:100%;border-collapse:collapse;white-space:nowrap}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;font-size:12px}
+  th{position:sticky;top:0;background:#131f33;color:var(--muted);z-index:2}
+  td:first-child,th:first-child{text-align:left}
+  tr{cursor:pointer}tr:hover td{background:rgba(59,130,246,0.08)}tr.active td{background:rgba(16,185,129,0.12)}
+  .tag{padding:3px 7px;border-radius:5px;font-weight:700;font-size:11px}
+  .buy{background:rgba(16,185,129,0.18);color:var(--green)}.sell{background:rgba(244,63,94,0.18);color:var(--red)}.hold{background:rgba(251,191,36,0.18);color:var(--yellow)}
+  canvas{width:100%;height:300px;background:#080e1a;border:1px solid var(--line);border-radius:8px;display:block}
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .mcard{background:#080e1a;border:1px solid var(--line);padding:10px;border-radius:8px}
+  .mcard small{color:var(--muted);display:block;font-size:11px}.mcard b{font-size:13px;margin-top:3px;display:block}
+  .ai-box{margin-top:12px;background:#0b1526;border-left:3px solid var(--blue);padding:10px 12px;border-radius:6px;font-size:12px;line-height:1.5;color:#cbd5e1}
+  @media(max-width:950px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -56,226 +43,324 @@ tr:hover td{background:rgba(59,130,246,0.04)}
     <div class="logo">R</div>
     <div>
       <h1>BIST RADAR <span style="color:#10b981">AI PRO</span></h1>
-      <p>Midas açık veri • 15 dk gecikmeli • Otomatik emir yok</p>
+      <p>Yahoo Finance Altyapısı • 15 Dk Gecikmeli Gerçek OHLCV Verisi</p>
     </div>
   </div>
-  <span class="muted" style="font-size:12px">HTML • v2.2 Modern Görünüm</span>
+  <span style="font-size:11px;color:var(--muted)">CORS Proxy Aktif • Otomatik Teknik Analiz</span>
 </header>
 
 <div class="wrap">
   <div class="bar">
-    <button class="primary" id="scan">↻ TÜM BIST'İ TARA</button>
-    <button id="auto">▶ Otomatik yenileme: Kapalı</button>
-    <select id="mins">
-      <option value="1">1 dakika</option>
-      <option value="5" selected>5 dakika</option>
-      <option value="15">15 dakika</option>
-    </select>
+    <button class="primary" id="btnScan">↻ BIST 30 GERÇEK VERİ TARA</button>
     <select id="filter">
-      <option value="ALL">Tüm sinyaller</option>
-      <option value="AL">AL</option>
-      <option value="SAT">SAT</option>
+      <option value="ALL">Tüm Sinyaller</option>
+      <option value="AL">Sadece AL</option>
+      <option value="SAT">Sadece SAT</option>
       <option value="BEKLE">BEKLE</option>
     </select>
-    <input id="search" placeholder="Hisse ara..." style="width:140px">
-    <span class="status"><i class="dot" id="dot"></i><span id="status">Midas bağlantısı bekleniyor</span></span>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><small>Alınan hisse</small><strong id="total">—</strong></div>
-    <div class="stat"><small>AL adayı</small><strong id="buys" style="color:var(--green)">—</strong></div>
-    <div class="stat"><small>SAT adayı</small><strong id="sells" style="color:var(--red)">—</strong></div>
-    <div class="stat"><small>Ortalama skor</small><strong id="avg">—</strong></div>
-    <div class="stat"><small>Veri zamanı</small><strong id="time" style="font-size:15px">—</strong></div>
+    <input id="search" placeholder="Hisse ara (örn: THYAO)..." style="width:160px">
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">Taramaya hazır (15 dk gecikmeli)</span></div>
   </div>
 
   <div class="grid">
     <section class="panel">
-      <h2>📈 Tüm hisseler <span class="muted" style="font-size:12px;font-weight:400">/ sinyal puanına göre</span></h2>
+      <h2>📊 BIST 30 Canlı Tarama Matrisi <span id="progress" style="color:var(--blue);font-weight:400"></span></h2>
       <div class="tablewrap">
         <table>
           <thead>
             <tr>
               <th>Hisse</th>
-              <th>Son</th>
+              <th>Son Fiyat</th>
               <th>Değişim</th>
-              <th>Hacim TL</th>
-              <th>Gün içi konum</th>
-              <th>Skor</th>
+              <th>RSI (14)</th>
+              <th>EMA20 Konum</th>
+              <th>AI Skor</th>
               <th>Sinyal</th>
-              <th>Stop*</th>
-              <th>Hedef 1*</th>
             </tr>
           </thead>
-          <tbody id="rows">
-            <tr><td colspan="9" style="text-align:center;padding:40px" class="muted">Tarama başlatmak için üstteki düğmeye basın.</td></tr>
+          <tbody id="tbody">
+            <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">Gerçek verileri çekmek için "BIST 30 GERÇEK VERİ TARA" butonuna basın.</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
     <section class="panel">
-      <h2>🏅 En güçlü adaylar</h2>
-      <div class="cols">
-        <div>
-          <div class="muted" style="font-size:11px;margin-bottom:8px;font-weight:600">İLK 10 AL</div>
-          <div id="topBuy"></div>
-        </div>
-        <div>
-          <div class="muted" style="font-size:11px;margin-bottom:8px;font-weight:600">İLK 10 SAT</div>
-          <div id="topSell"></div>
-        </div>
+      <h2>📈 <span id="chartTitle">Grafik ve AI Analiz (Hisse Seçin)</span></h2>
+      <canvas id="chart"></canvas>
+      <div class="metrics" id="metrics">
+        <div class="mcard"><small>Destek / Direnç</small><b>—</b></div>
+        <div class="mcard"><small>ATR Stop-Loss</small><b>—</b></div>
+        <div class="mcard"><small>Bollinger Durumu</small><b>—</b></div>
       </div>
-      <div class="notice">Skor, Midas ekranındaki günlük fiyat/hacim alanlarından türetilen tarama puanıdır; kesin getiri olasılığı değildir. Geçmiş mum, RSI ve MACD verileri bu anlık listeye dahil edilmez.</div>
+      <div class="ai-box" id="aiComment">Tablodan bir hisseye tıkladığınızda son 60 günlük gerçek mum verileri üzerinden RSI, EMA 20/50 kesişimi, Bollinger daralması ve destek/direnç analizi burada oluşturulur.</div>
     </section>
   </div>
-
-  <section class="panel bottom">
-    <h2>🔎 Seçili hisse analizi</h2>
-    <div id="detail" class="muted" style="padding:8px 0">Tablodan bir hisse seçerek mevcut veri alanlarını inceleyebilirsiniz.</div>
-  </section>
-
-  <section class="panel bottom">
-    <h2>⚙️ Veri kaynağı ve ayarlar</h2>
-    <div class="goodnote"><b>Kaynak:</b> Midas'ın herkese açık Borsa ekranı 15 dakika gecikmeli veriyi gösterir. Kaynak: <a href="https://www.getmidas.com/canli-borsa/" target="_blank" rel="noopener" style="color:var(--blue)">Midas Canlı Borsa</a>.</div>
-    <div class="notice"><b>Teknik Sınır:</b> Bu sürüm Midas kaynaklı verileri sunan bir ara servis kullanır. Tarayıcı CORS politikaları nedeniyle doğrudan erişim kısıtlanabilir.</div>
-    <label class="muted" style="font-size:12px">Veri bağlantı uç noktası (Endpoint)</label>
-    <input id="endpoint" style="width:100%;margin:8px 0" value="https://api.asenax.com/bist/list">
-    <div class="bar" style="padding:0;border:0;background:none;margin:8px 0">
-      <button id="save">Ayarı kaydet</button>
-      <button id="raw">Son ham yanıtı göster</button>
-      <button id="csv">CSV indir</button>
-    </div>
-    <div id="diag" class="muted" style="font-size:12px;white-space:pre-wrap"></div>
-    <pre id="rawbox" class="hide" style="white-space:pre-wrap;overflow:auto;max-height:260px;background:#050a14;padding:12px;border-radius:8px;color:#93c5fd;border:1px solid var(--line)"></pre>
-    <p class="muted" style="font-size:11.5px;line-height:1.6;margin-top:12px">* Stop ve hedef alanları günlük değişim ve aralıktan türetilen yaklaşık izleme seviyeleridir; gerçek ATR veya destek/direnç seviyesi değildir.</p>
-  </section>
 </div>
 
-<div class="foot">BIST RADAR AI PRO • Yatırım tavsiyesi değildir • Otomatik emir göndermez.</div>
-
 <script>
-const $=x=>document.getElementById(x);
-let data=[],rawLast=null,auto=false,timer=null,busy=false;
-const aliases={
-  symbol:['code','symbol','ticker','stock_code','hisse_kodu','sembol','short_name'],
-  name:['name','title','stock_name','hisse_adi','company'],
-  price:['last','last_price','price','current','current_price','son','son_fiyat','close','kapanis'],
-  change:['dailychangepercent','daily_change_percent','change_percent','changePercent','percent','percentage','change','daily_change','fark_yuzde','degisim','yuzde'],
-  volume:['volume_tl','volume','turnover','traded_value','hacim','hacim_tl','total_volume'],
-  low:['low','day_low','lowest','en_dusuk','dusuk'],
-  high:['high','day_high','highest','en_yuksek','yuksek'],
-  bid:['bid','buy','alis','alis_fiyati'],
-  ask:['ask','sell','satis','satis_fiyati']
-};
+const BIST30 = [
+  "THYAO","GARAN","AKBNK","ASELS","EREGL","KCHOL","SAHOL","TUPRS","SISE","BIMAS",
+  "YKBNK","ISCTR","ENKAI","FROTO","TOASO","TCELL","TTKOM","PETKM","KOZAL","KOZAA",
+  "SASA","HEKTS","ARCLK","VESTL","PGSUS","TAVHL","EKGYO","GUBRF","ODAS","ASTOR"
+];
 
-function norm(s){return String(s??'').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/İ/g,'i').replace(/ş/g,'s').replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ç/g,'c').replace(/[^a-z0-9]/g,'')}
-function num(v){if(typeof v==='number')return v;if(v==null)return NaN;let s=String(v).trim().replace(/\s/g,'').replace(/₺|TL/gi,'');if(s.includes(',')&&s.includes('.'))s=s.replace(/\./g,'').replace(',','.');else if(s.includes(','))s=s.replace(',','.');return Number(s.replace(/%/g,''))}
-function pick(o,keys){if(!o||typeof o!=='object')return undefined;let m={};for(const [k,v] of Object.entries(o))m[norm(k)]=v;for(const k of keys){let v=m[norm(k)];if(v!==undefined)return v}return undefined}
-function deepRows(obj){if(Array.isArray(obj)){if(obj.length&&typeof obj[0]==='object')return obj;for(const x of obj){let r=deepRows(x);if(r)return r}}else if(obj&&typeof obj==='object'){for(const k of ['data','stocks','items','results','rows','table','list','hisseler','response']){let v=obj[k];if(v){let r=deepRows(v);if(r)return r}}for(const v of Object.values(obj)){let r=deepRows(v);if(r)return r}}return null}
-function decodePayload(j){let x=j;for(let i=0;i<3&&typeof x==='string';i++){try{x=JSON.parse(x)}catch(e){break}}return x}
+let stocksData = [];
+let selectedSymbol = null;
 
-function normalizeRow(o){
-  let symbol=pick(o,aliases.symbol);if(!symbol)return null;
-  let price=num(pick(o,aliases.price)),change=num(pick(o,aliases.change)),volume=num(pick(o,aliases.volume)),low=num(pick(o,aliases.low)),high=num(pick(o,aliases.high)),bid=num(pick(o,aliases.bid)),ask=num(pick(o,aliases.ask));
-  if(!Number.isFinite(price)||price<=0)return null;
-  let range=Number.isFinite(low)&&Number.isFinite(high)&&high>low?Math.max(0,Math.min(1,(price-low)/(high-low))):.5;
-  let volScore=Number.isFinite(volume)&&volume>0?Math.min(15,Math.log10(volume+1)*1.7):0;
-  let spread=Number.isFinite(bid)&&Number.isFinite(ask)&&ask>0?(ask-bid)/ask*100:NaN;
-  let score=50+(Number.isFinite(change)?Math.max(-22,Math.min(22,change*3)):0)+(range-.5)*18+volScore-(Number.isFinite(spread)?Math.min(8,spread*4):0);
-  score=Math.max(0,Math.min(100,Math.round(score)));
-  let signal=score>=72?'AL':score<=35?'SAT':'BEKLE';
-  let risk=Math.max(price*.015,Number.isFinite(high-low)?(high-low)*.55:price*.02);
-  return {symbol:String(symbol).toUpperCase().replace(/\.IS$/,''),name:pick(o,aliases.name)||'',price,change,volume,low,high,bid,ask,spread,range,score,signal,stop:price-risk,t1:price+risk*1.5,raw:o};
-}
-
-function fmt(n,d=2){return Number.isFinite(n)?n.toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d}):'—'}
-
-async function fetchMidas(){
-  const url=$('endpoint').value.trim();
-  if(!url)throw Error('Veri bağlantısı adresi boş.');
-  let res;
-  if(url.includes('getmidas.com')){
-    const u=url.includes('?')?url+'&sortId=&return=table':url+'?sortId=&return=table';
-    res=await fetch(u,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Accept':'application/json'},body:'sortId=&return=table',cache:'no-store'});
-  }else{
-    res=await fetch(url+(url.includes('?')?'&':'?')+'_='+Date.now(),{method:'GET',headers:{'Accept':'application/json'},cache:'no-store'});
+// Teknik İndikatör Hesaplamaları
+function calcEMA(closes, period) {
+  const k = 2 / (period + 1);
+  let ema = [closes[0]];
+  for (let i = 1; i < closes.length; i++) {
+    ema.push(closes[i] * k + ema[i - 1] * (1 - k));
   }
-  if(!res.ok)throw Error('Veri sunucusu HTTP '+res.status);
-  let body=await res.text();let j;try{j=JSON.parse(body)}catch(e){throw Error('Sunucu JSON yanıtı döndürmedi.');}
-  rawLast=j;let x=decodePayload(j);let rows=deepRows(x);if(!rows&&Array.isArray(x))rows=x;
-  if(!rows)throw Error('Hisse listesi çözümlenemedi.');
-  let parsed=rows.map(normalizeRow).filter(Boolean);
-  if(!parsed.length)throw Error('Fiyat alanları tanınamadı.');
-  let seen=new Set();return parsed.filter(x=>!seen.has(x.symbol)&&seen.add(x.symbol));
+  return ema;
 }
 
-async function scan(){
-  if(busy)return;busy=true;
-  $('scan').disabled=true;
-  $('dot').className='dot';
-  $('status').textContent='BIST verisi isteniyor…';
-  $('diag').textContent='BIST veri servisine bağlanılıyor…';
-  try{
-    data=await fetchMidas();
-    data.sort((a,b)=>b.score-a.score);
-    render();
-    $('total').textContent=data.length;
-    $('buys').textContent=data.filter(x=>x.signal==='AL').length;
-    $('sells').textContent=data.filter(x=>x.signal==='SAT').length;
-    $('avg').textContent=data.length?fmt(data.reduce((s,x)=>s+x.score,0)/data.length,0)+'/100':'—';
-    $('time').textContent=new Date().toLocaleTimeString('tr-TR');
-    $('dot').className='dot ok';
-    $('status').textContent='Veri alındı • '+data.length+' hisse';
-    $('diag').textContent='Son başarılı yanıt: '+new Date().toLocaleString('tr-TR')+'\nHisse sayısı: '+data.length;
-  }catch(e){
-    $('dot').className='dot bad';
-    $('status').textContent='Bağlantı başarısız';
-    $('diag').textContent='Hata: '+e.message;
-    data=[];render();
-    $('total').textContent='—';$('buys').textContent='—';$('sells').textContent='—';$('avg').textContent='—';$('time').textContent='—';
-  }finally{
-    busy=false;$('scan').disabled=false;
+function calcRSI(closes, period = 14) {
+  if (closes.length <= period) return 50;
+  let gains = 0, losses = 0;
+  for (let i = closes.length - period; i < closes.length; i++) {
+    const diff = closes[i] - closes[i - 1];
+    if (diff >= 0) gains += diff; else losses -= diff;
   }
+  if (losses === 0) return 100;
+  const rs = (gains / period) / (losses / period);
+  return 100 - (100 / (1 + rs));
 }
 
-function render(){
-  let f=$('filter').value,q=$('search').value.toUpperCase();
-  let arr=data.filter(x=>(f==='ALL'||x.signal===f)&&x.symbol.includes(q));
-  $('rows').innerHTML=arr.map(x=>`<tr data-s="${x.symbol}"><td class="sym">${x.symbol}</td><td>${fmt(x.price,3)}</td><td style="color:${x.change>=0?'var(--green)':'var(--red)'}">${fmt(x.change)}%</td><td>${fmt(x.volume,0)}</td><td>${fmt(x.range*100,0)}%</td><td><b>${x.score}</b></td><td><span class="tag ${x.signal==='AL'?'buy':x.signal==='SAT'?'sell':'hold'}">${x.signal}</span></td><td style="color:var(--red)">${fmt(x.stop,3)}</td><td style="color:var(--green)">${fmt(x.t1,3)}</td></tr>`).join('')||'<tr><td colspan="9" style="text-align:center;padding:32px" class="muted">Gösterilecek veri yok.</td></tr>';
+function calcBollinger(closes, period = 20) {
+  const slice = closes.slice(-period);
+  const mean = slice.reduce((a, b) => a + b, 0) / slice.length;
+  const variance = slice.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / slice.length;
+  const std = Math.sqrt(variance);
+  return { upper: mean + 2 * std, middle: mean, lower: mean - 2 * std };
+}
+
+// Yahoo Finance 15 Dk Gecikmeli Veri Çekici (CORS Proxy ile)
+async function fetchYahooStock(symbol) {
+  const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.IS?interval=1d&range=3mo`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
   
-  const card=x=>`<div class="item"><div><b>${x.symbol} <span class="tag ${x.signal==='AL'?'buy':'sell'}">${x.signal}</span></b><small>${fmt(x.price,3)} TL • ${fmt(x.change)}%</small></div><b>${x.score}/100</b></div>`;
-  $('topBuy').innerHTML=data.filter(x=>x.signal==='AL').slice(0,10).map(card).join('')||'<p class="muted" style="font-size:12px">AL adayı yok.</p>';
-  $('topSell').innerHTML=data.filter(x=>x.signal==='SAT').sort((a,b)=>a.score-b.score).slice(0,10).map(card).join('')||'<p class="muted" style="font-size:12px">SAT adayı yok.</p>';
+  const res = await fetch(proxyUrl);
+  if (!res.ok) throw new Error("Ağ hatası");
+  const json = await res.json();
+  const result = json.chart.result[0];
+  const meta = result.meta;
+  const quote = result.indicators.quote[0];
+  
+  // Geçerli mumları filtrele
+  const candles = [];
+  for (let i = 0; i < result.timestamp.length; i++) {
+    if (quote.close[i] != null && quote.open[i] != null) {
+      candles.push({
+        time: result.timestamp[i],
+        open: quote.open[i],
+        high: quote.high[i],
+        low: quote.low[i],
+        close: quote.close[i],
+        volume: quote.volume[i] || 0
+      });
+    }
+  }
+
+  const closes = candles.map(c => c.close);
+  const lastPrice = meta.regularMarketPrice || closes[closes.length - 1];
+  const prevClose = meta.chartPreviousClose || closes[closes.length - 2];
+  const changePct = ((lastPrice - prevClose) / prevClose) * 100;
+
+  const ema20Arr = calcEMA(closes, 20);
+  const ema50Arr = calcEMA(closes, 50);
+  const ema20 = ema20Arr[ema20Arr.length - 1];
+  const ema50 = ema50Arr[ema50Arr.length - 1];
+  const rsi = calcRSI(closes, 14);
+  const bb = calcBollinger(closes, 20);
+
+  // ATR (Son 14 gün ortalama aralık)
+  let atrSum = 0;
+  for (let i = Math.max(1, candles.length - 14); i < candles.length; i++) {
+    atrSum += (candles[i].high - candles[i].low);
+  }
+  const atr = atrSum / 14;
+
+  // Yapay Zeka Skorlama Algoritması (0-100)
+  let score = 50;
+  if (lastPrice > ema20) score += 12; else score -= 12;
+  if (ema20 > ema50) score += 10; else score -= 10;
+  if (rsi > 30 && rsi < 65) score += 10;
+  if (rsi <= 30) score += 18; // Aşırı satım tepki fırsatı
+  if (rsi >= 75) score -= 15; // Aşırı alım düzeltme riski
+  if (lastPrice <= bb.lower * 1.01) score += 10;
+  if (changePct > 0) score += Math.min(8, changePct * 1.5);
+
+  score = Math.max(5, Math.min(98, Math.round(score)));
+  const signal = score >= 68 ? "AL" : score <= 38 ? "SAT" : "BEKLE";
+
+  return {
+    symbol, lastPrice, changePct, rsi, ema20, ema50, ema20Arr, bb, atr, score, signal, candles,
+    support: Math.min(...closes.slice(-20)),
+    resistance: Math.max(...closes.slice(-20))
+  };
 }
 
-$('rows').addEventListener('click',e=>{
-  let tr=e.target.closest('tr[data-s]');if(!tr)return;
-  let x=data.find(z=>z.symbol===tr.dataset.s);if(!x)return;
-  $('detail').innerHTML=`<div class="detail"><div><small>Hisse</small><b>${x.symbol}</b></div><div><small>Son fiyat</small><b>${fmt(x.price,3)} TL</b></div><div><small>Günlük değişim</small><b>${fmt(x.change)}%</b></div><div><small>Hacim</small><b>${fmt(x.volume,0)} TL</b></div><div><small>Gün içi düşük / yüksek</small><b>${fmt(x.low,3)} / ${fmt(x.high,3)}</b></div><div><small>Alış / satış</small><b>${fmt(x.bid,3)} / ${fmt(x.ask,3)}</b></div><div><small>Teknik skor</small><b>${x.score}/100 • ${x.signal}</b></div><div><small>Stop / hedef</small><b>${fmt(x.stop,3)} / ${fmt(x.t1,3)}</b></div></div>`;
-});
+async function scanAll() {
+  const btn = document.getElementById("btnScan");
+  const dot = document.getElementById("dot");
+  const statusText = document.getElementById("statusText");
+  const progress = document.getElementById("progress");
 
-$('scan').onclick=scan;
-$('filter').onchange=render;
-$('search').oninput=render;
-$('auto').onclick=()=>{
-  auto=!auto;
-  $('auto').textContent=auto?'Ⅱ Otomatik yenileme: Açık':'▶ Otomatik yenileme: Kapalı';
-  if(timer)clearInterval(timer);
-  if(auto){scan();timer=setInterval(scan,Number($('mins').value)*60000)}
-};
-$('mins').onchange=()=>{if(auto){clearInterval(timer);timer=setInterval(scan,Number($('mins').value)*60000)}};
-$('save').onclick=()=>{try{localStorage.setItem('bistMidasEndpoint',$('endpoint').value);alert('Uç nokta kaydedildi.')}catch(e){alert('Kaydedilemedi.')}};
-$('raw').onclick=()=>{$('rawbox').classList.toggle('hide');$('rawbox').textContent=rawLast?JSON.stringify(rawLast,null,2):'Henüz ham yanıt yok.'};
-$('csv').onclick=()=>{
-  if(!data.length){alert('Önce veri alın.');return}
-  let rows=[['Hisse','Fiyat','Günlük %','Hacim TL','Skor','Sinyal','Stop','Hedef1'],...data.map(x=>[x.symbol,x.price,x.change,x.volume,x.score,x.signal,x.stop,x.t1])];
-  let csv=rows.map(r=>r.join(';')).join('\n');
-  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
-  a.download='BIST_RADAR_AI_PRO_MIDAS.csv';a.click();URL.revokeObjectURL(a.href);
-};
+  btn.disabled = true;
+  dot.className = "dot";
+  stocksData = [];
 
-try{let ep=localStorage.getItem('bistMidasEndpoint');if(ep)$('endpoint').value=ep}catch(e){}
+  for (let i = 0; i < BIST30.length; i++) {
+    const sym = BIST30[i];
+    statusText.textContent = `${sym} verisi çekiliyor...`;
+    progress.textContent = `(${i + 1}/${BIST30.length})`;
+    try {
+      const item = await fetchYahooStock(sym);
+      stocksData.push(item);
+      stocksData.sort((a, b) => b.score - a.score);
+      renderTable();
+      if (!selectedSymbol && stocksData.length === 1) selectStock(item.symbol);
+    } catch (e) {
+      console.warn(sym + " atlandı:", e);
+    }
+    // Proxy hız limitine takılmamak için kısa bekleme
+    await new Promise(r => setTimeout(r, 250));
+  }
+
+  btn.disabled = false;
+  progress.textContent = "";
+  if (stocksData.length > 0) {
+    dot.className = "dot ok";
+    statusText.textContent = `Tamamlandı • ${stocksData.length} hisse güncellendi (${new Date().toLocaleTimeString('tr-TR')})`;
+  } else {
+    dot.className = "dot bad";
+    statusText.textContent = "Proxy erişim hatası. Biraz bekleyip tekrar deneyin.";
+  }
+}
+
+function renderTable() {
+  const filter = document.getElementById("filter").value;
+  const q = document.getElementById("search").value.toUpperCase().trim();
+  const tbody = document.getElementById("tbody");
+
+  const filtered = stocksData.filter(s => 
+    (filter === "ALL" || s.signal === filter) && s.symbol.includes(q)
+  );
+
+  tbody.innerHTML = filtered.map(s => {
+    const emaDiff = ((s.lastPrice - s.ema20) / s.ema20) * 100;
+    const tagClass = s.signal === "AL" ? "buy" : s.signal === "SAT" ? "sell" : "hold";
+    return `
+      <tr class="${s.symbol === selectedSymbol ? 'active' : ''}" onclick="selectStock('${s.symbol}')">
+        <td><b>${s.symbol}</b></td>
+        <td>${s.lastPrice.toFixed(2)} ₺</td>
+        <td style="color:${s.changePct >= 0 ? 'var(--green)' : 'var(--red)'}">${s.changePct >= 0 ? '+' : ''}${s.changePct.toFixed(2)}%</td>
+        <td style="color:${s.rsi < 35 ? 'var(--green)' : s.rsi > 70 ? 'var(--red)' : 'var(--txt)'}">${s.rsi.toFixed(1)}</td>
+        <td style="color:${emaDiff >= 0 ? 'var(--green)' : 'var(--red)'}">${emaDiff >= 0 ? 'Üstünde' : 'Altında'} (%${emaDiff.toFixed(1)})</td>
+        <td><b>${s.score}/100</b></td>
+        <td><span class="tag ${tagClass}">${s.signal}</span></td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function selectStock(symbol) {
+  selectedSymbol = symbol;
+  renderTable();
+  const s = stocksData.find(x => x.symbol === symbol);
+  if (!s) return;
+
+  document.getElementById("chartTitle").textContent = `${s.symbol} • Günlük Mum & EMA20 Grafiği`;
+  const stopLoss = (s.lastPrice - s.atr * 1.5).toFixed(2);
+  const bbPos = s.lastPrice > s.bb.upper ? "Üst Bant Üzeri (Aşırı)" : s.lastPrice < s.bb.lower ? "Alt Bant Altı (Tepki)" : "Bant İçinde Normal";
+
+  document.getElementById("metrics").innerHTML = `
+    <div class="mcard"><small>20G Destek / Direnç</small><b>${s.support.toFixed(2)} / ${s.resistance.toFixed(2)} ₺</b></div>
+    <div class="mcard"><small>ATR İz süren Stop</small><b style="color:var(--red)">${stopLoss} ₺</b></div>
+    <div class="mcard"><small>Bollinger Konumu</small><b>${bbPos}</b></div>
+  `;
+
+  // Algoritmik AI Yorumu
+  let trendText = s.lastPrice > s.ema20 && s.ema20 > s.ema50 ? "Güçlü yükseliş trendi (Fiyat > EMA20 > EMA50) hakim." :
+                  s.lastPrice < s.ema20 ? "Kısa vadeli ortalamaların altında baskı altında seyrediyor." : "Yatay ve kararsız görünüm mevcut.";
+  let rsiText = s.rsi < 32 ? `RSI (${s.rsi.toFixed(1)}) aşırı satım bölgesinde; tepki alımları gelebilir.` :
+                s.rsi > 70 ? `RSI (${s.rsi.toFixed(1)}) aşırı alım bölgesinde; kâr realizasyonu riski artmış.` :
+                `RSI (${s.rsi.toFixed(1)}) nötr/sağlıklı bölgede momentumu destekliyor.`;
+
+  document.getElementById("aiComment").innerHTML = `<b>🤖 ${s.symbol} AI Teknik Değerlendirme (${s.signal} - ${s.score}/100):</b><br>${trendText} ${rsiText} Olası geri çekilmelerde <b>${stopLoss} ₺</b> seviyesi teknik zarar-kes (stop) noktası olarak izlenebilir.`;
+
+  drawChart(s);
+}
+
+function drawChart(s) {
+  const canvas = document.getElementById("chart");
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  const w = rect.width, h = rect.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const candles = s.candles.slice(-45);
+  const emaSlice = s.ema20Arr.slice(-45);
+  const lows = candles.map(c => c.low);
+  const highs = candles.map(c => c.high);
+  const minP = Math.min(...lows) * 0.99;
+  const maxP = Math.max(...highs) * 1.01;
+  const pad = 20;
+
+  const getY = p => h - pad - ((p - minP) / (maxP - minP)) * (h - pad * 2);
+  const stepX = (w - pad * 2) / candles.length;
+
+  // Yatay kılavuz çizgileri
+  ctx.strokeStyle = "#17243b";
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad + (i * (h - pad * 2)) / 4;
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
+  }
+
+  // Mumlar
+  candles.forEach((c, i) => {
+    const x = pad + i * stepX + stepX / 2;
+    const isUp = c.close >= c.open;
+    ctx.strokeStyle = isUp ? "#10b981" : "#f43f5e";
+    ctx.fillStyle = isUp ? "#10b981" : "#f43f5e";
+
+    // Fitil
+    ctx.beginPath();
+    ctx.moveTo(x, getY(c.high));
+    ctx.lineTo(x, getY(c.low));
+    ctx.stroke();
+
+    // Gövde
+    const top = getY(Math.max(c.open, c.close));
+    const bot = getY(Math.min(c.open, c.close));
+    ctx.fillRect(x - stepX * 0.3, top, stepX * 0.6, Math.max(2, bot - top));
+  });
+
+  // EMA 20 Çizgisi
+  ctx.strokeStyle = "#fbbf24";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  emaSlice.forEach((val, i) => {
+    const x = pad + i * stepX + stepX / 2;
+    const y = getY(val);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
+document.getElementById("btnScan").onclick = scanAll;
+document.getElementById("filter").onchange = renderTable;
+document.getElementById("search").oninput = renderTable;
 </script>
 </body>
 </html>
