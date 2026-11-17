@@ -46,7 +46,7 @@
       <p>Yahoo Finance Altyapısı • 15 Dk Gecikmeli Gerçek OHLCV Verisi</p>
     </div>
   </div>
-  <span style="font-size:11px;color:var(--muted)">CORS Proxy Aktif • Otomatik Teknik Analiz</span>
+  <span style="font-size:11px;color:var(--muted)">Hızlı Proxy Aktif • Otomatik Teknik Analiz</span>
 </header>
 
 <div class="wrap">
@@ -108,7 +108,6 @@ const BIST30 = [
 let stocksData = [];
 let selectedSymbol = null;
 
-// Teknik İndikatör Hesaplamaları
 function calcEMA(closes, period) {
   const k = 2 / (period + 1);
   let ema = [closes[0]];
@@ -138,70 +137,77 @@ function calcBollinger(closes, period = 20) {
   return { upper: mean + 2 * std, middle: mean, lower: mean - 2 * std };
 }
 
-// Yahoo Finance 15 Dk Gecikmeli Veri Çekici (CORS Proxy ile)
 async function fetchYahooStock(symbol) {
   const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.IS?interval=1d&range=3mo`;
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+  const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
   
-  const res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error("Ağ hatası");
-  const json = await res.json();
-  const result = json.chart.result[0];
-  const meta = result.meta;
-  const quote = result.indicators.quote[0];
-  
-  // Geçerli mumları filtrele
-  const candles = [];
-  for (let i = 0; i < result.timestamp.length; i++) {
-    if (quote.close[i] != null && quote.open[i] != null) {
-      candles.push({
-        time: result.timestamp[i],
-        open: quote.open[i],
-        high: quote.high[i],
-        low: quote.low[i],
-        close: quote.close[i],
-        volume: quote.volume[i] || 0
-      });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 saniye zaman aşımı
+
+  try {
+    const res = await fetch(proxyUrl, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error("Ağ hatası");
+    const json = await res.json();
+    const result = json.chart.result[0];
+    const meta = result.meta;
+    const quote = result.indicators.quote[0];
+    
+    const candles = [];
+    for (let i = 0; i < result.timestamp.length; i++) {
+      if (quote.close[i] != null && quote.open[i] != null) {
+        candles.push({
+          time: result.timestamp[i],
+          open: quote.open[i],
+          high: quote.high[i],
+          low: quote.low[i],
+          close: quote.close[i],
+          volume: quote.volume[i] || 0
+        });
+      }
     }
+
+    if (candles.length === 0) throw new Error("Veri yok");
+
+    const closes = candles.map(c => c.close);
+    const lastPrice = meta.regularMarketPrice || closes[closes.length - 1];
+    const prevClose = meta.chartPreviousClose || closes[closes.length - 2];
+    const changePct = ((lastPrice - prevClose) / prevClose) * 100;
+
+    const ema20Arr = calcEMA(closes, 20);
+    const ema50Arr = calcEMA(closes, 50);
+    const ema20 = ema20Arr[ema20Arr.length - 1];
+    const ema50 = ema50Arr[ema50Arr.length - 1];
+    const rsi = calcRSI(closes, 14);
+    const bb = calcBollinger(closes, 20);
+
+    let atrSum = 0;
+    for (let i = Math.max(1, candles.length - 14); i < candles.length; i++) {
+      atrSum += (candles[i].high - candles[i].low);
+    }
+    const atr = atrSum / 14;
+
+    let score = 50;
+    if (lastPrice > ema20) score += 12; else score -= 12;
+    if (ema20 > ema50) score += 10; else score -= 10;
+    if (rsi > 30 && rsi < 65) score += 10;
+    if (rsi <= 30) score += 18;
+    if (rsi >= 75) score -= 15;
+    if (lastPrice <= bb.lower * 1.01) score += 10;
+    if (changePct > 0) score += Math.min(8, changePct * 1.5);
+
+    score = Math.max(5, Math.min(98, Math.round(score)));
+    const signal = score >= 68 ? "AL" : score <= 38 ? "SAT" : "BEKLE";
+
+    return {
+      symbol, lastPrice, changePct, rsi, ema20, ema50, ema20Arr, bb, atr, score, signal, candles,
+      support: Math.min(...closes.slice(-20)),
+      resistance: Math.max(...closes.slice(-20))
+    };
+  } catch (e) {
+    console.warn(symbol + " çekilemedi:", e);
+    return null;
   }
-
-  const closes = candles.map(c => c.close);
-  const lastPrice = meta.regularMarketPrice || closes[closes.length - 1];
-  const prevClose = meta.chartPreviousClose || closes[closes.length - 2];
-  const changePct = ((lastPrice - prevClose) / prevClose) * 100;
-
-  const ema20Arr = calcEMA(closes, 20);
-  const ema50Arr = calcEMA(closes, 50);
-  const ema20 = ema20Arr[ema20Arr.length - 1];
-  const ema50 = ema50Arr[ema50Arr.length - 1];
-  const rsi = calcRSI(closes, 14);
-  const bb = calcBollinger(closes, 20);
-
-  // ATR (Son 14 gün ortalama aralık)
-  let atrSum = 0;
-  for (let i = Math.max(1, candles.length - 14); i < candles.length; i++) {
-    atrSum += (candles[i].high - candles[i].low);
-  }
-  const atr = atrSum / 14;
-
-  // Yapay Zeka Skorlama Algoritması (0-100)
-  let score = 50;
-  if (lastPrice > ema20) score += 12; else score -= 12;
-  if (ema20 > ema50) score += 10; else score -= 10;
-  if (rsi > 30 && rsi < 65) score += 10;
-  if (rsi <= 30) score += 18; // Aşırı satım tepki fırsatı
-  if (rsi >= 75) score -= 15; // Aşırı alım düzeltme riski
-  if (lastPrice <= bb.lower * 1.01) score += 10;
-  if (changePct > 0) score += Math.min(8, changePct * 1.5);
-
-  score = Math.max(5, Math.min(98, Math.round(score)));
-  const signal = score >= 68 ? "AL" : score <= 38 ? "SAT" : "BEKLE";
-
-  return {
-    symbol, lastPrice, changePct, rsi, ema20, ema50, ema20Arr, bb, atr, score, signal, candles,
-    support: Math.min(...closes.slice(-20)),
-    resistance: Math.max(...closes.slice(-20))
-  };
 }
 
 async function scanAll() {
@@ -218,27 +224,25 @@ async function scanAll() {
     const sym = BIST30[i];
     statusText.textContent = `${sym} verisi çekiliyor...`;
     progress.textContent = `(${i + 1}/${BIST30.length})`;
-    try {
-      const item = await fetchYahooStock(sym);
+    
+    const item = await fetchYahooStock(sym);
+    if (item) {
       stocksData.push(item);
       stocksData.sort((a, b) => b.score - a.score);
       renderTable();
       if (!selectedSymbol && stocksData.length === 1) selectStock(item.symbol);
-    } catch (e) {
-      console.warn(sym + " atlandı:", e);
     }
-    // Proxy hız limitine takılmamak için kısa bekleme
-    await new Promise(r => setTimeout(r, 250));
+    await new Promise(r => setTimeout(r, 100)); // Hızlı geçiş
   }
 
   btn.disabled = false;
   progress.textContent = "";
   if (stocksData.length > 0) {
     dot.className = "dot ok";
-    statusText.textContent = `Tamamlandı • ${stocksData.length} hisse güncellendi (${new Date().toLocaleTimeString('tr-TR')})`;
+    statusText.textContent = `Tamamlandı • ${stocksData.length} hisse yüklendi (${new Date().toLocaleTimeString('tr-TR')})`;
   } else {
     dot.className = "dot bad";
-    statusText.textContent = "Proxy erişim hatası. Biraz bekleyip tekrar deneyin.";
+    statusText.textContent = "Bağlantı hatası. Tekrar deneyin.";
   }
 }
 
@@ -265,7 +269,7 @@ function renderTable() {
         <td><span class="tag ${tagClass}">${s.signal}</span></td>
       </tr>
     `;
-  }).join("");
+  }).join("") || `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">Gösterilecek veri yok.</td></tr>`;
 }
 
 function selectStock(symbol) {
@@ -284,7 +288,6 @@ function selectStock(symbol) {
     <div class="mcard"><small>Bollinger Konumu</small><b>${bbPos}</b></div>
   `;
 
-  // Algoritmik AI Yorumu
   let trendText = s.lastPrice > s.ema20 && s.ema20 > s.ema50 ? "Güçlü yükseliş trendi (Fiyat > EMA20 > EMA50) hakim." :
                   s.lastPrice < s.ema20 ? "Kısa vadeli ortalamaların altında baskı altında seyrediyor." : "Yatay ve kararsız görünüm mevcut.";
   let rsiText = s.rsi < 32 ? `RSI (${s.rsi.toFixed(1)}) aşırı satım bölgesinde; tepki alımları gelebilir.` :
@@ -319,7 +322,6 @@ function drawChart(s) {
   const getY = p => h - pad - ((p - minP) / (maxP - minP)) * (h - pad * 2);
   const stepX = (w - pad * 2) / candles.length;
 
-  // Yatay kılavuz çizgileri
   ctx.strokeStyle = "#17243b";
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
@@ -327,26 +329,22 @@ function drawChart(s) {
     ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - pad, y); ctx.stroke();
   }
 
-  // Mumlar
   candles.forEach((c, i) => {
     const x = pad + i * stepX + stepX / 2;
     const isUp = c.close >= c.open;
     ctx.strokeStyle = isUp ? "#10b981" : "#f43f5e";
     ctx.fillStyle = isUp ? "#10b981" : "#f43f5e";
 
-    // Fitil
     ctx.beginPath();
     ctx.moveTo(x, getY(c.high));
     ctx.lineTo(x, getY(c.low));
     ctx.stroke();
 
-    // Gövde
     const top = getY(Math.max(c.open, c.close));
     const bot = getY(Math.min(c.open, c.close));
     ctx.fillRect(x - stepX * 0.3, top, stepX * 0.6, Math.max(2, bot - top));
   });
 
-  // EMA 20 Çizgisi
   ctx.strokeStyle = "#fbbf24";
   ctx.lineWidth = 2;
   ctx.beginPath();
