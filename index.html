@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TEST</title></head>
-<body style="background:#080d18;color:#fff;font-family:Arial;padding:20px">
-<h1>BIST RADAR</h1>
-<div id="status">Yukleniyor...</div>
-<div id="liste"></div>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BIST RADAR AI PRO</title>
+<style>body{margin:0;background:#080d18;color:#fff;font-family:Arial;padding:14px}h1{font-size:22px}button{background:#1769c5;color:#fff;border:0;padding:12px 16px;border-radius:10px;font-weight:700;width:100%;font-size:16px}select,input{background:#0a1423;color:#fff;border:1px solid #344967;border-radius:9px;padding:10px;width:100%;margin-top:8px}.c{background:#111c2d;border:1px solid #2a3b55;border-radius:14px;padding:13px;margin:10px 0}.b{font-size:22px}.g{color:#22d6a0}.r{color:#ff657d}.y{color:#ffc857}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:8px;border-bottom:1px solid #203047;text-align:right}th:first-child,td:first-child{text-align:left}.m{color:#9aabc2;font-size:12px}</style></head>
+<body>
+<h1>BIST RADAR <span style="color:#55d9b3">AI PRO</span></h1><p class="m">RSI + Para Girisi - Otomatik emir yok</p>
+<div id="status" style="color:#ffc857">Yukleniyor...</div>
+<button onclick="scan()">TUM BISTI TARA - CANLI</button>
+<select id="f" onchange="render()"><option value="ALL">Tumu</option><option value="AL">Sadece AL</option><option value="GIRIS">Sadece Para Girisi</option></select>
+<input id="q" placeholder="Hisse ara: SISE" oninput="render()">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="c">AL adayi<div class="b g" id="buys">-</div></div><div class="c">Para Girisi<div class="b" id="mg">-</div></div></div>
+<div class="c"><b>EN IYI 5</b><div id="top"></div></div>
+<div class="c"><b>TUM HISSELER</b><div style="overflow:auto"><table><tr><th>Hisse</th><th>Fiyat</th><th>Deg</th><th>RSI</th><th>Para</th><th>AI</th><th>Sinyal</th></tr><tbody id="rows"></tbody></table></div></div>
+<div id="det" class="c m">Bir hisseye dokun, detay gor.</div>
+<p class="m">Skor: RSI dipte + Para girisi = yuksek. Yatirim tavsiyesi degildir.</p>
 <script>
-var d1 = "SISE - AI 92 - AL";
-var d2 = "EREGL - AI 82 - AL";
-document.getElementById("status").innerHTML = "JS CALISIYOR";
-document.getElementById("liste").innerHTML = d1 + "<br>" + d2;
-</script>
-</body></html>
+function G(i){return document.getElementById(i);}
+var F=[
+["SISE",38.12,-2.84,32,35,1.6],["EREGL",32.22,-1.47,36,38,1.3],["HEKTS",3.95,-0.50,39,37,1.4],["PETKM",19.85,-0.85,41,39,1.2],["SAHOL",98.40,-0.59,43,40,0.9],["KCHOL",205.50,-0.96,44,42,0.9],["TUPRS",356.00,-0.84,46,45,0.8],["YKBNK",37.40,-0.79,47,44,1.0],["AKBNK",69.90,-0.07,48,48,1.0],["BIMAS",395.25,-0.06,49,50,1.0],["GARAN",138.20,-0.13,50,52,1.1],["FROTO",1012.00,0.45,51,53,1.0],["ENKAI",82.70,-0.84,52,49,0.9],["TCELL",94.10,0.32,53,54,1.0],["THYAO",323.50,1.02,54,55,1.1],["PGSUS",262.50,1.42,55,58,1.2],["ASELS",353.00,2.17,63,62,1.4],["KOZAL",24.60,-0.44,42,41,1.1],["SASA",3.62,0.63,45,46,1.3],["EKGYO",18.55,0.38,40,43,1.0
