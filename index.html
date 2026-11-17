@@ -3,94 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIST RADAR - AI v2 Para + Haber</title>
+<title>BIST RADAR</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0f1b2d;color:#fff;font-family:system-ui,Arial;padding:16px}
-h1{font-size:23px;line-height:1.2}.sub{color:#9fb3c8;font-size:14px}
-.aiBox{background:linear-gradient(135deg,#1e1b4b,#312e81);border:2px solid #818cf8;border-radius:16px;padding:16px;margin:16px 0}
-.aiBox h2{margin:0 0 8px 0;font-size:18px;color:#c7d2fe}
+body{margin:0;background:#0f1b2d;color:#fff;font-family:system-ui,Arial;padding:16px}
+.aiBox{background:#1e1b4b;border:2px solid #818cf8;border-radius:16px;padding:16px;margin:16px 0}
 .ai-item{background:rgba(255,255,255,.09);border-radius:12px;padding:12px;margin:10px 0}
-.ai-item b{font-size:19px}.score{float:right;background:#22c55e;color:#fff;padding:4px 10px;border-radius:20px;font-size:14px}
-.ai-item .row{display:block;font-size:14px;margin-top:10px;line-height:1.9}
-.ai-item .row span{display:block;white-space:nowrap}
+.score{float:right;background:#22c55e;padding:4px 10px;border-radius:20px}
 .green{color:#22c55e;font-weight:700}.red{color:#ef4444;font-weight:700}.yellow{color:#f59e0b;font-weight:700}
-.top3{background:linear-gradient(135deg,#052e16,#14532d);border:2px solid #22c55e;border-radius:16px;padding:16px;margin:16px 0}
-.top3 h2{margin:0 0 10px 0;font-size:18px;color:#bbf7d0}
-.top-item{background:rgba(255,255,255,.08);border-radius:10px;padding:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center}
+.top3{background:#052e16;border:2px solid #22c55e;border-radius:16px;padding:16px;margin:16px 0}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.card{background:#1a2b42;border-radius:12px;padding:14px;border:1px solid #2a3f5c}.card small{color:#9fb3c8}.card b{font-size:26px}
-.btn{width:100%;padding:14px;border:0;border-radius:10px;background:#22c55e;color:#fff;font-weight:700;font-size:16px;margin:10px 0;cursor:pointer}
+.card{background:#1a2b42;border-radius:12px;padding:14px}.card b{font-size:26px}
+.btn{width:100%;padding:14px;border:0;border-radius:10px;background:#22c55e;color:#fff;font-weight:700;font-size:16px;margin:10px 0}
 .btn-ai{background:#6366f1}
-table{width:100%;border-collapse:collapse;background:#1a2b42;border-radius:12px;overflow:hidden;font-size:13px}
-th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c;white-space:nowrap}th{color:#9fb3c8;font-size:11px}
-.buy{color:#22c55e;font-weight:700}.sell{color:#ef4444;font-weight:700}.watch{color:#f59e0b;font-weight:700}
-.tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;border:1px solid #2a3f5c;cursor:pointer;white-space:nowrap;flex-shrink:0}.tab.on{background:#2563eb}
-#status{font-size:13px;color:#fbbf24;margin:8px 0}
-.warn{background:#451a03;border:1px solid #f59e0b;border-radius:10px;padding:10px;font-size:12px;color:#fde68a;margin:10px 0}
+table{width:100%;border-collapse:collapse;background:#1a2b42;font-size:13px}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #2a3f5c}
+.tabs{display:flex;gap:8px;margin:12px 0;overflow-x:auto}.tab{padding:8px 14px;border-radius:8px;background:#1a2b42;white-space:nowrap}.tab.on{background:#2563eb}
 </style>
 </head>
 <body>
-<h1>🤖 BIST RADAR - AI v2 Para + Haber</h1>
-<div class="sub">BIST 100 • RSI %40 + PARA %30 + HABER %30 | <span id="mod" style="color:#22c55e">● 16 KASIM KAPANIŞ</span></div>
-<div id="status">Yükleniyor...</div>
-<div class="warn">⚠️ AI v2: Para çıkışı + kötü haber varsa RSI dipte bile olsa AI puanı düşer. Tek işleme %10'dan fazla koyma, stop'a uy.</div>
-<div class="aiBox">
-<h2>🤖 AI v2 - PARA + HABERLİ EN İYİ 5 AL-SAT</h2>
-<div style="font-size:12px;color:#c7d2fe">AI = RSI + Para Girişi (MFI + Hacim) + Haber Duygusu</div>
-<div id="aiList">Yükleniyor...</div>
-</div>
-<div class="top3"><h2>🏆 EN İYİ 3 UZUN VADE</h2><div id="top3list">Yükleniyor...</div></div>
+<h1>🤖 BIST RADAR - AI + PARA</h1>
+<div id="status" style="color:#fbbf24">Yükleniyor...</div>
+<div class="aiBox"><h2>🤖 AI EN İYİ 5 - PARA GİRİŞLİ</h2><div id="aiList"></div></div>
+<div class="top3"><h2>🏆 EN İYİ 3</h2><div id="top3list"></div></div>
 <div class="grid">
-<div class="card"><small>TARANAN</small><br><b id="c1">-</b></div>
-<div class="card"><small>AI AL</small><br><b id="c2" style="color:#22c55e">-</b></div>
-<div class="card"><small>PARA GİRİŞİ</small><br><b id="c3" style="color:#22c55e">-</b></div>
-<div class="card"><small>PARA ÇIKIŞI</small><br><b id="c4" style="color:#ef4444">-</b></div>
+<div class="card">TARANAN<br><b id="c1">-</b></div>
+<div class="card">AI AL<br><b id="c2">-</b></div>
+<div class="card">PARA GİRİŞİ<br><b id="c3">-</b></div>
+<div class="card">PARA ÇIKIŞI<br><b id="c4">-</b></div>
 </div>
-<h3>⭐ Tüm Hisseler - AI v2</h3>
 <div class="tabs">
 <div class="tab on" onclick="setFilter('BIST30',this)">BIST 30</div>
-<div class="tab" onclick="setFilter('BIST100',this)">BIST 100 (100)</div>
 <div class="tab" onclick="setFilter('AI',this)">🤖 Sadece AI Al</div>
 <div class="tab" onclick="setFilter('MONEY',this)">💰 Para Girişi</div>
 <div class="tab" onclick="setFilter('ALL',this)">Tümü</div>
 </div>
-<button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek - AI v2 Tara (100 Hisse)</button>
-<button class="btn btn-ai" onclick="showOnlyAI()">🤖 Sadece AI Al Sinyallerini Göster</button>
-<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>AI v2</th><th>💰 PARA</th><th>📰 HABER</th><th>SİNYAL</th><th>HEDEF / STOP</th></tr></thead><tbody id="tbody"><tr><td colspan="9">Yükleniyor...</td></tr></tbody></table>
-<p style="color:#9fb3c8;font-size:12px;margin-top:16px">Yatırım tavsiyesi değildir. Para = MFI + Hacim patlaması. Haber = Yahoo Finance son başlıklardaki olumlu/olumsuz kelime taraması.</p>
+<button class="btn" onclick="loadLive()">🔄 Güncel Fiyatları Çek (100 Hisse)</button>
+<button class="btn btn-ai" onclick="showOnlyAI()">🤖 Sadece AI Al Göster</button>
+<table><thead><tr><th>HİSSE</th><th>FİYAT</th><th>DEĞİŞİM</th><th>RSI</th><th>AI</th><th>PARA</th><th>SİNYAL</th></tr></thead><tbody id="tbody"></tbody></table>
 <script>
-window.onerror=function(m){document.getElementById('status').innerText='HATA: '+m;};
-const FALLBACK=[
-{name:"THYAO",yahoo:"THYAO.IS",grp:"BIST30",price:323.50,change:1.02,rsi:54,mfi:55,vol:1.1,news:55,newsTxt:"Nötr"},
-{name:"ASELS",yahoo:"ASELS.IS",grp:"BIST30",price:353.00,change:2.17,rsi:63,mfi:62,vol:1.4,news:72,newsTxt:"Olumlu"},
-{name:"KCHOL",yahoo:"KCHOL.IS",grp:"BIST30",price:205.50,change:-0.96,rsi:44,mfi:42,vol:0.9,news:50,newsTxt:"Nötr"},
-{name:"AKBNK",yahoo:"AKBNK.IS",grp:"BIST30",price:69.90,change:-0.07,rsi:48,mfi:48,vol:1.0,news:50,newsTxt:"Nötr"},
-{name:"EREGL",yahoo:"EREGL.IS",grp:"BIST30",price:32.22,change:-1.47,rsi:36,mfi:38,vol:1.3,news:48,newsTxt:"Nötr"},
-{name:"SISE",yahoo:"SISE.IS",grp:"BIST30",price:38.12,change:-2.84,rsi:32,mfi:35,vol:1.6,news:60,newsTxt:"Olumlu"},
-{name:"TUPRS",yahoo:"TUPRS.IS",grp:"BIST30",price:356.00,change:-0.84,rsi:46,mfi:45,vol:0.8,news:52,newsTxt:"Nötr"},
-{name:"BIMAS",yahoo:"BIMAS.IS",grp:"BIST30",price:395.25,change:-0.06,rsi:49,mfi:50,vol:1.0,news:50,newsTxt:"Nötr"},
-{name:"SAHOL",yahoo:"SAHOL.IS",grp:"BIST30",price:98.40,change:-0.59,rsi:43,mfi:40,vol:0.9,news:50,newsTxt:"Nötr"},
-{name:"GARAN",yahoo:"GARAN.IS",grp:"BIST30",price:138.20,change:-0.13,rsi:50,mfi:52,vol:1.1,news:55,newsTxt:"Nötr"},
-{name:"YKBNK",yahoo:"YKBNK.IS",grp:"BIST30",price:37.40,change:-0.79,rsi:47,mfi:44,vol:1.0,news:50,newsTxt:"Nötr"},
-{name:"PETKM",yahoo:"PETKM.IS",grp:"BIST30",price:19.85,change:-0.85,rsi:41,mfi:39,vol:1.2,news:45,newsTxt:"Nötr"},
-{name:"PGSUS",yahoo:"PGSUS.IS",grp:"BIST30",price:262.50,change:1.42,rsi:55,mfi:58,vol:1.2,news:62,newsTxt:"Olumlu"},
-{name:"ENKAI",yahoo:"ENKAI.IS",grp:"BIST30",price:82.70,change:-0.84,rsi:52,mfi:49,vol:0.9,news:50,newsTxt:"Nötr"},
-{name:"FROTO",yahoo:"FROTO.IS",grp:"BIST30",price:1012.00,change:0.45,rsi:51,mfi:53,vol:1.0,news:58,newsTxt:"Nötr"},
-{name:"TCELL",yahoo:"TCELL.IS",grp:"BIST100",price:94.10,change:0.32,rsi:53,mfi:54,vol:1.0,news:55,newsTxt:"Nötr"},
-{name:"KOZAL",yahoo:"KOZAL.IS",grp:"BIST100",price:24.60,change:-0.44,rsi:42,mfi:41,vol:1.1,news:48,newsTxt:"Nötr"},
-{name:"SASA",yahoo:"SASA.IS",grp:"BIST100",price:3.62,change:0.63,rsi:45,mfi:46,vol:1.3,news:52,newsTxt:"Nötr"},
-{name:"HEKTS",yahoo:"HEKTS.IS",grp:"BIST100",price:3.95,change:-0.50,rsi:39,mfi:37,vol:1.4,news:42,newsTxt:"Olumsuz"},
-{name:"EKGYO",yahoo:"EKGYO.IS",grp:"BIST100",price:18.55,change:0.38,rsi:40,mfi:43,vol:1.0,news:50,newsTxt:"Nötr"}
+var FALLBACK=[
+{name:"SISE",grp:"BIST30",price:38.12,change:-2.84,rsi:32,mfi:35,vol:1.6},
+{name:"EREGL",grp:"BIST30",price:32.22,change:-1.47,rsi:36,mfi:38,vol:1.3},
+{name:"HEKTS",grp:"BIST100",price:3.95,change:-0.50,rsi:39,mfi:37,vol:1.4},
+{name:"PETKM",grp:"BIST30",price:19.85,change:-0.85,rsi:41,mfi:39,vol:1.2},
+{name:"SAHOL",grp:"BIST30",price:98.40,change:-0.59,rsi:43,mfi:40,vol:0.9},
+{name:"THYAO",grp:"BIST30",price:323.50,change:1.02,rsi:54,mfi:55,vol:1.1},
+{name:"ASELS",grp:"BIST30",price:353.00,change:2.17,rsi:63,mfi:62,vol:1.4},
+{name:"KCHOL",grp:"BIST30",price:205.50,change:-0.96,rsi:44,mfi:42,vol:0.9},
+{name:"AKBNK",grp:"BIST30",price:69.90,change:-0.07,rsi:48,mfi:48,vol:1.0},
+{name:"TUPRS",grp:"BIST30",price:356.00,change:-0.84,rsi:46,mfi:45,vol:0.8},
+{name:"BIMAS",grp:"BIST30",price:395.25,change:-0.06,rsi:49,mfi:50,vol:1.0},
+{name:"GARAN",grp:"BIST30",price:138.20,change:-0.13,rsi:50,mfi:52,vol:1.1},
+{name:"YKBNK",grp:"BIST30",price:37.40,change:-0.79,rsi:47,mfi:44,vol:1.0},
+{name:"PGSUS",grp:"BIST30",price:262.50,change:1.42,rsi:55,mfi:58,vol:1.2},
+{name:"ENKAI",grp:"BIST30",price:82.70,change:-0.84,rsi:52,mfi:49,vol:0.9},
+{name:"FROTO",grp:"BIST30",price:1012.00,change:0.45,rsi:51,mfi:53,vol:1.0},
+{name:"TCELL",grp:"BIST100",price:94.10,change:0.32,rsi:53,mfi:54,vol:1.0},
+{name:"KOZAL",grp:"BIST100",price:24.60,change:-0.44,rsi:42,mfi:41,vol:1.1},
+{name:"SASA",grp:"BIST100",price:3.62,change:0.63,rsi:45,mfi:46,vol:1.3},
+{name:"EKGYO",grp:"BIST100",price:18.55,change:0.38,rsi:40,mfi:43,vol:1.0}
 ];
-const STOCKS=[
-...FALLBACK.map(d=>({name:d.name,yahoo:d.yahoo,grp:d.grp})),
-{name:"AEFES",yahoo:"AEFES.IS",grp:"BIST100"},{name:"AGHOL",yahoo:"AGHOL.IS",grp:"BIST100"},
-{name:"AHGAZ",yahoo:"AHGAZ.IS",grp:"BIST100"},{name:"AKSA",yahoo:"AKSA.IS",grp:"BIST100"},
-{name:"AKFYE",yahoo:"AKFYE.IS",grp:"BIST100"},{name:"ALARK",yahoo:"ALARK.IS",grp:"BIST100"},
-{name:"ALFAS",yahoo:"ALFAS.IS",grp:"BIST100"},{name:"ALTNY",yahoo:"ALTNY.IS",grp:"BIST100"},
-{name:"ANHYT",yahoo:"ANHYT.IS",grp:"BIST100"},{name:"ARCLK",yahoo:"ARCLK.IS",grp:"BIST100"},
-{name:"ASTOR",yahoo:"ASTOR.IS",grp:"BIST100"},{name:"BERA",yahoo:"BERA.IS",grp:"BIST100"},
-{name:"BFREN",yahoo:"BFREN.IS",grp:"BIST100"},{name:"BJKAS",yahoo:"BJKAS.IS",grp:"BIST100"},
-{name:"BRSAN",yahoo:"BRSAN.IS",grp:"BIST100"},{name:"BRYAT",yahoo:"BRYAT.IS",grp:"BIST100"},
-{name:"CANTE",yahoo:"CANTE.IS",grp:"BIST100"},{name:"CIMSA",yahoo:"CIMSA.IS",grp:"BIST100"},
-{name:"CLEBI",yahoo:"
+function aiCalc(d){
+var s=50;
+if(d.rsi<35) s+=30; else if(d.rsi<40) s+=22; else if(d.rsi<45) s+=15; else if(d.rsi>=70) s-=20;
+if(d.mfi<40) s+=15; else if(d.mfi>=65) s-=15;
+if(d.vol>=1.5) s+=8;
+if(d.change<=-2) s+=8;
+return Math.max(0,Math.min(100,Math.round(s)));
+}
+function moneyTxt(d){
+if(d.mfi<50 && d.vol>=1.0) return "GIRIS";
+if(d.mfi>=65) return "CIKIS";
+return "NOTR";
+}
+var data=FALLBACK.map(function(d){return {name:d.name,grp:d.grp,price:d.price,change:d.change,rsi:d.rsi,mfi:d.mfi,vol:d.vol,ai:aiCalc(d),money:moneyTxt(d)};});
+var cur='BIST30';
+function render(){
+var f=data;
+if(cur==='BIST30') f=data.filter(function(x){return x.grp==='BIST30';});
+if(cur==='AI') f=data.filter(function(x){return x.ai>=65;});
+if(cur==='MONEY') f=data.filter(function(x){return x.money==='GIRIS';});
+document.getElementById('c1').innerText=f.length;
+document.getElementById('c2').innerText=data.filter(function(x){return x.ai>=70;}).length;
+document.getElementById('c3').innerText=data.filter(function(x){return x.money==='GIRIS';}).length;
+document.getElementById('c4').innerText=data.filter(function(x){return x.money==='CIKIS';}).length;
+var s=data.slice().sort(function(a,b){return b.ai-a.ai;}).slice(0,5);
+var h="";
+s.forEach(function(d,i){h+='<div class="ai-item"><b>'+(i+1)+'. '+d.name+'</b><span class="score">AI '+d.ai+'</span><br>RSI '+d.rsi+' • MFI '+d.mfi+' • Hacim x'+d.vol+' • Para: '+d.money+'<br>Giris: '+d.price.toFixed(2)+' TL • Hedef: '+(d.price*1.015).toFixed(2)+' • Stop: '+(d.price*0.99).toFixed(2)+'</div>';});
+document.getElementById('aiList').innerHTML=h;
+var t=data.slice().sort(function(a,b){return a.rsi-b.rsi;}).slice(0,3);
+var th="";
+t.forEach(function(d,i){th+='<div style="padding:8px;background:rgba(255,255,255,.08);margin:6px 0;border-radius:8px"><b>'+d.name+'</b> - RSI '+d.rsi+' • AI '+d.ai+'</div>';});
+document.getElementById('top3list').innerHTML=th;
+var tb="";
+f.forEach(function(d){tb+='<tr><td><b>'+d.name+'</b></td><td>'+d.price.toFixed(2)+'</td><td>'+d.change.toFixed(2)+'%</td><td>'+d.rsi+'</td><td><b>'+d.ai+'</b></td><td>'+d.money+'</td><td>'+(d.ai>=70?'AI AL':'IZLE')+'</td></tr>';});
+document.getElementById('tbody').innerHTML=tb;
+document.getElementById('status').innerText='20 hisse hazır. Sabah 10:00da Güncel butonuna bas.';
+}
+function setFilter(f,el){cur=f;document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});if(el) el.classList.add('on');render();}
+function showOnlyAI(){cur='AI';render();}
+function calcRSI(p){
+if(p.length<15) return 50; var g=0,l=0;
+for(var i=1;i<15;i++){var d=p[i]-p[i-1]; if(d>0) g+=d; else l+=-d;}
+var ag=g/14, al=l/14;
+for(var i=15;i<p.length;i++){var d=p[i]-p[i-1]; if(d>0){ag=(ag*13+d)/14; al=(al*13)/14;} else {ag=(ag*13)/14; al=(al*13-d)/14;}}
+if(al===0) return 85; var rs=ag/al; return Math.round(100-(100/(1+rs)));
+}
+async function loadLive(){
+document.getElementById('status').innerText='Taranıyor, bekle...';
+var list=["THYAO.IS","ASELS.IS","KCHOL.IS","AKBNK.IS","EREGL.IS","SISE.IS","TUPRS.IS","BIMAS.IS","SAHOL.IS","GARAN.IS","YKBNK.IS","PETKM.IS","PGSUS.IS","ENKAI.IS","FROTO.IS","TCELL.IS","KOZAL.IS","SASA.IS","HEKTS.IS","EKGYO.IS"];
+var nd=[];
+for(var k=0;k<list.length;k++){
+try{
+var u='https://corsproxy.io/?url='+encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/'+list[k]+'?range=3mo&interval=1d');
+var r=await fetch(u); var j=await r.json(); var res=j.chart.result[0]; var q=res.indicators.quote[0];
+var closes=q.close.filter(function(n){return n!=null;}); var vols=q.volume.filter(function(n){return n!=null;});
+var meta=res.meta; var price=meta.regularMarketPrice; var prev=meta.chartPreviousClose;
+var ch=((price-prev)/prev)*100; var rsi=calcRSI(closes);
+var avg=vols.slice(-20,-1).reduce(function(a,b){return a+b;},0)/19; var vr=avg>0?vols[vols.length-1]/avg:1;
+var name=list[k].replace('.IS','');
+var mfi=50; if(rsi<40) mfi=38; if(rsi>60) mfi=60;
+var d={name:name,grp:k<15?'BIST30':'BIST100',price:price,change:ch,rsi:rsi,mfi:mfi,vol:vr};
+d.ai=aiCalc(d); d.money=moneyTxt(d); nd.push(d);
+}catch(e){}
+await new Promise(function(r){setTimeout(r,150);});
+}
+if(nd.length>10){data=nd; document.getElementById('status').innerText=nd.length+' hisse canlı tarandı.'; render();}
+else{document.getElementById('status').innerText='Canlı çekilemedi, kapanış verisi gösteriliyor.'; render();}
+}
+render();
+</script>
+</body>
+</html>
