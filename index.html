@@ -1,37 +1,68 @@
-<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BIST Radar</title>
-<style>body{font-family:sans-serif;background:#0b1220;color:#fff;padding:12px;margin:0}.hero{background:linear-gradient(135deg,#16a34a,#0ea5e9);padding:14px;border-radius:16px;margin-top:10px}.hero b{font-size:17px}.m{color:#94a3b8;font-size:12px}.search{width:100%;padding:12px;border-radius:12px;border:0;background:#1e293b;color:#fff;margin-top:12px}.filters{display:flex;gap:6px;margin-top:10px;overflow-x:auto}.filters button{border:0;padding:8px 14px;border-radius:20px;background:#1e293b;color:#fff;white-space:nowrap}.filters button.on{background:#22c55e;color:#000;font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.card{background:#1e293b;border-radius:14px;padding:10px}.card b{font-size:15px}.price{font-size:16px;font-weight:800}.ch{font-size:12px}.up{color:#22c55e}.down{color:#ef4444}.badge{float:right;font-size:11px;font-weight:800;padding:4px 8px;border-radius:20px}.al{background:#22c55e;color:#000}.sat{background:#ef4444}.bekle{background:#facc15;color:#000}.yok{background:#334155;color:#94a3b8}.meta{font-size:11px;color:#94a3b8;margin-top:6px;display:flex;justify-content:space-between}.btn{width:100%;background:#22c55e;border:0;padding:12px;border-radius:12px;font-weight:800;margin-top:12px}</style></head><body>
-<h2 style="margin:0">📈 BIST <span style="color:#22c55e">RADAR</span></h2>
-<div class="hero" id="hero"><b>Yükleniyor...</b><div class="m">Veri bekleniyor</div></div>
-<input class="search" id="q" placeholder="🔍 Ara... THYAO" oninput="render()">
-<div class="filters"><button class="on" onclick="setF('ALL',this)">Tümü (100)</button><button onclick="setF('AL',this)">🟢 AL</button><button onclick="setF('BEKLE',this)">🟡 BEKLE</button><button onclick="setF('SAT',this)">🔴 SAT</button></div>
-<div class="m" id="count" style="margin-top:8px"></div>
-<div class="grid" id="grid"></div>
-<button class="btn" onclick="load()">🔄 YENİLE</button>
-<div class="m" style="text-align:center;margin-top:8px">BIST 15 dk gecikmeli</div>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIST 100 Canlı</title>
+<style>
+body{font-family:Arial,sans-serif;background:#0f172a;color:white;margin:0;padding:12px}
+.top{position:sticky;top:0;background:#0f172a;padding:10px 0;z-index:10}
+h1{margin:0;font-size:22px}
+.sub{color:#94a3b8;font-size:13px;margin:6px 0}
+.btn{width:100%;padding:13px;background:#22c55e;color:white;border:none;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer}
+.btn:active{background:#16a34a}
+input{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;font-size:16px;box-sizing:border-box}
+table{width:100%;border-collapse:collapse;margin-top:10px;background:#1e293b;border-radius:12px;overflow:hidden}
+th,td{padding:10px 8px;text-align:left;font-size:14px}
+th{background:#334155}
+tr{border-bottom:1px solid #334155}
+.up{color:#22c55e;font-weight:bold}
+.down{color:#ef4444;font-weight:bold}
+.badge{padding:3px 8px;border-radius:8px;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="top">
+<h1>📈 BIST 100 Canlı</h1>
+<div class="sub">Son Güncelleme: <b id="updated">Yükleniyor...</b> • Otomatik yenileme: Her 60 sn</div>
+<button class="btn" onclick="loadData()">🔄 ŞİMDİ YENİLE</button>
+<input id="search" placeholder="🔍 Hisse ara... Örn: THYAO" oninput="render()">
+</div>
+
+<table>
+<thead><tr><th>Hisse</th><th>Fiyat</th><th>Değişim</th><th>RSI</th></tr></thead>
+<tbody id="list"><tr><td colspan="4">Yükleniyor...</td></tr></tbody>
+</table>
+
 <script>
-var ALL="AEFES,AGHOL,AHGAZ,AKBNK,AKCNS,AKSA,AKSEN,ALARK,ALFAS,ALBRK,ANHYT,ANSGR,ARCLK,ARDYZ,ASELS,ASTOR,BERA,BIMAS,BINHO,BRSAN,BRYAT,BTCIM,CANTE,CCOLA,CIMSA,CWENE,DOAS,DOHOL,ECILC,ECZYT,EGEEN,EGGUB,EKGYO,ENERY,ENJSA,ENKAI,EREGL,EUPWR,FENER,FROTO,GARAN,GENIL,GESAN,GLRMK,GOLTS,GUBRF,HALKB,HEKTS,ISCTR,ISDMR,ISMEN,KARSN,KCAER,KCHOL,KENT,KMPUR,KONTR,KOZAA,KOZAL,KRDMD,KTLEV,MAVI,MGROS,MIATK,MPARK,ODAS,OTKAR,OYAKC,PAHOL,PETKM,PGSUS,SAHOL,SASA,SDTTR,SELEC,SISE,SKBNK,SMRTG,SOKM,TABGD,TAVHL,TCELL,THYAO,TKFEN,TOASO,TSKB,TTKOM,TTRAK,TUPRS,TURSG,ULKER,VAKBN,VESTL,YKBNK,ZOREN,AGROT,AKFYE,ALTNY,CMENT,IEYHO".split(",");
-var DATA={},CUR="ALL";
-function calcRSI(c){var r=50+(c*5); if(r<15)r=15; if(r>85)r=85; return Math.round(r)}
-function setF(f,el){CUR=f; var b=document.querySelectorAll(".filters button"); for(var i=0;i<b.length;i++)b[i].classList.remove("on"); el.classList.add("on"); render()}
+let allData = [];
+async function loadData(){
+  try{
+    const res = await fetch('data.json?t=' + Date.now());
+    const data = await res.json();
+    document.getElementById('updated').innerText = data.updated || '-';
+    allData = data.stocks || [];
+    render();
+  }catch(e){
+    document.getElementById('list').innerHTML = '<tr><td colspan="4">Veri yüklenemedi</td></tr>';
+  }
+}
 function render(){
-var q=(document.getElementById("q").value||"").toUpperCase();
-var items=[]; for(var i=0;i<ALL.length;i++){var s=ALL[i]; if(s.indexOf(q)>-1) items.push({sym:s,d:DATA[s]})}
-if(CUR!=="ALL") items=items.filter(function(it){return it.d&&it.d.sg===CUR});
-items.sort(function(a,b){return (b.d?b.d.s:-1)-(a.d?a.d.s:-1)});
-var h="",best=null; for(var k=0;k<items.length;k++) if(items[k].d){best=items[k]; break}
-if(best) document.getElementById("hero").innerHTML="<b>⭐ EN İYİ: "+best.sym+" - AI "+best.d.s+" - "+best.d.sg+"</b><div>Fiyat "+best.d.p+" • RSI "+best.d.r+" • "+best.d.c+"%</div>";
-document.getElementById("count").innerText=items.length+" gösteriliyor • Toplam "+ALL.length+" hisse • Canlı: "+Object.keys(DATA).length;
-for(var j=0;j<items.length;j++){var it=items[j];
-if(!it.d){h+="<div class='card'><span class='badge yok'>BEKLİYOR</span><b>"+it.sym+"</b><div class='price'>--</div><div class='ch'>Veri bekleniyor</div><div class='meta'><span>RSI --</span><span>AI --</span></div></div>"}
-else{var cls=it.d.c>=0?"up":"down"; var bg=it.d.sg==="AL"?"al":it.d.sg==="SAT"?"sat":"bekle"; h+="<div class='card'><span class='badge "+bg+"'>"+it.d.sg+"</span><b>"+it.sym+"</b><div class='price'>"+it.d.p+" ₺</div><div class='ch "+cls+"'>"+(it.d.c>=0?"+":"")+it.d.c+"%</div><div class='meta'><span>RSI "+it.d.r+"</span><span>AI "+it.d.s+"</span></div></div>"}}
-document.getElementById("grid").innerHTML=h;
+  const q = document.getElementById('search').value.toUpperCase();
+  const filtered = allData.filter(s => s.sym.includes(q));
+  document.getElementById('list').innerHTML = filtered.map(s => {
+    const cls = s.ch >= 0 ? 'up' : 'down';
+    const sign = s.ch >= 0 ? '+' : '';
+    let rsiColor = '#22c55e';
+    if(s.rsi > 70) rsiColor = '#ef4444';
+    else if(s.rsi < 30) rsiColor = '#eab308';
+    return `<tr><td><b>${s.sym}</b></td><td>${s.price} ₺</td><td class="${cls}">${sign}%${s.ch}</td><td><span class="badge" style="background:${rsiColor}">${s.rsi}</span></td></tr>`;
+  }).join('') || '<tr><td colspan="4">Bulunamadı</td></tr>';
 }
-async function load(){
-try{var r=await fetch("data.json?v="+Date.now()); var j=await r.json(); var list=Array.isArray(j)?j:(j.stocks||j.data||[]);
-for(var i=0;i<list.length;i++){var x=list[i]; var sym=(x.sym||x.symbol||x.code||"").toUpperCase(); var ch=x.ch; if(ch===undefined)ch=x.change; if(ch===undefined)ch=x.change_pct; if(ch===undefined)ch=0; ch=parseFloat(ch); var rsi=x.rsi; if(rsi===undefined||rsi===null||rsi===50)rsi=calcRSI(ch); rsi=Math.round(rsi); var s=50; if(rsi<30)s=92; else if(rsi<35)s=85; else if(rsi<40)s=72; else if(rsi<45)s=62; else if(rsi<55)s=50; else if(rsi<65)s=42; else s=30; if(ch<=-2)s+=6; if(ch<=-3.5)s+=8; if(ch>=2)s-=8; DATA[sym]={p:x.price||x.last||0,c:ch,r:rsi,s:s,sg:s>=70?"AL":s<=35?"SAT":"BEKLE"};}
-}catch(e){}
-render();
-}
-render();
-load();
-</script></body></html>
+loadData();
+// OTOMATİK YENİLEME - 60 saniyede bir
+setInterval(loadData, 60000);
+</script>
+</body>
+</html>
