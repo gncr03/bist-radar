@@ -1,62 +1,74 @@
 <!DOCTYPE html>
-<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BIST PRO - Analiz Terminali</title>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIST Radar</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-body{background:#0b0e11;color:#eaecef;padding:12px;padding-bottom:90px}
-.top{display:flex;justify-content:space-between;align-items:center;padding:10px 4px}
-.logo{font-size:22px;font-weight:900}.logo span{color:#f0b90b}
-.badge{background:#1e2329;padding:6px 10px;border-radius:20px;font-size:12px;color:#848e9c}
-.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
-.card{background:#1e2329;border-radius:14px;padding:14px;border:1px solid #2b3139}
-.card small{color:#848e9c;font-size:11px}.card b{font-size:19px;display:block;margin-top:4px}
-.green{color:#0ecb81}.red{color:#f6465d}.gold{color:#f0b90b}
-.tabs{display:flex;gap:8px;margin:14px 0;overflow-x:auto}
-.tab{background:#1e2329;border:1px solid #2b3139;color:#eaecef;padding:9px 16px;border-radius:20px;white-space:nowrap;cursor:pointer;font-weight:700}
-.tab.active{background:#f0b90b;color:#000;border-color:#f0b90b}
-.search{width:100%;background:#1e2329;border:1px solid #2b3139;color:#fff;padding:13px;border-radius:12px;font-size:15px;outline:none;margin-bottom:12px}
-.stock{background:#1e2329;border:1px solid #2b3139;border-radius:14px;padding:13px;margin-bottom:10px}
-.row{display:flex;justify-content:space-between;align-items:center}
-.sym{font-weight:900;font-size:17px}.sym small{color:#848e9c;font-weight:400;font-size:12px}
-.price{font-weight:900;font-size:17px;text-align:right}.up{color:#0ecb81}.down{color:#f6465d}
-.meta{font-size:12px;color:#848e9c;margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
-.pill{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#2b3139}
-.btns{display:flex;gap:8px;margin-top:10px}
-.btn{flex:1;padding:11px;border:none;border-radius:10px;font-weight:900;font-size:14px;cursor:pointer}
-.buy{background:#0ecb81;color:#fff}.sell{background:#f6465d;color:#fff}.star{background:#2b3139;color:#f0b90b}.detail{background:#f0b90b;color:#000}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:flex-end;z-index:99}
-.modal.open{display:flex}.box{background:#1e2329;width:100%;border-radius:20px 20px 0 0;padding:20px;max-height:88vh;overflow-y:auto}
-.box input{width:100%;padding:14px;background:#0b0e11;border:1px solid #2b3139;color:#fff;border-radius:12px;font-size:18px;margin:12px 0;outline:none}
-.ana{background:#0b0e11;border:1px solid #2b3139;border-radius:12px;padding:13px;margin:10px 0;font-size:13px;line-height:1.7;color:#b7bdc6}
-.ana b{color:#fff}.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.kv div{background:#0b0e11;border:1px solid #2b3139;border-radius:10px;padding:10px}.kv small{color:#848e9c;font-size:11px}.kv b{display:block;margin-top:3px;font-size:15px}
-.midas{background:#00c853;color:#fff}
-.hold{background:#1e2329;border:1px solid #f0b90b;border-radius:14px;padding:13px;margin-bottom:10px}
-.warn{background:#2b1a00;border:1px solid #f0b90b;border-radius:10px;padding:10px;font-size:12px;color:#f0b90b;margin-top:10px}
-</style></head>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+body{background:#0f172a;color:#fff;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.top h1{font-size:22px}
+.top span{font-size:12px;background:#1e293b;padding:6px 10px;border-radius:20px;color:#94a3b8}
+#status{text-align:center;padding:12px;background:#1e293b;border-radius:12px;margin-bottom:12px;font-size:14px}
+.grid{display:grid;gap:12px}
+.card{background:#1e293b;border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:center}
+.card b{font-size:18px;letter-spacing:.5px}
+.card small{color:#94a3b8;font-size:12px;display:block;margin-top:2px}
+.price{font-size:20px;font-weight:800;text-align:right}
+.badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block;margin-top:4px}
+.AL{background:#16a34a}.GÜÇLÜ{background:#16a34a}.SAT{background:#dc2626}.GÜÇLÜSAT{background:#dc2626}.TUT{background:#eab308;color:#000}.BEKLE{background:#64748b}.NÖTR{background:#64748b}
+</style>
+</head>
 <body>
-<div class="top"><div class="logo">BIST <span>PRO</span></div><div class="badge" id="updated">Bağlanıyor...</div></div>
-<div class="cards">
-<div class="card"><small>TOPLAM VARLIK</small><b id="total">100.000 ₺</b></div>
-<div class="card"><small>NAKİT</small><b class="green" id="cash">100.000 ₺</b></div>
-<div class="card"><small>KAR / ZARAR</small><b class="gold" id="pnl">0 ₺</b></div>
-</div>
-<div class="tabs">
-<button class="tab active" onclick="setTab('all',this)">Tümü</button>
-<button class="tab" onclick="setTab('port',this)">Portföyüm</button>
-<button class="tab" onclick="setTab('fav',this)">⭐ Takip</button>
-<button class="tab" onclick="setTab('gain',this)">🏆 Kazananlar</button>
-<button class="tab" onclick="setTab('lose',this)">📉 Kaybedenler</button>
-</div>
-<input class="search" id="q" placeholder="🔍 Hisse ara... THYAO, ASELS..." oninput="render()">
-<div id="list"></div>
+<div class="top"><h1>📈 BIST Radar</h1><span id="time">Bağlanıyor...</span></div>
+<div id="status">Veriler yükleniyor...</div>
+<div class="grid" id="list"></div>
 
-<div class="modal" id="modal"><div class="box">
-<h3 id="mTitle">THYAO</h3><p id="mInfo" style="color:#848e9c;font-size:13px;margin-top:6px"></p>
-<input type="number" id="qty" value="10" min="1"><p id="mTotal"></p>
-<div style="display:flex;gap:10px"><button class="btn buy" onclick="doTrade('buy')">🟢 AL</button><button class="btn sell" onclick="doTrade('sell')">🔴 SAT</button><button class="btn" style="background:#2b3139;color:#fff" onclick="closeModal()">Kapat</button></div>
-</div></div>
+<script>
+async function load(){
+  try{
+    const res = await fetch('data.json?v=' + Date.now());
+    if(!res.ok) throw new Error('data.json bulunamadı: '+res.status);
+    const j = await res.json();
 
-<div class="modal" id="detailModal"><div class="box">
-<h3 id="dTitle">Detay</h3><p id="dSignal" style="font-weight:900;margin-top:6px"></p>
-<div class="kv">
-<div><small>ŞU ANKİ FİYAT</small><b id="d
+    // Her türlü yapıyı kabul et
+    let arr = [];
+    if(Array.isArray(j)) arr = j;
+    else if(Array.isArray(j.hisseler)) arr = j.hisseler;
+    else if(Array.isArray(j.stocks)) arr = j.stocks;
+    else if(Array.isArray(j.data)) arr = j.data;
+    else if(Array.isArray(j.results)) arr = j.results;
+    else if(typeof j === 'object'){
+      // { "YKBNK": {...} } gibi obje ise
+      const keys = Object.keys(j).filter(k=>!['Güncellendi','guncellendi','updated','time','tarih'].includes(k));
+      if(keys.length && typeof j[keys[0]]==='object') arr = keys.map(k=>({...j[k], sym:k}));
+    }
+
+    const time = j.Güncellendi || j.guncellendi || j.updated || j.time || j.tarih || new Date().toLocaleTimeString('tr-TR');
+    document.getElementById('time').textContent = 'Son: ' + time;
+
+    if(!arr.length){ document.getElementById('status').textContent='Veri boş görünüyor. data.json boş.'; return; }
+    document.getElementById('status').style.display='none';
+
+    document.getElementById('list').innerHTML = arr.map(h=>{
+      const sym = h.sym || h.sembol || h.symbol || h.code || h.hisse || h.ticker || '?';
+      const fiyat = h.fiyat ?? h.price ?? h.last ?? h.close ?? h.kapanis ?? '-';
+      const sinyal = (h.sinyal || h.signal || h.yorum || h.durum || '').toString().toUpperCase();
+      let cls='NÖTR';
+      if(sinyal.includes('GÜÇLÜ AL')||sinyal==='AL') cls='AL';
+      else if(sinyal.includes('GÜÇLÜ SAT')||sinyal==='SAT') cls='SAT';
+      else if(sinyal.includes('TUT')) cls='TUT';
+      else if(sinyal.includes('BEKLE')) cls='BEKLE';
+      const degisim = h.degisim ?? h.change ?? h.yuzde ?? '';
+      return `<div class="card"><div><b>${sym}</b><small>${degisim!==''? 'Değişim: '+degisim : 'BIST'}</small></div><div><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal||'TUT'}</span></div></div>`;
+    }).join('');
+  }catch(e){
+    document.getElementById('status').textContent='Hata: '+e.message+' - data.json aynı klasörde mi kontrol et';
+    document.getElementById('time').textContent='Bağlanamadı';
+  }
+}
+load();
+</script>
+</body>
+</html>
