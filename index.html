@@ -7,18 +7,25 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
 body{background:#0f172a;color:#fff;padding:16px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .top h1{font-size:22px}
 .top span{font-size:12px;background:#1e293b;padding:6px 10px;border-radius:20px;color:#94a3b8}
+#search{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #334155;background:#1e293b;color:#fff;font-size:15px;outline:none;margin-bottom:12px}
+#search::placeholder{color:#64748b}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{flex:1;padding:10px;border-radius:99px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;font-size:13px;font-weight:700;cursor:pointer}
+.tab.active{background:#fff;color:#000;border-color:#fff}
 #status{text-align:center;padding:12px;background:#1e293b;border-radius:12px;margin-bottom:12px;font-size:14px}
 .grid{display:grid;gap:12px}
-.card{background:#1e293b;border-radius:16px;padding:14px;cursor:pointer}
+.card{background:#1e293b;border-radius:16px;padding:14px;cursor:pointer;position:relative}
 .row{display:flex;justify-content:space-between;align-items:center}
 .card b{font-size:18px}
 .card small{color:#94a3b8;font-size:12px;display:block;margin-top:2px}
 .price{font-size:20px;font-weight:800;text-align:right}
 .badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block;margin-top:4px}
-.AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}.BEKLE{background:#64748b}.NÖTR{background:#64748b}
+.AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}.BEKLE{background:#64748b}
+.star{position:absolute;top:10px;right:10px;font-size:22px;z-index:2;padding:4px}
+.star.active{color:#facc15}
 .ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
 .ai.open{display:block}
 .ai h4{font-size:14px;margin-bottom:6px}
@@ -27,70 +34,62 @@ body{background:#0f172a;color:#fff;padding:16px}
 .disclaimer{font-size:11px;color:#94a3b8;text-align:center;margin-top:16px;line-height:1.5}
 .bar{height:8px;background:#334155;border-radius:99px;overflow:hidden;margin:6px 0 10px}
 .bar div{height:100%;background:#4ade80}
+.empty{text-align:center;color:#94a3b8;padding:30px 10px;font-size:14px;line-height:1.6}
 </style>
 </head>
 <body>
 <div class="top"><h1>📈 BIST Radar</h1><span id="time">Bağlanıyor...</span></div>
+<input id="search" placeholder="🔍 Hisse ara... örn: THYAO, ASELS" oninput="render()">
+<div class="tabs">
+<button class="tab active" id="tab-all" onclick="setTab('all')">Tümü</button>
+<button class="tab" id="tab-fav" onclick="setTab('fav')">⭐ Takip Listem (<span id="favCount">0</span>)</button>
+<button class="tab" id="tab-strong" onclick="setTab('strong')">🔥 GÜÇLÜ AL</button>
+</div>
 <div id="status">Veriler yükleniyor...</div>
-<div class="hint">👆 Analiz için hisseye dokun</div>
+<div class="hint">⭐ Yıldıza bas = Takibe al &nbsp;|&nbsp; 👆 Karta dokun = Analiz</div>
 <div class="grid" id="list"></div>
-<div class="disclaimer">Eğitim amaçlıdır, yatırım tavsiyesi değildir.<br>RSI + Hacim + Fiyat ile hesaplanır.</div>
+<div class="disclaimer">Eğitim amaçlıdır, yatırım tavsiyesi değildir.<br>Takip listen telefonunda saklanır.</div>
+
 <script>
-async function load(){
-  try{
-    const res=await fetch('data.json?v='+Date.now());
-    if(!res.ok) throw new Error('data.json bulunamadı');
-    const j=await res.json();
-    let arr=[];
-    if(Array.isArray(j)) arr=j;
-    else if(Array.isArray(j.hisseler)) arr=j.hisseler;
-    else if(Array.isArray(j.stocks)) arr=j.stocks;
-    else if(Array.isArray(j.data)) arr=j.data;
-    document.getElementById('time').textContent='Son: '+(j.Güncellendi||j.guncellendi||j.updated||'');
-    if(!arr.length){document.getElementById('status').textContent='Veri boş';return;}
-    document.getElementById('status').style.display='none';
-    document.getElementById('list').innerHTML=arr.map((h,i)=>{
-      const sym=h.sym||h.sembol||h.symbol||h.code||'?';
-      const fiyat=parseFloat(h.fiyat??h.price??h.last??0)||0;
-      const sinyal=(h.sinyal||h.signal||'TUT').toString().toUpperCase();
-      let cls='TUT';
-      if(sinyal.includes('GÜÇLÜ AL')||sinyal==='AL') cls='AL';
-      else if(sinyal.includes('GÜÇLÜ SAT')||sinyal==='SAT') cls='SAT';
-      const rsi=h.rsi??'-';
-      const hacim=h.hacim||'-';
-      const skor=h.skor??50;
-      const destek=h.destek??(fiyat*0.98).toFixed(2);
-      const direnc=h.direnc??(fiyat*1.02).toFixed(2);
-      const hedef=h.hedef??(fiyat*1.04).toFixed(2);
-      const stop=h.stop??(fiyat*0.97).toFixed(2);
-      const degisim=h.degisim||'';
-      let yorum='';
-      if(sinyal.includes('GÜÇLÜ AL')) yorum=`${sym} için RSI ${rsi}, hacim ${hacim}. Alıcılar güçlü, momentum yukarı.`;
-      else if(sinyal.includes('AL')) yorum=`${sym} pozitif. RSI ${rsi} - yükseliş isteği var, hacim ${hacim}.`;
-      else if(sinyal.includes('SAT')) yorum=`${sym} için satıcılar baskın. RSI ${rsi}, hacim ${hacim}. Acele etme.`;
-      else yorum=`${sym} kararsız. RSI ${rsi} - sıkışma var, kırılım bekle.`;
-      let rsiYorum='';
-      if(rsi!=='-' && rsi<30) rsiYorum=' (Aşırı satım - tepki gelebilir)';
-      else if(rsi!=='-' && rsi>70) rsiYorum=' (Aşırı alım - dikkat!)';
-      return `<div class="card" onclick="document.getElementById('ai-${i}').classList.toggle('open')">
-        <div class="row"><div><b>${sym}</b><small>RSI: ${rsi} | ${degisim} | Hacim: ${hacim}</small></div><div><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal}</span></div></div>
-        <div class="ai" id="ai-${i}">
-          <h4>🤖 ${sym} - AI Analizi</h4>
-          <div>${yorum}</div>
-          <div style="margin-top:8px"><b>Güç Skoru: ${skor} / 100</b><div class="bar"><div style="width:${skor}%"></div></div></div>
-          <div class="line"><span>📊 RSI (14)</span><b>${rsi}${rsiYorum}</b></div>
-          <div class="line"><span>📦 Hacim</span><b>${hacim} ${h.hacim_oran? '(x'+h.hacim_oran+')':''}</b></div>
-          <div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${hedef}</b></div>
-          <div class="line"><span>🛑 Stop</span><b style="color:#f87171">${stop}</b></div>
-          <div class="line"><span>📉 Destek</span><b>${destek}</b></div>
-          <div class="line"><span>📈 Direnç</span><b>${direnc}</b></div>
-          <div style="margin-top:8px;color:#cbd5e1"><b>Strateji:</b> ${sinyal.includes('AL')?'Kademeli al, stopa uy, hedefte kâr al.':sinyal.includes('SAT')?'Düşerken alma, destek kırılırsa uzak dur.':'İzle, direnç kırılırsa al, destek kırılırsa bekle.'}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }catch(e){document.getElementById('status').textContent='Hata: '+e.message;}
+let ALL=[];
+let TAB='all';
+let FAV=JSON.parse(localStorage.getItem('bist_fav')||'[]');
+
+function setTab(t){
+  TAB=t;
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById(t==='all'?'tab-all':t==='fav'?'tab-fav':'tab-strong').classList.add('active');
+  render();
 }
-load();
-</script>
-</body>
-</html>
+function toggleFav(sym, ev){
+  ev.stopPropagation();
+  if(FAV.includes(sym)) FAV=FAV.filter(s=>s!==sym);
+  else FAV.push(sym);
+  localStorage.setItem('bist_fav', JSON.stringify(FAV));
+  document.getElementById('favCount').textContent=FAV.length;
+  render();
+}
+function render(){
+  const q=(document.getElementById('search').value||'').toUpperCase().trim();
+  let arr=[...ALL];
+  if(TAB==='fav') arr=arr.filter(h=>FAV.includes(h.sym||h.sembol||h.symbol));
+  if(TAB==='strong') arr=arr.filter(h=>(h.sinyal||'').toString().toUpperCase().includes('GÜÇLÜ AL'));
+  if(q) arr=arr.filter(h=>(h.sym||h.sembol||'').toString().toUpperCase().includes(q));
+  const el=document.getElementById('list');
+  document.getElementById('favCount').textContent=FAV.length;
+  if(!arr.length){
+    el.innerHTML=`<div class="empty">${TAB==='fav' ? 'Henüz takip listen boş.<br>⭐ Yıldıza basarak hisse ekle.' : 'Hisse bulunamadı.'}</div>`;
+    return;
+  }
+  el.innerHTML=arr.map((h,i)=>{
+    const sym=h.sym||h.sembol||h.symbol||h.code||'?';
+    const fiyat=parseFloat(h.fiyat??h.price??h.last??0)||0;
+    const sinyal=(h.sinyal||h.signal||'TUT').toString().toUpperCase();
+    let cls='TUT';
+    if(sinyal.includes('GÜÇLÜ AL')||sinyal==='AL') cls='AL';
+    else if(sinyal.includes('GÜÇLÜ SAT')||sinyal==='SAT') cls='SAT';
+    const rsi=h.rsi??'-';
+    const hacim=h.hacim||'-';
+    const skor=h.skor??50;
+    const destek=h.destek??(fiyat*0.98).toFixed(2);
+    const direnc=h.direnc??(fiyat*1.02).to
