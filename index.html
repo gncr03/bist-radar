@@ -10,9 +10,31 @@
 
 <script>
 let all=[];
+let modalOpen = false;
 async function loadData(){const r=await fetch('data.json?t='+Date.now());const d=await r.json();document.getElementById('updated').innerText=d.updated;all=d.stocks||[];render();}
 function render(){const q=document.getElementById('search').value.toUpperCase();document.getElementById('list').innerHTML=all.filter(s=>s.sym.includes(q)).map(s=>`<tr onclick="openDetail('${s.sym}')"><td><b>${s.sym}</b></td><td>${s.price} ₺</td><td class="${s.ch>=0?'up':'down'}">${s.ch>=0?'+':''}%${s.ch}</td><td>${s.rsi}</td><td>${s.signal}</td></tr>`).join('');}
-function openDetail(sym){const s=all.find(x=>x.sym===sym);if(!s)return;document.getElementById('mSym').innerText=sym+' - '+s.price+' ₺ (%'+s.ch+')';const el=document.getElementById('mSignal');el.innerText=s.signal+'  •  Skor: '+s.score+'/100';el.style.background=s.score>=60?'#22c55e':s.score>=45?'#eab308':'#ef4444';document.getElementById('mComment').innerText=s.comment;document.getElementById('mRows').innerHTML=`<div class="row"><span>RSI</span><b>${s.rsi}</b></div><div class="row"><span>MACD</span><b>${s.macd}</b></div><div class="row"><span>MA20</span><b>${s.ma20} ₺</b></div><div class="row"><span>MA50</span><b>${s.ma50} ₺</b></div><div class="row"><span>Destek</span><b>${s.support} ₺</b></div><div class="row"><span>Direnç</span><b>${s.resist} ₺</b></div><div class="row"><span>Hacim</span><b>${s.vol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Ort. Hacim</span><b>${s.avgvol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Tahmini İşlem Hacmi</span><b>${s.money} Milyon ₺</b></div><div class="row"><span>Para Akışı (Tahmini)</span><b>${s.money_trend}</b></div>`;document.getElementById('newsLink').href='https://news.google.com/search?q='+sym+'%20hisse%20borsa&hl=tr&gl=TR';document.getElementById('kapLink').href='https://www.kap.org.tr/tr/Arama?query='+sym;document.getElementById('modal').style.display='block';}
-function closeModal(){document.getElementById('modal').style.display='none';}
-loadData();setInterval(loadData,60000);
+function openDetail(sym){
+  const s=all.find(x=>x.sym===sym);if(!s)return;
+  document.getElementById('mSym').innerText=sym+' - '+s.price+' ₺ (%'+s.ch+')';
+  const el=document.getElementById('mSignal');
+  el.innerText=s.signal+'  •  Skor: '+s.score+'/100';
+  el.style.background=s.score>=60?'#22c55e':s.score>=45?'#eab308':'#ef4444';
+  document.getElementById('mComment').innerText=s.comment;
+  document.getElementById('mRows').innerHTML=`<div class="row"><span>RSI</span><b>${s.rsi}</b></div><div class="row"><span>MACD</span><b>${s.macd}</b></div><div class="row"><span>MA20</span><b>${s.ma20} ₺</b></div><div class="row"><span>MA50</span><b>${s.ma50} ₺</b></div><div class="row"><span>Destek</span><b>${s.support} ₺</b></div><div class="row"><span>Direnç</span><b>${s.resist} ₺</b></div><div class="row"><span>Hacim</span><b>${s.vol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Ort. Hacim</span><b>${s.avgvol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Tahmini İşlem Hacmi</span><b>${s.money} Milyon ₺</b></div><div class="row"><span>Para Akışı (Tahmini)</span><b>${s.money_trend}</b></div>`;
+  document.getElementById('newsLink').href='https://news.google.com/search?q='+sym+'%20hisse%20borsa&hl=tr&gl=TR';
+  document.getElementById('kapLink').href='https://www.kap.org.tr/tr/Arama?query='+sym;
+  document.getElementById('modal').style.display='block';
+  modalOpen = true;
+  history.pushState({modal:true}, '');
+}
+function closeModal(){
+  document.getElementById('modal').style.display='none';
+  if(modalOpen){ modalOpen = false; history.back(); }
+}
+window.addEventListener('popstate', function(){
+  document.getElementById('modal').style.display='none';
+  modalOpen = false;
+});
+loadData();
+setInterval(loadData,60000);
 </script></body></html>
