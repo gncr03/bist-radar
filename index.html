@@ -5,91 +5,80 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BIST Radar</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
 body{background:#0f172a;color:#fff;padding:16px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.top h1{font-size:22px}
-.top span{font-size:12px;background:#1e293b;padding:6px 10px;border-radius:20px;color:#94a3b8}
-#search{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #334155;background:#1e293b;color:#fff;font-size:15px;outline:none;margin-bottom:12px}
-#search::placeholder{color:#64748b}
+#debug{background:#7f1d1d;padding:10px;border-radius:10px;font-size:12px;margin-bottom:12px;white-space:pre-wrap;word-break:break-all}
+#debug.ok{background:#14532d}
+#search{width:100%;padding:12px;border-radius:12px;border:1px solid #334155;background:#1e293b;color:#fff;font-size:15px;margin-bottom:12px}
 .tabs{display:flex;gap:8px;margin-bottom:12px}
-.tab{flex:1;padding:10px;border-radius:99px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;font-size:13px;font-weight:700;cursor:pointer}
-.tab.active{background:#fff;color:#000;border-color:#fff}
-#status{text-align:center;padding:12px;background:#1e293b;border-radius:12px;margin-bottom:12px;font-size:14px}
-.grid{display:grid;gap:12px}
-.card{background:#1e293b;border-radius:16px;padding:14px;cursor:pointer;position:relative}
-.row{display:flex;justify-content:space-between;align-items:center}
-.card b{font-size:18px}
-.card small{color:#94a3b8;font-size:12px;display:block;margin-top:2px}
+.tab{flex:1;padding:10px;border-radius:99px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;font-size:13px;font-weight:700}
+.tab.active{background:#fff;color:#000}
+.card{background:#1e293b;border-radius:16px;padding:14px;margin-bottom:12px;position:relative}
+.row{display:flex;justify-content:space-between}
 .price{font-size:20px;font-weight:800;text-align:right}
-.badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block;margin-top:4px}
-.AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}.BEKLE{background:#64748b}
-.star{position:absolute;top:10px;right:10px;font-size:22px;z-index:2;padding:4px}
-.star.active{color:#facc15}
+.badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block}
+.AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}
+.star{position:absolute;top:8px;right:10px;font-size:22px}
 .ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
 .ai.open{display:block}
-.ai h4{font-size:14px;margin-bottom:6px}
 .ai .line{display:flex;justify-content:space-between;margin:4px 0}
-.hint{text-align:center;color:#94a3b8;font-size:12px;margin:12px 0}
-.disclaimer{font-size:11px;color:#94a3b8;text-align:center;margin-top:16px;line-height:1.5}
-.bar{height:8px;background:#334155;border-radius:99px;overflow:hidden;margin:6px 0 10px}
-.bar div{height:100%;background:#4ade80}
-.empty{text-align:center;color:#94a3b8;padding:30px 10px;font-size:14px;line-height:1.6}
 </style>
 </head>
 <body>
-<div class="top"><h1>📈 BIST Radar</h1><span id="time">Bağlanıyor...</span></div>
-<input id="search" placeholder="🔍 Hisse ara... örn: THYAO, ASELS" oninput="render()">
+<div class="top"><h1>📈 BIST Radar</h1><span id="time">...</span></div>
+<div id="debug">Test başlıyor...</div>
+<input id="search" placeholder="🔍 Hisse ara..." oninput="render()">
 <div class="tabs">
 <button class="tab active" id="tab-all" onclick="setTab('all')">Tümü</button>
-<button class="tab" id="tab-fav" onclick="setTab('fav')">⭐ Takip Listem (<span id="favCount">0</span>)</button>
+<button class="tab" id="tab-fav" onclick="setTab('fav')">⭐ Takip (<span id="favCount">0</span>)</button>
 <button class="tab" id="tab-strong" onclick="setTab('strong')">🔥 GÜÇLÜ AL</button>
 </div>
-<div id="status">Veriler yükleniyor...</div>
-<div class="hint">⭐ Yıldıza bas = Takibe al &nbsp;|&nbsp; 👆 Karta dokun = Analiz</div>
-<div class="grid" id="list"></div>
-<div class="disclaimer">Eğitim amaçlıdır, yatırım tavsiyesi değildir.<br>Takip listen telefonunda saklanır.</div>
-
+<div id="list"></div>
 <script>
-let ALL=[];
-let TAB='all';
-let FAV=JSON.parse(localStorage.getItem('bist_fav')||'[]');
-
-function setTab(t){
-  TAB=t;
-  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-  document.getElementById(t==='all'?'tab-all':t==='fav'?'tab-fav':'tab-strong').classList.add('active');
-  render();
-}
-function toggleFav(sym, ev){
-  ev.stopPropagation();
-  if(FAV.includes(sym)) FAV=FAV.filter(s=>s!==sym);
-  else FAV.push(sym);
-  localStorage.setItem('bist_fav', JSON.stringify(FAV));
-  document.getElementById('favCount').textContent=FAV.length;
-  render();
-}
+let ALL=[],TAB='all';
+let FAV=[];
+try{FAV=JSON.parse(localStorage.getItem('bist_fav')||'[]');}catch(e){FAV=[];}
+function setTab(t){TAB=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById(t==='all'?'tab-all':t==='fav'?'tab-fav':'tab-strong').classList.add('active');render();}
+function toggleFav(sym,ev){ev.stopPropagation();if(FAV.includes(sym))FAV=FAV.filter(s=>s!==sym);else FAV.push(sym);localStorage.setItem('bist_fav',JSON.stringify(FAV));render();}
 function render(){
   const q=(document.getElementById('search').value||'').toUpperCase().trim();
   let arr=[...ALL];
-  if(TAB==='fav') arr=arr.filter(h=>FAV.includes(h.sym||h.sembol||h.symbol));
-  if(TAB==='strong') arr=arr.filter(h=>(h.sinyal||'').toString().toUpperCase().includes('GÜÇLÜ AL'));
-  if(q) arr=arr.filter(h=>(h.sym||h.sembol||'').toString().toUpperCase().includes(q));
-  const el=document.getElementById('list');
+  if(TAB==='fav')arr=arr.filter(h=>FAV.includes(h.sym));
+  if(TAB==='strong')arr=arr.filter(h=>(h.sinyal||'').includes('GÜÇLÜ AL'));
+  if(q)arr=arr.filter(h=>(h.sym||'').includes(q));
   document.getElementById('favCount').textContent=FAV.length;
-  if(!arr.length){
-    el.innerHTML=`<div class="empty">${TAB==='fav' ? 'Henüz takip listen boş.<br>⭐ Yıldıza basarak hisse ekle.' : 'Hisse bulunamadı.'}</div>`;
-    return;
+  const el=document.getElementById('list');
+  if(!arr.length){el.innerHTML='<div style="text-align:center;color:#94a3b8;padding:30px">Hisse bulunamadı.<br>Takip listen boşsa önce yıldıza bas.</div>';return;}
+  el.innerHTML=arr.map(h=>{
+    const sym=h.sym||'?';const fiyat=h.fiyat||0;const sinyal=(h.sinyal||'TUT');let cls='TUT';if(sinyal.includes('AL'))cls='AL';if(sinyal.includes('SAT'))cls='SAT';
+    const isFav=FAV.includes(sym);
+    return `<div class="card" onclick="document.getElementById('ai-${sym}').classList.toggle('open')">
+    <div class="star" onclick="toggleFav('${sym}',event)">${isFav?'⭐':'☆'}</div>
+    <div class="row"><div><b>${sym}</b><br><small style="color:#94a3b8">RSI: ${h.rsi} | ${h.degisim} | ${h.hacim}</small></div><div style="padding-right:28px"><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal}</span></div></div>
+    <div class="ai" id="ai-${sym}"><b>🤖 ${sym} Analizi</b><div>Güç: ${h.skor}/100 | RSI: ${h.rsi} | Hacim: ${h.hacim}</div><div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${h.hedef}</b></div><div class="line"><span>🛑 Stop</span><b style="color:#f87171">${h.stop}</b></div><div class="line"><span>📉 Destek</span><b>${h.destek}</b></div><div class="line"><span>📈 Direnç</span><b>${h.direnc}</b></div></div></div>`;
+  }).join('');
+}
+async function load(){
+  const dbg=document.getElementById('debug');
+  try{
+    const url='https://gncr03.github.io/bist-radar/data.json?v='+Date.now();
+    dbg.textContent='Deniyorum: '+url;
+    const res=await fetch(url,{cache:'no-store'});
+    dbg.textContent='Cevap kodu: '+res.status+'\nURL: '+url;
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const j=await res.json();
+    const arr=j.hisseler||j;
+    dbg.textContent='✅ BAŞARILI! '+arr.length+' hisse geldi.\nSon güncelleme: '+(j.Güncellendi||'');
+    dbg.className='ok';
+    document.getElementById('debug').id='debug';
+    document.getElementById('time').textContent='Son: '+(j.Güncellendi||'');
+    ALL=arr; render();
+  }catch(e){
+    dbg.textContent='❌ HATA: '+e.message+'\n\nBu yazıyı bana at. İnternet / GitHub Pages sorunu bu.';
   }
-  el.innerHTML=arr.map((h,i)=>{
-    const sym=h.sym||h.sembol||h.symbol||h.code||'?';
-    const fiyat=parseFloat(h.fiyat??h.price??h.last??0)||0;
-    const sinyal=(h.sinyal||h.signal||'TUT').toString().toUpperCase();
-    let cls='TUT';
-    if(sinyal.includes('GÜÇLÜ AL')||sinyal==='AL') cls='AL';
-    else if(sinyal.includes('GÜÇLÜ SAT')||sinyal==='SAT') cls='SAT';
-    const rsi=h.rsi??'-';
-    const hacim=h.hacim||'-';
-    const skor=h.skor??50;
-    const destek=h.destek??(fiyat*0.98).toFixed(2);
-    const direnc=h.direnc??(fiyat*1.02).to
+}
+load();
+</script>
+</body>
+</html>
