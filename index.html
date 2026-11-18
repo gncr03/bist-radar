@@ -1,70 +1,44 @@
 <!DOCTYPE html>
 <html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BIST Radar</title>
+<title>BIST Radar AI</title>
 <style>
-body{font-family:sans-serif;background:#0f172a;color:#fff;padding:12px;margin:0}
-.wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px;white-space:nowrap}
-th,td{padding:8px 6px;border-bottom:1px solid #334155;text-align:left}
-th{color:#94a3b8}
-.top{background:#1e293b;padding:12px;border-radius:12px}
-button{background:#22c55e;border:0;padding:10px 16px;border-radius:10px;font-weight:700}
-.m{color:#94a3b8;font-size:13px}
-.al{color:#22c55e;font-weight:700}.sat{color:#ef4444;font-weight:700}.bekle{color:#facc15}
+*{box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:#0b1220;color:#fff;padding:12px;margin:0}
+.topbar{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:20px;font-weight:900}.logo span{color:#22c55e}
+.m{color:#94a3b8;font-size:12px}
+.hero{background:linear-gradient(135deg,#16a34a,#0ea5e9);padding:14px;border-radius:16px;margin-top:12px}
+.hero b{font-size:18px}.hero div{font-size:12px;opacity:.9}
+.search{width:100%;padding:12px;border-radius:12px;border:0;background:#1e293b;color:#fff;margin-top:12px;font-size:15px}
+.filters{display:flex;gap:6px;margin-top:10px;overflow-x:auto}
+.filters button{border:0;padding:8px 14px;border-radius:20px;background:#1e293b;color:#fff;white-space:nowrap}
+.filters button.on{background:#22c55e;color:#000;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.card{background:#1e293b;border-radius:14px;padding:10px;position:relative}
+.card b{font-size:15px}
+.price{font-size:16px;font-weight:800;margin-top:4px}
+.ch{font-size:12px}.up{color:#22c55e}.down{color:#ef4444}
+.badge{position:absolute;top:8px;right:8px;font-size:11px;font-weight:800;padding:4px 8px;border-radius:20px}
+.al{background:#22c55e;color:#000}.sat{background:#ef4444;color:#fff}.bekle{background:#facc15;color:#000}.yok{background:#334155;color:#94a3b8}
+.meta{font-size:11px;color:#94a3b8;margin-top:6px;display:flex;justify-content:space-between}
+.btn{width:100%;background:#22c55e;border:0;padding:12px;border-radius:12px;font-weight:800;margin-top:12px}
+.count{font-size:12px;color:#94a3b8;margin-top:8px}
+@media(min-width:600px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
 </style></head><body>
-<h1>📈 BIST RADAR - AI</h1>
-<div class="m">Her 15 dakikada Yahoo'dan veri çeker.</div>
-<div class="top" id="top">Yükleniyor...</div>
-<div style="margin-top:12px"><button onclick="load()">YENİLE - CANLI VERİ</button> <span id="status"></span></div>
-<div class="wrap"><table><thead><tr><th>Hisse</th><th>Fiyat</th><th>Değişim</th><th>RSI</th><th>Skor</th><th>Sinyal</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="topbar"><div class="logo">📈 BIST <span>RADAR</span></div><div class="m" id="time">--:--</div></div>
+<div class="hero" id="hero"><b>Yükleniyor...</b><div>Canlı veri bekleniyor</div></div>
+<input class="search" id="q" placeholder="🔍 Hisse ara... THYAO, ASELS, KCHOL" oninput="render()">
+<div class="filters">
+<button class="on" onclick="setF('ALL',this)">Tümü</button>
+<button onclick="setF('AL',this)">🟢 AL</button>
+<button onclick="setF('BEKLE',this)">🟡 BEKLE</button>
+<button onclick="setF('SAT',this)">🔴 SAT</button>
+<button onclick="setF('YOK',this)">⏳ Bekleyen</button>
+</div>
+<div class="count" id="count"></div>
+<div class="grid" id="grid"></div>
+<button class="btn" onclick="load()">🔄 YENİLE - CANLI VERİ</button>
+<div class="m" style="text-align:center;margin-top:8px">BIST 15 dk gecikmeli • Yahoo Finance</div>
 <script>
-function G(i){return document.getElementById(i)}
-function calcRSI(ch){
-  // Bot RSI vermediyse değişimden tahmin et
-  // -5% düşüş = aşırı satım ~25, +5% yükseliş = aşırı alım ~75
-  var r = 50 + (ch * 5);
-  if(r<15) r=15; if(r>85) r=85;
-  return Math.round(r);
-}
-async function load(){
-try{
-var r=await fetch("data.json?v="+Date.now());
-var j=await r.json();
-var list=j;
-if(!Array.isArray(j)){list=j.stocks||j.data||[]}
-var D=[];
-for(var i=0;i<list.length;i++){
-var x=list[i];
-var sym=x.sym||x.symbol||x.code||"";
-var price=x.price||x.last||0;
-var ch=x.ch; if(ch===undefined) ch=x.change; if(ch===undefined) ch=x.change_pct; if(ch===undefined) ch=0;
-ch = parseFloat(ch);
-var rsi=x.rsi; if(rsi===undefined||rsi===null||rsi===50) rsi=calcRSI(ch);
-rsi = Math.round(rsi);
-var time=x.time||x.updated||j.updated||j.time||"";
-// AI Skor: RSI + Değişim bazlı
-var s=50;
-if(rsi<30) s=92;
-else if(rsi<35) s=85;
-else if(rsi<40) s=72;
-else if(rsi<45) s=62;
-else if(rsi<55) s=50;
-else if(rsi<65) s=42;
-else s=30;
-if(ch<=-2) s+=6; if(ch<=-3.5) s+=8;
-if(ch>=2) s-=8;
-if(s>98) s=98; if(s<5) s=5;
-var sg = s>=70?"AL":s<=35?"SAT":"BEKLE";
-var cls = sg==="AL"?"al":sg==="SAT"?"sat":"bekle";
-D.push({n:sym,p:price,c:ch,r:rsi,s:s,sg:sg,cls:cls,t:time});
-}
-D.sort(function(a,b){return b.s-a.s});
-var h="";
-for(var k=0;k<D.length;k++){var z=D[k]; h+="<tr><td><b>"+z.n+"</b></td><td>"+z.p+"</td><td>"+z.c+"%</td><td>"+z.r+"</td><td><b>"+z.s+"</b></td><td class='"+z.cls+"'>"+z.sg+"</td></tr>"}
-G("rows").innerHTML=h;
-if(D.length>0){G("top").innerHTML="<b>EN IYI: "+D[0].n+" - AI "+D[0].s+" - "+D[0].sg+"</b><div class=m>Fiyat "+D[0].p+" - RSI "+D[0].r+" - Değişim "+D[0].c+"%</div>"; G("status").innerHTML="Canli veri - Son guncelleme: "+D[0].t}
-}catch(e){G("status").innerHTML="Henüz otomatik veri yok"}
-}
-load();
-</script></body></html>
+var ALL=["THYAO","ASELS","KCHOL","TUPRS","AKBNK","GARAN","ISCTR","YKBNK","BIMAS","EREGL","SAHOL","SISE","KOZAL","KOZAA","PGSUS","TCELL","TURSG","ENKAI","FROTO","TOASO","SASA","HEKTS","GUBRF","PETKM","EKGYO","HALKB","VAKBN","TSKB","ALARK","DOHOL","KONTR","ODAS","ASTOR","CWENE","SMRTG","MIATK","REEDR","CANTE","KRDMD","TTKOM","MGROS","MAVI","LOGO","ULKER","ARCLK","VESTL","VESBE","OTKAR","DOAS","TAVHL","AEFES","CCOLA","BRSAN","KMPUR","OYAKC","CIMSA","AKSA","ALGYO","EGEEN","TUPRS","IZENR","ZOREN","SNGYO","AGHOL","AYGAZ","CLEBI","SELEC","ECILC","TMSN
