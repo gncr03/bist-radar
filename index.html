@@ -1,1 +1,37 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;background:#070b14;color:#fff;font-family:Arial;padding:14px}.top{background:#0f2a4a;border-radius:16px;padding:14px}.btn{background:#00b894;color:#fff;border:0;padding:14px;border-radius:12px;width:100%;font-weight:800}.box{background:#101c2e;border:1px solid #263b58;border-radius:14px;padding:12px;margin-top:12px}.m{color:#8fa3bd;font-size:12px}table{width:100%;font-size:13px}td,th{padding:8px 4px;border-bottom:1px solid #1f324d;text-align:right}th:first-child,td:first-child{text-align:left}</style></head><body><div class="top"><h1>BIST RADAR AI PRO</h1><div class="m">Otomatik 15 DK Gecikmeli - V308</div></div><div id="status" style="color:#ffc857;margin:12px 2px">Veri cekiliyor...</div><button class="btn" onclick="load()">YENILE - CANLI VERI</button><div class="box" id="top"></div><div class="box"><table><tr><th>Hisse</th><th>Fiyat</th><th>Deg</th><th>RSI</th><th>AI</th><th>Sinyal</th></tr><tbody id="rows"></tbody></table></div><div class="box m">Bu sistem GitHub Actions ile her 15 dakikada Yahoo'dan veri çeker. 15 dk gecikmeli BIST verisidir.</div><script>function G(i){return document.getElementById(i)}function rsi(p){if(p.length<15)return 50;var g=0,l=0;for(var i=1;i<15;i++){var d=p[i]-p[i-1];if(d>0)g+=d;else l-=d}var a=g/14,b=l/14;for(var i=15;i<p.length;i++){var d=p[i]-p[i-1];if(d>0){a=(a*13+d)/14;b=b*13/14}else{a=a*13/14;b=(b*13-d)/14}}if(b==0)return 85;var rs=a/b;return Math.round(100-100/(1+rs))}async function load(){try{var r=await fetch("data.json?v="+Date.now());var j=await r.json();var D=[];for(var i=0;i<j.length;i++){var x=j[i];var s=50;if(x.rsi<35)s=90;else if(x.rsi<45)s=70;else if(x.rsi<50)s=55;else if(x.rsi>=65)s=35;if(x.ch<=-2)s+=8;if(s>98)s=98;D.push({n:x.sym,p:x.price,c:x.ch,r:x.rsi,s:s,sg:s>=70?"AL":s<=32?"SAT":"BEKLE"})}D.sort(function(a,b){return b.s-a.s});var h="";for(var k=0;k<D.length;k++){var z=D[k];h+="<tr><td><b>"+z.n+"</b></td><td>"+z.p+"</td><td>"+z.c+"%</td><td>"+z.r+"</td><td><b>"+z.s+"</b></td><td>"+z.sg+"</td></tr>"}G("rows").innerHTML=h;G("top").innerHTML="<b>EN IYI: "+D[0].n+" - AI "+D[0].s+" - "+D[0].sg+"</b><div class=m>Fiyat "+D[0].p+" - RSI "+D[0].r+"</div>";G("status").innerHTML="Canli veri - Son guncelleme: "+j[0].time}catch(e){G("status").innerHTML="Henuz otomatik veri yok - 2. dosyayi ekle, 15 dk bekle"}}</script></body></html>
+<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIST Radar</title>
+<style>body{font-family:sans-serif;background:#0f172a;color:#fff;padding:16px}h1{font-size:22px}.m{color:#94a3b8;font-size:13px}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{padding:10px;border-bottom:1px solid #334155;text-align:left}th{color:#94a3b8}.top{background:#1e293b;padding:12px;border-radius:12px}button{background:#22c55e;border:0;padding:10px 16px;border-radius:10px;font-weight:700}</style>
+</head><body>
+<h1>📈 BIST RADAR - AI</h1>
+<div class="m">Her 15 dakikada Yahoo'dan veri çeker. 15 dk gecikmeli BIST verisidir.</div>
+<div class="top" id="top">Yükleniyor...</div>
+<div style="margin-top:12px"><button onclick="load()">YENİLE - CANLI VERİ</button> <span id="status"></span></div>
+<table><thead><tr><th>Hisse</th><th>Fiyat</th><th>Değişim</th><th>RSI</th><th>Skor</th><th>Sinyal</th></tr></thead><tbody id="rows"></tbody></table>
+<script>
+function G(i){return document.getElementById(i)}
+async function load(){
+try{
+var r=await fetch("data.json?v="+Date.now());
+var j=await r.json();
+// Her formatı listeye çevir
+var list=j;
+if(!Array.isArray(j)){ list=j.stocks||j.data||j.symbols||[]; if(list.length===0 && j.updated){ list=Object.keys(j).filter(k=>k!=="updated"&&k!=="time").map(k=>{var v=j[k]; return {sym:k,price:v.price||v.last||v, ch:v.ch||v.change||0, rsi:v.rsi||50, time:v.time||j.updated}}) } }
+var D=[];
+for(var i=0;i<list.length;i++){var x=list[i];
+var sym=x.sym||x.symbol||x.code||x.name||"";
+var price=x.price||x.last||x.close||0;
+var ch=x.ch;
+if(ch===undefined) ch=x.change||x.changePct||x.pct||0;
+var rsi=x.rsi; if(rsi===undefined) rsi=50;
+var time=x.time||x.updated||j.updated||j.time||"";
+var s=50; if(rsi<35)s=90; else if(rsi<45)s=70; else if(rsi<50)s=55; else if(rsi>=65)s=35;
+if(ch<=-2)s+=8; if(s>98)s=98;
+D.push({n:sym,p:price,c:ch,r:rsi,s:s,sg:s>=70?"AL":s<=32?"SAT":"BEKLE",t:time});
+}
+D.sort(function(a,b){return b.s-a.s});
+var h=""; for(var k=0;k<D.length;k++){var z=D[k]; h+="<tr><td><b>"+z.n+"</b></td><td>"+z.p+"</td><td>"+z.c+"%</td><td>"+z.r+"</td><td><b>"+z.s+"</b></td><td>"+z.sg+"</td></tr>"}
+G("rows").innerHTML=h;
+if(D.length>0){G("top").innerHTML="<b>EN IYI: "+D[0].n+" - AI "+D[0].s+" - "+D[0].sg+"</b><div class=m>Fiyat "+D[0].p+" - RSI "+D[0].r+"</div>"; G("status").innerHTML="Canli veri - Son guncelleme: "+D[0].t}
+}catch(e){G("status").innerHTML="Henüz otomatik veri yok - 2. dosyayi ekle, 15 dk bekle"}}
+load();
+</script></body></html>
