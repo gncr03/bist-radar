@@ -1,7 +1,7 @@
-name: BIST Update
+name: BIST 100 Bot
 on:
   schedule:
-    - cron: '*/15 7-16 * * 1-5'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -14,38 +14,10 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install yfinance pandas
+      - run: python bot.py
       - run: |
-          cat > fetch.py << 'PYEOF'
-          import yfinance as yf, json, datetime
-          syms = ['THYAO.IS','ASELS.IS','KCHOL.IS','AKBNK.IS','EREGL.IS','SISE.IS','TUPRS.IS','BIMAS.IS']
-          out = []
-          for s in syms:
-              try:
-                  df = yf.download(s, period='3mo', interval='1d', progress=False, auto_adjust=False)
-                  if df is None or len(df) == 0:
-                      print(s, 'bos')
-                      continue
-                  close = df['Close']
-                  if hasattr(close, 'columns'):
-                      close = close.iloc[:,0]
-                  cl = [float(x) for x in close.tolist()]
-                  if len(cl) < 2:
-                      continue
-                  price = cl[-1]
-                  prev = cl[-2]
-                  chg = (price - prev) / prev * 100
-                  out.append({'symbol': s.replace('.IS',''), 'price': round(price,2), 'change': round(chg,2), 'prev': round(prev,2)})
-                  print(s, 'OK', price)
-              except Exception as e:
-                  print(s, 'HATA', e)
-          data = {'updated': datetime.datetime.now().isoformat(), 'stocks': out}
-          open('data.json','w').write(json.dumps(data, ensure_ascii=False, indent=2))
-          print('yazildi:', len(out))
-          PYEOF
-      - run: python fetch.py
-      - run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config user.name "bot"
+          git config user.email "bot@bot.com"
           git add data.json
-          git commit -m "update data" || echo "degisiklik yok"
+          git commit -m "update" || echo "no change"
           git push
