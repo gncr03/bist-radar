@@ -18,10 +18,16 @@ body{background:#0f172a;color:#fff;padding:16px}
 .badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block}
 .AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}
 .star{position:absolute;top:8px;right:10px;font-size:22px}
-.ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
+.ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.7}
 .ai.open{display:block}
 .ai .line{display:flex;justify-content:space-between;margin:4px 0}
+.ai .box{background:#1e293b;border-radius:10px;padding:10px;margin:8px 0}
+.ai .box b{color:#facc15}
+.ai .karar{padding:10px;border-radius:10px;margin-top:8px;font-weight:700;line-height:1.5}
+.karar.al{background:#14532d}.karar.sat{background:#7f1d1d}.karar.tut{background:#713f12}
 .hint{text-align:center;color:#94a3b8;font-size:12px;margin:12px 0}
+.bar{height:8px;background:#334155;border-radius:99px;overflow:hidden;margin:6px 0}
+.bar div{height:100%;background:#4ade80}
 </style>
 </head>
 <body>
@@ -32,7 +38,7 @@ body{background:#0f172a;color:#fff;padding:16px}
 <button class="tab" id="tab-fav" onclick="setTab('fav')">⭐ Takip (<span id="favCount">0</span>)</button>
 <button class="tab" id="tab-strong" onclick="setTab('strong')">🔥 GÜÇLÜ AL</button>
 </div>
-<div class="hint">⭐ Yıldıza bas = Takibe al &nbsp;|&nbsp; 👆 Karta dokun = Analiz</div>
+<div class="hint">⭐ Yıldıza bas = Takibe al &nbsp;|&nbsp; 👆 Karta dokun = Detaylı Yorum</div>
 <div id="list">Yükleniyor...</div>
 <script>
 let ALL=[],TAB='all';
@@ -40,6 +46,48 @@ let FAV=[];
 try{FAV=JSON.parse(localStorage.getItem('bist_fav')||'[]');}catch(e){FAV=[];}
 function setTab(t){TAB=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById(t==='all'?'tab-all':t==='fav'?'tab-fav':'tab-strong').classList.add('active');render();}
 function toggleFav(sym,ev){ev.stopPropagation();if(FAV.includes(sym))FAV=FAV.filter(s=>s!==sym);else FAV.push(sym);localStorage.setItem('bist_fav',JSON.stringify(FAV));render();}
+
+function yorumUret(h){
+  const sym=h.sym, fiyat=h.fiyat, rsi=parseFloat(h.rsi)||50, degisim=String(h.degisim||'0'), hacim=h.hacim||'Normal', skor=h.skor||50, sinyal=(h.sinyal||'TUT');
+  const degNum=parseFloat(degisim.replace('%','').replace(',','.'))||0;
+  let rsiYorum='';
+  if(rsi<30) rsiYorum=`RSI ${rsi} ile <b>çok satılmış</b> bölgede. Yani herkes satmış, fiyat şişmiş değil, düşmüş. Genelde buradan tepki yükselişi gelir, ama tek başına al demek değil.`;
+  else if(rsi<40) rsiYorum=`RSI ${rsi} - <b>zayıf bölgeye yakın.</b> Alıcılar isteksiz, satıcılar biraz önde. Acele etme, dönüş işareti bekle.`;
+  else if(rsi<=60) rsiYorum=`RSI ${rsi} - <b>tam dengede.</b> Ne çok alınmış, ne çok satılmış. Hisse yön arıyor.`;
+  else if(rsi<=70) rsiYorum=`RSI ${rsi} - <b>güçlü bölge.</b> Alıcılar kontrolde, momentum yukarı. Ama fiyat biraz ısınmış, kademeli düşün.`;
+  else rsiYorum=`RSI ${rsi} ile <b>çok alınmış / şişmiş</b> bölgede. Herkes almış, fiyat hızlı yükselmiş. Buradan almak riskli, düzeltme gelebilir.`;
+
+  let hacimYorum='';
+  if(hacim.includes('Yüksek')) hacimYorum=`Hacim <b>yüksek 🔥</b> - Bugün herkes bu hisseyle ilgilenmiş. Hareket gerçek, boş değil.`;
+  else if(hacim.includes('Düşük')) hacimYorum=`Hacim <b>düşük</b> - Bugün ilgi az. Fiyat hareketi zayıf kalabilir, hacim artmadan güvenme.`;
+  else hacimYorum=`Hacim <b>normal</b> - Ortalama bir ilgi var, ne coşku ne kaçış.`;
+
+  let degYorum='';
+  if(degNum>2) degYorum=`Bugün <b>%${degNum} yükselmiş</b>, güçlü bir gün geçirmiş.`;
+  else if(degNum>0) degYorum=`Bugün <b>%${degNum} hafif artıda</b>, pozitif ama coşku yok.`;
+  else if(degNum>-2) degYorum=`Bugün <b>%${degNum} hafif ekside</b>, küçük bir geri çekilme var.`;
+  else degYorum=`Bugün <b>%${degNum} düşmüş</b>, satıcılar bugün baskın.`;
+
+  let karar='', kararCls='tut', kararBaslik='';
+  if(sinyal.includes('GÜÇLÜ AL')){
+    kararCls='al'; kararBaslik='✅ ALINABİLİR - Güçlü Görünüm';
+    karar=`${sym} şu an radarın en güçlülerinden. RSI, hacim ve momentum aynı anda pozitif. <b>Ne yapmalı?</b> Kademeli alım düşünülebilir. Tek seferde tüm parayla girme, ${h.destek} altına stop koy. Hedefin ${h.hedef} olsun.`;
+  } else if(sinyal.includes('AL')){
+    kararCls='al'; kararBaslik='🟢 AL Düşünülebilir';
+    karar=`${sym} pozitif tarafta. <b>Ne yapmalı?</b> ${h.direnc} direnci kırılırsa alım güçlenir. Kırılmadan alırsan küçük gir, kırılırsa ekle. Stopun: ${h.stop}`;
+  } else if(sinyal.includes('GÜÇLÜ SAT')){
+    kararCls='sat'; kararBaslik='⛔ ŞİMDİ ALMA - Bekle';
+    karar=`${sym} şu an zayıf. <b>Ne yapmalı?</b> Elinde varsa ${h.destek} desteğini izle, kırılırsa satışı düşün. Elinde yoksa düşen bıçağı tutma, dibi görmeden alma. ${h.destek} üstünde tutunursa tekrar bak.`;
+  } else if(sinyal.includes('SAT')){
+    kararCls='sat'; kararBaslik='🔴 ZAYIF - Acele Etme';
+    karar=`${sym} satıcı baskısında. <b>Ne yapmalı?</b> Yeni alım için erken. ${h.destek} desteğinde tutunursa ve hacim artarsa o zaman düşün. Şimdilik izle.`;
+  } else {
+    kararCls='tut'; kararBaslik='🟡 TUT / İZLE - Kararsız';
+    karar=`${sym} yön arıyor. <b>Ne yapmalı?</b> Elinde varsa ${h.destek} altına inmedikçe tut. Yeni alacaksan ${h.direnc} üstünde kapanış bekle. ${h.direnc} kırılırsa AL, ${h.destek} kırılırsa SAT tarafına döner.`;
+  }
+  return {rsiYorum,hacimYorum,degYorum,karar,kararCls,kararBaslik};
+}
+
 function render(){
   const q=(document.getElementById('search').value||'').toUpperCase().trim();
   let arr=[...ALL];
@@ -52,10 +100,22 @@ function render(){
   el.innerHTML=arr.map(h=>{
     const sym=h.sym||'?';const fiyat=h.fiyat||0;const sinyal=(h.sinyal||'TUT');let cls='TUT';if(sinyal.includes('AL'))cls='AL';if(sinyal.includes('SAT'))cls='SAT';
     const isFav=FAV.includes(sym);
+    const y=yorumUret(h);
     return `<div class="card" onclick="document.getElementById('ai-${sym}').classList.toggle('open')">
     <div class="star" onclick="toggleFav('${sym}',event)">${isFav?'⭐':'☆'}</div>
     <div class="row"><div><b>${sym}</b><br><small style="color:#94a3b8">RSI: ${h.rsi} | ${h.degisim} | ${h.hacim}</small></div><div style="padding-right:28px"><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal}</span></div></div>
-    <div class="ai" id="ai-${sym}"><b>🤖 ${sym} Analizi</b><div>Güç: ${h.skor}/100 | RSI: ${h.rsi} | Hacim: ${h.hacim}</div><div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${h.hedef}</b></div><div class="line"><span>🛑 Stop</span><b style="color:#f87171">${h.stop}</b></div><div class="line"><span>📉 Destek</span><b>${h.destek}</b></div><div class="line"><span>📈 Direnç</span><b>${h.direnc}</b></div></div></div>`;
+    <div class="ai" id="ai-${sym}">
+      <b>🤖 ${sym} - Detaylı Yorum</b>
+      <div class="box">📊 <b>RSI Yorumu:</b><br>${y.rsiYorum}</div>
+      <div class="box">📦 <b>Hacim Yorumu:</b><br>${y.hacimYorum}</div>
+      <div class="box">📈 <b>Bugün Ne Oldu?</b><br>${y.degYorum} Güç skoru <b>${h.skor}/100</b>.<div class="bar"><div style="width:${h.skor}%"></div></div></div>
+      <div class="karar ${y.kararCls}">${y.kararBaslik}<br><span style="font-weight:400">${y.karar}</span></div>
+      <div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${h.hedef}</b></div>
+      <div class="line"><span>🛑 Stop</span><b style="color:#f87171">${h.stop}</b></div>
+      <div class="line"><span>📉 Destek - Kırılırsa düşer</span><b>${h.destek}</b></div>
+      <div class="line"><span>📈 Direnç - Kırılırsa yükselir</span><b>${h.direnc}</b></div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:8px">Eğitim amaçlıdır, yatırım tavsiyesi değildir. Kendi araştırmanı da yap.</div>
+    </div></div>`;
   }).join('');
 }
 async function load(){
