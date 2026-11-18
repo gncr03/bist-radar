@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BIST PRO - Profesyonel Terminal</title>
+<title>BIST PRO - Analiz Terminali</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
 body{background:#0b0e11;color:#eaecef;padding:12px;padding-bottom:90px}
 .top{display:flex;justify-content:space-between;align-items:center;padding:10px 4px}
-.logo{font-size:22px;font-weight:900} .logo span{color:#f0b90b}
+.logo{font-size:22px;font-weight:900}.logo span{color:#f0b90b}
 .badge{background:#1e2329;padding:6px 10px;border-radius:20px;font-size:12px;color:#848e9c}
 .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
 .card{background:#1e2329;border-radius:14px;padding:14px;border:1px solid #2b3139}
-.card small{color:#848e9c;font-size:11px} .card b{font-size:19px;display:block;margin-top:4px}
-.card .green{color:#0ecb81} .card .red{color:#f6465d} .card .gold{color:#f0b90b}
+.card small{color:#848e9c;font-size:11px}.card b{font-size:19px;display:block;margin-top:4px}
+.green{color:#0ecb81}.red{color:#f6465d}.gold{color:#f0b90b}
 .tabs{display:flex;gap:8px;margin:14px 0;overflow-x:auto}
 .tab{background:#1e2329;border:1px solid #2b3139;color:#eaecef;padding:9px 16px;border-radius:20px;white-space:nowrap;cursor:pointer;font-weight:700}
 .tab.active{background:#f0b90b;color:#000;border-color:#f0b90b}
 .search{width:100%;background:#1e2329;border:1px solid #2b3139;color:#fff;padding:13px;border-radius:12px;font-size:15px;outline:none;margin-bottom:12px}
-.stock{background:#1e2329;border:1px solid #2b3139;border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer}
+.stock{background:#1e2329;border:1px solid #2b3139;border-radius:14px;padding:13px;margin-bottom:10px}
 .row{display:flex;justify-content:space-between;align-items:center}
-.sym{font-weight:900;font-size:17px} .sym small{color:#848e9c;font-weight:400;font-size:12px}
-.price{font-weight:900;font-size:17px;text-align:right} .up{color:#0ecb81} .down{color:#f6465d}
+.sym{font-weight:900;font-size:17px}.sym small{color:#848e9c;font-weight:400;font-size:12px}
+.price{font-weight:900;font-size:17px;text-align:right}.up{color:#0ecb81}.down{color:#f6465d}
 .meta{font-size:12px;color:#848e9c;margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
 .pill{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#2b3139}
 .btns{display:flex;gap:8px;margin-top:10px}
 .btn{flex:1;padding:11px;border:none;border-radius:10px;font-weight:900;font-size:14px;cursor:pointer}
-.buy{background:#0ecb81;color:#fff} .sell{background:#f6465d;color:#fff} .star{background:#2b3139;color:#f0b90b}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:flex-end;z-index:99}
-.modal.open{display:flex} .box{background:#1e2329;width:100%;border-radius:20px 20px 0 0;padding:20px}
+.buy{background:#0ecb81;color:#fff}.sell{background:#f6465d;color:#fff}.star{background:#2b3139;color:#f0b90b}.detail{background:#f0b90b;color:#000}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:flex-end;z-index:99}
+.modal.open{display:flex}.box{background:#1e2329;width:100%;border-radius:20px 20px 0 0;padding:20px;max-height:88vh;overflow-y:auto}
 .box input{width:100%;padding:14px;background:#0b0e11;border:1px solid #2b3139;color:#fff;border-radius:12px;font-size:18px;margin:12px 0;outline:none}
-.box h3{font-size:20px} .box p{color:#848e9c;font-size:13px;margin-top:6px}
+.ana{background:#0b0e11;border:1px solid #2b3139;border-radius:12px;padding:13px;margin:10px 0;font-size:13px;line-height:1.7;color:#b7bdc6}
+.ana b{color:#fff}.kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.kv div{background:#0b0e11;border:1px solid #2b3139;border-radius:10px;padding:10px}.kv small{color:#848e9c;font-size:11px}.kv b{display:block;margin-top:3px;font-size:15px}
+.midas{background:#00c853;color:#fff}
 .hold{background:#1e2329;border:1px solid #f0b90b;border-radius:14px;padding:13px;margin-bottom:10px}
+.warn{background:#2b1a00;border:1px solid #f0b90b;border-radius:10px;padding:10px;font-size:12px;color:#f0b90b;margin-top:10px}
 </style></head>
 <body>
 <div class="top"><div class="logo">BIST <span>PRO</span></div><div class="badge" id="updated">Bağlanıyor...</div></div>
@@ -46,60 +49,14 @@ body{background:#0b0e11;color:#eaecef;padding:12px;padding-bottom:90px}
 </div>
 <input class="search" id="q" placeholder="🔍 Hisse ara... THYAO, ASELS..." oninput="render()">
 <div id="list"></div>
+
 <div class="modal" id="modal"><div class="box">
-<h3 id="mTitle">THYAO</h3><p id="mInfo"></p>
+<h3 id="mTitle">THYAO</h3><p id="mInfo" style="color:#848e9c;font-size:13px;margin-top:6px"></p>
 <input type="number" id="qty" value="10" min="1"><p id="mTotal"></p>
 <div style="display:flex;gap:10px"><button class="btn buy" onclick="doTrade('buy')">🟢 AL</button><button class="btn sell" onclick="doTrade('sell')">🔴 SAT</button><button class="btn" style="background:#2b3139;color:#fff" onclick="closeModal()">Kapat</button></div>
 </div></div>
-<script>
-let DATA=[],tab='all',sel=null;
-let cash=parseFloat(localStorage.getItem('pro_cash')||100000);
-let holds=JSON.parse(localStorage.getItem('pro_holds')||'{}');
-let favs=JSON.parse(localStorage.getItem('pro_favs')||'[]');
-function save(){localStorage.setItem('pro_cash',cash);localStorage.setItem('pro_holds',JSON.stringify(holds));localStorage.setItem('pro_favs',JSON.stringify(favs))}
-function setTab(t,el){tab=t;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');render()}
-async function load(){try{let r=await fetch('data.json?t='+Date.now());let j=await r.json();DATA=j.stocks||[];document.getElementById('updated').innerText='Son: '+j.updated}catch(e){}render()}
-function render(){
- let q=(document.getElementById('q').value||'').toUpperCase();
- let list=[...DATA];
- if(tab=='fav') list=list.filter(s=>favs.includes(s.sym));
- if(tab=='gain') list=list.sort((a,b)=>b.ch-a.ch).slice(0,15);
- if(tab=='lose') list=list.sort((a,b)=>a.ch-b.ch).slice(0,15);
- if(q) list=list.filter(s=>s.sym.includes(q));
- let html='';
- if(tab=='port'){
-   let total=cash, pnl=0;
-   for(let sym in holds){let s=DATA.find(x=>x.sym==sym);if(!s)continue;let cur=s.price*holds[sym].qty;let cost=holds[sym].avg*holds[sym].qty;total+=cur;pnl+=cur-cost;
-   html+=`<div class="hold"><div class="row"><b>${sym} - ${holds[sym].qty} adet</b><b>${cur.toLocaleString('tr-TR')} ₺</b></div><div class="meta"><span>Ort: ${holds[sym].avg} ₺</span><span>Şimdi: ${s.price} ₺</span><span class="${cur-cost>=0?'up':'down'}">${(cur-cost).toFixed(0)} ₺ (${((s.price/holds[sym].avg-1)*100).toFixed(2)}%)</span></div><div class="btns"><button class="btn buy" onclick="openModal('${sym}')">AL / SAT</button></div></div>`}
-   document.getElementById('total').innerText=total.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
-   document.getElementById('cash').innerText=cash.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
-   document.getElementById('pnl').innerText=(pnl>=0?'+':'')+pnl.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
-   document.getElementById('pnl').className=pnl>=0?'green':'red';
-   if(!html) html='<p style="text-align:center;color:#848e9c;padding:30px">Henüz hissen yok. Tümü sekmesinden AL yap.</p>';
-   document.getElementById('list').innerHTML=html; return;
- }
- // total for other tabs
- let total=cash; DATA.forEach(s=>{if(holds[s.sym]) total+=s.price*holds[s.sym].qty});
- document.getElementById('total').innerText=total.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
- document.getElementById('cash').innerText=cash.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
- list.forEach(s=>{
-   let isFav=favs.includes(s.sym)?'⭐':'☆';
-   let has=holds[s.sym]?` • 📦 ${holds[s.sym].qty} adet`:'';
-   html+=`<div class="stock"><div class="row"><div class="sym">${s.sym} <small>${s.signal||''}${has}</small></div><div class="price">${s.price} ₺<br><span class="${s.ch>=0?'up':'down'}" style="font-size:13px">${s.ch>=0?'+':''}%${s.ch}</span></div></div>
-   <div class="meta"><span>RSI ${s.rsi}</span><span>Skor ${s.score}</span><span>Destek ${s.support}</span><span>Direnç ${s.resist}</span></div>
-   <div style="color:#b7bdc6;font-size:13px;margin-top:6px">${s.comment||''}</div>
-   <div class="btns"><button class="btn buy" onclick="openModal('${s.sym}')">🟢 AL</button><button class="btn sell" onclick="openModal('${s.sym}')">🔴 SAT</button><button class="btn star" onclick="toggleFav('${s.sym}',event)">${isFav}</button></div></div>`
- });
- document.getElementById('list').innerHTML=html||'<p style="text-align:center;color:#848e9c;padding:30px">Bulunamadı</p>';
-}
-function toggleFav(sym,e){e.stopPropagation();if(favs.includes(sym)) favs=favs.filter(x=>x!=sym);else favs.push(sym);save();render()}
-function openModal(sym){sel=DATA.find(x=>x.sym==sym);if(!sel)return;document.getElementById('mTitle').innerText=sel.sym+' - '+sel.price+' ₺';document.getElementById('mInfo').innerText=sel.signal+' • RSI '+sel.rsi+' • Nakit: '+cash.toLocaleString('tr-TR')+' ₺ • Elinde: '+(holds[sel.sym]?.qty||0)+' adet';document.getElementById('qty').value=10;updTotal();document.getElementById('modal').classList.add('open')}
-function updTotal(){let q=parseInt(document.getElementById('qty').value||0);document.getElementById('mTotal').innerText='Toplam: '+(q*(sel?.price||0)).toLocaleString('tr-TR')+' ₺'}
-document.getElementById('qty').addEventListener('input',updTotal);
-function closeModal(){document.getElementById('modal').classList.remove('open')}
-function doTrade(type){let q=parseInt(document.getElementById('qty').value||0);if(!q||q<=0)return alert('Adet gir');let cost=q*sel.price;
- if(type=='buy'){if(cost>cash)return alert('Nakit yetersiz!');cash-=cost;if(!holds[sel.sym])holds[sel.sym]={qty:0,avg:sel.price};let old=holds[sel.sym];let newAvg=(old.avg*old.qty+cost)/(old.qty+q);holds[sel.sym]={qty:old.qty+q,avg:newAvg};alert('✅ '+q+' adet '+sel.sym+' ALINDI')}
- else{if(!holds[sel.sym]||holds[sel.sym].qty<q)return alert('Elinde o kadar yok!');cash+=cost;holds[sel.sym].qty-=q;if(holds[sel.sym].qty==0)delete holds[sel.sym];alert('✅ '+q+' adet '+sel.sym+' SATILDI')}
- save();closeModal();render()}
-load();setInterval(load,60000);
-</script></body></html>
+
+<div class="modal" id="detailModal"><div class="box">
+<h3 id="dTitle">Detay</h3><p id="dSignal" style="font-weight:900;margin-top:6px"></p>
+<div class="kv">
+<div><small>ŞU ANKİ FİYAT</small><b id="d
