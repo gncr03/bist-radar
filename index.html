@@ -40,13 +40,19 @@ async function load(){
     else if(Array.isArray(j.data)) arr = j.data;
     else if(Array.isArray(j.results)) arr = j.results;
     else if(typeof j === 'object'){
-      // { "YKBNK": {...} } gibi obje ise
       const keys = Object.keys(j).filter(k=>!['Güncellendi','guncellendi','updated','time','tarih'].includes(k));
       if(keys.length && typeof j[keys[0]]==='object') arr = keys.map(k=>({...j[k], sym:k}));
     }
 
-    const time = j.Güncellendi || j.guncellendi || j.updated || j.time || j.tarih || new Date().toLocaleTimeString('tr-TR');
-    document.getElementById('time').textContent = 'Son: ' + time;
+    // SAAT DÜZELTMESİ: Bot UTC yazıyor, Türkiye'ye +3 ekle
+    let rawTime = j.Güncellendi || j.guncellendi || j.updated || j.time || j.tarih || new Date().toLocaleTimeString('tr-TR');
+    let trTime = rawTime;
+    if(/^\d{1,2}:\d{2}/.test(rawTime)){
+      let parts = rawTime.split(':');
+      let h = (parseInt(parts[0]) + 3) % 24;
+      trTime = String(h).padStart(2,'0') + ':' + parts[1];
+    }
+    document.getElementById('time').textContent = 'Son: ' + trTime;
 
     if(!arr.length){ document.getElementById('status').textContent='Veri boş görünüyor. data.json boş.'; return; }
     document.getElementById('status').style.display='none';
