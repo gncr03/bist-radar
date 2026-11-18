@@ -8,8 +8,6 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
 body{background:#0f172a;color:#fff;padding:16px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-#debug{background:#7f1d1d;padding:10px;border-radius:10px;font-size:12px;margin-bottom:12px;white-space:pre-wrap;word-break:break-all}
-#debug.ok{background:#14532d}
 #search{width:100%;padding:12px;border-radius:12px;border:1px solid #334155;background:#1e293b;color:#fff;font-size:15px;margin-bottom:12px}
 .tabs{display:flex;gap:8px;margin-bottom:12px}
 .tab{flex:1;padding:10px;border-radius:99px;border:1px solid #334155;background:#1e293b;color:#cbd5e1;font-size:13px;font-weight:700}
@@ -23,18 +21,19 @@ body{background:#0f172a;color:#fff;padding:16px}
 .ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
 .ai.open{display:block}
 .ai .line{display:flex;justify-content:space-between;margin:4px 0}
+.hint{text-align:center;color:#94a3b8;font-size:12px;margin:12px 0}
 </style>
 </head>
 <body>
 <div class="top"><h1>📈 BIST Radar</h1><span id="time">...</span></div>
-<div id="debug">Test başlıyor...</div>
 <input id="search" placeholder="🔍 Hisse ara..." oninput="render()">
 <div class="tabs">
 <button class="tab active" id="tab-all" onclick="setTab('all')">Tümü</button>
 <button class="tab" id="tab-fav" onclick="setTab('fav')">⭐ Takip (<span id="favCount">0</span>)</button>
 <button class="tab" id="tab-strong" onclick="setTab('strong')">🔥 GÜÇLÜ AL</button>
 </div>
-<div id="list"></div>
+<div class="hint">⭐ Yıldıza bas = Takibe al &nbsp;|&nbsp; 👆 Karta dokun = Analiz</div>
+<div id="list">Yükleniyor...</div>
 <script>
 let ALL=[],TAB='all';
 let FAV=[];
@@ -49,7 +48,7 @@ function render(){
   if(q)arr=arr.filter(h=>(h.sym||'').includes(q));
   document.getElementById('favCount').textContent=FAV.length;
   const el=document.getElementById('list');
-  if(!arr.length){el.innerHTML='<div style="text-align:center;color:#94a3b8;padding:30px">Hisse bulunamadı.<br>Takip listen boşsa önce yıldıza bas.</div>';return;}
+  if(!arr.length){el.innerHTML='<div style="text-align:center;color:#94a3b8;padding:30px">Hisse bulunamadı.</div>';return;}
   el.innerHTML=arr.map(h=>{
     const sym=h.sym||'?';const fiyat=h.fiyat||0;const sinyal=(h.sinyal||'TUT');let cls='TUT';if(sinyal.includes('AL'))cls='AL';if(sinyal.includes('SAT'))cls='SAT';
     const isFav=FAV.includes(sym);
@@ -60,23 +59,13 @@ function render(){
   }).join('');
 }
 async function load(){
-  const dbg=document.getElementById('debug');
   try{
-    const url='https://gncr03.github.io/bist-radar/data.json?v='+Date.now();
-    dbg.textContent='Deniyorum: '+url;
-    const res=await fetch(url,{cache:'no-store'});
-    dbg.textContent='Cevap kodu: '+res.status+'\nURL: '+url;
-    if(!res.ok) throw new Error('HTTP '+res.status);
+    const res=await fetch('https://gncr03.github.io/bist-radar/data.json?v='+Date.now(),{cache:'no-store'});
     const j=await res.json();
     const arr=j.hisseler||j;
-    dbg.textContent='✅ BAŞARILI! '+arr.length+' hisse geldi.\nSon güncelleme: '+(j.Güncellendi||'');
-    dbg.className='ok';
-    document.getElementById('debug').id='debug';
     document.getElementById('time').textContent='Son: '+(j.Güncellendi||'');
     ALL=arr; render();
-  }catch(e){
-    dbg.textContent='❌ HATA: '+e.message+'\n\nBu yazıyı bana at. İnternet / GitHub Pages sorunu bu.';
-  }
+  }catch(e){document.getElementById('list').textContent='Hata: '+e.message;}
 }
 load();
 </script>
