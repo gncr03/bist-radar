@@ -1,41 +1,105 @@
 <!DOCTYPE html>
-<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>BIST 100 Canlı</title>
-<style>body{font-family:Arial;background:#0f172a;color:#fff;margin:0;padding:12px}.top{position:sticky;top:0;background:#0f172a;padding:10px 0;z-index:10}h1{margin:0;font-size:22px}.sub{color:#94a3b8;font-size:13px;margin:6px 0}.btn{width:100%;padding:13px;background:#22c55e;color:#fff;border:none;border-radius:12px;font-size:17px;font-weight:bold}input{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;font-size:16px;box-sizing:border-box}table{width:100%;border-collapse:collapse;margin-top:10px;background:#1e293b;border-radius:12px;overflow:hidden}th,td{padding:10px 6px;text-align:left;font-size:13px;white-space:nowrap}th{background:#334155}tr{border-bottom:1px solid #334155;cursor:pointer}.up{color:#22c55e;font-weight:bold}.down{color:#ef4444;font-weight:bold}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;overflow:auto}.box{background:#1e293b;margin:20px;padding:18px;border-radius:16px}.close{float:right;font-size:24px;cursor:pointer}.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155}.big{font-size:22px;font-weight:bold;text-align:center;padding:12px;border-radius:12px;margin:10px 0}.link{display:block;background:#334155;color:#fff;text-align:center;padding:12px;border-radius:10px;margin-top:8px;text-decoration:none}
-</style></head><body>
-<div class="top"><h1>📈 BIST 100 Canlı</h1><div class="sub">Son: <b id="updated">...</b> • Hisseye dokun = Analiz</div><button class="btn" onclick="loadData()">🔄 ŞİMDİ YENİLE</button><input id="search" placeholder="🔍 Hisse ara..." oninput="render()"></div>
-<table><thead><tr><th>Hisse</th><th>Fiyat</th><th>Değişim</th><th>RSI</th><th>Sinyal</th></tr></thead><tbody id="list"></tbody></table>
-
-<div id="modal" class="modal"><div class="box"><span class="close" onclick="closeModal()">✕</span><h2 id="mSym"></h2><div id="mSignal" class="big"></div><p id="mComment" style="line-height:1.5"></p><div id="mRows"></div><a id="newsLink" class="link" target="_blank">📰 Bu Hisseyle İlgili Son Haberler</a><a id="kapLink" class="link" target="_blank">📄 KAP Bildirimleri</a></div></div>
-
+<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIST PRO - Profesyonel Terminal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#0b0e11;color:#eaecef;padding:12px;padding-bottom:90px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:10px 4px}
+.logo{font-size:22px;font-weight:900} .logo span{color:#f0b90b}
+.badge{background:#1e2329;padding:6px 10px;border-radius:20px;font-size:12px;color:#848e9c}
+.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:12px 0}
+.card{background:#1e2329;border-radius:14px;padding:14px;border:1px solid #2b3139}
+.card small{color:#848e9c;font-size:11px} .card b{font-size:19px;display:block;margin-top:4px}
+.card .green{color:#0ecb81} .card .red{color:#f6465d} .card .gold{color:#f0b90b}
+.tabs{display:flex;gap:8px;margin:14px 0;overflow-x:auto}
+.tab{background:#1e2329;border:1px solid #2b3139;color:#eaecef;padding:9px 16px;border-radius:20px;white-space:nowrap;cursor:pointer;font-weight:700}
+.tab.active{background:#f0b90b;color:#000;border-color:#f0b90b}
+.search{width:100%;background:#1e2329;border:1px solid #2b3139;color:#fff;padding:13px;border-radius:12px;font-size:15px;outline:none;margin-bottom:12px}
+.stock{background:#1e2329;border:1px solid #2b3139;border-radius:14px;padding:13px;margin-bottom:10px;cursor:pointer}
+.row{display:flex;justify-content:space-between;align-items:center}
+.sym{font-weight:900;font-size:17px} .sym small{color:#848e9c;font-weight:400;font-size:12px}
+.price{font-weight:900;font-size:17px;text-align:right} .up{color:#0ecb81} .down{color:#f6465d}
+.meta{font-size:12px;color:#848e9c;margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
+.pill{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;background:#2b3139}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;padding:11px;border:none;border-radius:10px;font-weight:900;font-size:14px;cursor:pointer}
+.buy{background:#0ecb81;color:#fff} .sell{background:#f6465d;color:#fff} .star{background:#2b3139;color:#f0b90b}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:flex-end;z-index:99}
+.modal.open{display:flex} .box{background:#1e2329;width:100%;border-radius:20px 20px 0 0;padding:20px}
+.box input{width:100%;padding:14px;background:#0b0e11;border:1px solid #2b3139;color:#fff;border-radius:12px;font-size:18px;margin:12px 0;outline:none}
+.box h3{font-size:20px} .box p{color:#848e9c;font-size:13px;margin-top:6px}
+.hold{background:#1e2329;border:1px solid #f0b90b;border-radius:14px;padding:13px;margin-bottom:10px}
+</style></head>
+<body>
+<div class="top"><div class="logo">BIST <span>PRO</span></div><div class="badge" id="updated">Bağlanıyor...</div></div>
+<div class="cards">
+<div class="card"><small>TOPLAM VARLIK</small><b id="total">100.000 ₺</b></div>
+<div class="card"><small>NAKİT</small><b class="green" id="cash">100.000 ₺</b></div>
+<div class="card"><small>KAR / ZARAR</small><b class="gold" id="pnl">0 ₺</b></div>
+</div>
+<div class="tabs">
+<button class="tab active" onclick="setTab('all',this)">Tümü</button>
+<button class="tab" onclick="setTab('port',this)">Portföyüm</button>
+<button class="tab" onclick="setTab('fav',this)">⭐ Takip</button>
+<button class="tab" onclick="setTab('gain',this)">🏆 Kazananlar</button>
+<button class="tab" onclick="setTab('lose',this)">📉 Kaybedenler</button>
+</div>
+<input class="search" id="q" placeholder="🔍 Hisse ara... THYAO, ASELS..." oninput="render()">
+<div id="list"></div>
+<div class="modal" id="modal"><div class="box">
+<h3 id="mTitle">THYAO</h3><p id="mInfo"></p>
+<input type="number" id="qty" value="10" min="1"><p id="mTotal"></p>
+<div style="display:flex;gap:10px"><button class="btn buy" onclick="doTrade('buy')">🟢 AL</button><button class="btn sell" onclick="doTrade('sell')">🔴 SAT</button><button class="btn" style="background:#2b3139;color:#fff" onclick="closeModal()">Kapat</button></div>
+</div></div>
 <script>
-let all=[];
-let modalOpen = false;
-async function loadData(){const r=await fetch('data.json?t='+Date.now());const d=await r.json();document.getElementById('updated').innerText=d.updated;all=d.stocks||[];render();}
-function shortSignal(s){ if(s.includes('GÜÇLÜ AL')) return '🟢 GÜÇLÜ AL'; if(s.includes('GÜÇLÜ SAT')) return '🔴 GÜÇLÜ SAT'; if(s.includes('AL')) return '🟢 AL'; if(s.includes('SAT')) return '🔴 SAT'; return '🟡 NÖTR'; }
-function render(){const q=document.getElementById('search').value.toUpperCase();document.getElementById('list').innerHTML=all.filter(s=>s.sym.includes(q)).map(s=>`<tr onclick="openDetail('${s.sym}')"><td><b>${s.sym}</b></td><td>${s.price} ₺</td><td class="${s.ch>=0?'up':'down'}">${s.ch>=0?'+':''}${s.ch}%</td><td>${s.rsi}</td><td>${shortSignal(s.signal)}</td></tr>`).join('');}
-function openDetail(sym){
-  const s=all.find(x=>x.sym===sym);if(!s)return;
-  document.getElementById('mSym').innerText=sym+' - '+s.price+' ₺ (%'+s.ch+')';
-  const el=document.getElementById('mSignal');
-  el.innerText=shortSignal(s.signal)+'  •  Skor: '+s.score+'/100';
-  el.style.background=s.score>=60?'#22c55e':s.score>=45?'#eab308':'#ef4444';
-  document.getElementById('mComment').innerText=s.comment;
-  document.getElementById('mRows').innerHTML=`<div class="row"><span>RSI</span><b>${s.rsi}</b></div><div class="row"><span>MACD</span><b>${s.macd}</b></div><div class="row"><span>MA20</span><b>${s.ma20} ₺</b></div><div class="row"><span>MA50</span><b>${s.ma50} ₺</b></div><div class="row"><span>Destek</span><b>${s.support} ₺</b></div><div class="row"><span>Direnç</span><b>${s.resist} ₺</b></div><div class="row"><span>Hacim</span><b>${s.vol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Ort. Hacim</span><b>${s.avgvol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Tahmini İşlem Hacmi</span><b>${s.money} Milyon ₺</b></div><div class="row"><span>Para Akışı (Tahmini)</span><b>${s.money_trend}</b></div>`;
-  document.getElementById('newsLink').href='https://news.google.com/search?q='+sym+'%20hisse%20borsa&hl=tr&gl=TR';
-  document.getElementById('kapLink').href='https://www.kap.org.tr/tr/Arama?query='+sym;
-  document.getElementById('modal').style.display='block';
-  modalOpen = true;
-  history.pushState({modal:true}, '');
+let DATA=[],tab='all',sel=null;
+let cash=parseFloat(localStorage.getItem('pro_cash')||100000);
+let holds=JSON.parse(localStorage.getItem('pro_holds')||'{}');
+let favs=JSON.parse(localStorage.getItem('pro_favs')||'[]');
+function save(){localStorage.setItem('pro_cash',cash);localStorage.setItem('pro_holds',JSON.stringify(holds));localStorage.setItem('pro_favs',JSON.stringify(favs))}
+function setTab(t,el){tab=t;document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');render()}
+async function load(){try{let r=await fetch('data.json?t='+Date.now());let j=await r.json();DATA=j.stocks||[];document.getElementById('updated').innerText='Son: '+j.updated}catch(e){}render()}
+function render(){
+ let q=(document.getElementById('q').value||'').toUpperCase();
+ let list=[...DATA];
+ if(tab=='fav') list=list.filter(s=>favs.includes(s.sym));
+ if(tab=='gain') list=list.sort((a,b)=>b.ch-a.ch).slice(0,15);
+ if(tab=='lose') list=list.sort((a,b)=>a.ch-b.ch).slice(0,15);
+ if(q) list=list.filter(s=>s.sym.includes(q));
+ let html='';
+ if(tab=='port'){
+   let total=cash, pnl=0;
+   for(let sym in holds){let s=DATA.find(x=>x.sym==sym);if(!s)continue;let cur=s.price*holds[sym].qty;let cost=holds[sym].avg*holds[sym].qty;total+=cur;pnl+=cur-cost;
+   html+=`<div class="hold"><div class="row"><b>${sym} - ${holds[sym].qty} adet</b><b>${cur.toLocaleString('tr-TR')} ₺</b></div><div class="meta"><span>Ort: ${holds[sym].avg} ₺</span><span>Şimdi: ${s.price} ₺</span><span class="${cur-cost>=0?'up':'down'}">${(cur-cost).toFixed(0)} ₺ (${((s.price/holds[sym].avg-1)*100).toFixed(2)}%)</span></div><div class="btns"><button class="btn buy" onclick="openModal('${sym}')">AL / SAT</button></div></div>`}
+   document.getElementById('total').innerText=total.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
+   document.getElementById('cash').innerText=cash.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
+   document.getElementById('pnl').innerText=(pnl>=0?'+':'')+pnl.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
+   document.getElementById('pnl').className=pnl>=0?'green':'red';
+   if(!html) html='<p style="text-align:center;color:#848e9c;padding:30px">Henüz hissen yok. Tümü sekmesinden AL yap.</p>';
+   document.getElementById('list').innerHTML=html; return;
+ }
+ // total for other tabs
+ let total=cash; DATA.forEach(s=>{if(holds[s.sym]) total+=s.price*holds[s.sym].qty});
+ document.getElementById('total').innerText=total.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
+ document.getElementById('cash').innerText=cash.toLocaleString('tr-TR',{maximumFractionDigits:0})+' ₺';
+ list.forEach(s=>{
+   let isFav=favs.includes(s.sym)?'⭐':'☆';
+   let has=holds[s.sym]?` • 📦 ${holds[s.sym].qty} adet`:'';
+   html+=`<div class="stock"><div class="row"><div class="sym">${s.sym} <small>${s.signal||''}${has}</small></div><div class="price">${s.price} ₺<br><span class="${s.ch>=0?'up':'down'}" style="font-size:13px">${s.ch>=0?'+':''}%${s.ch}</span></div></div>
+   <div class="meta"><span>RSI ${s.rsi}</span><span>Skor ${s.score}</span><span>Destek ${s.support}</span><span>Direnç ${s.resist}</span></div>
+   <div style="color:#b7bdc6;font-size:13px;margin-top:6px">${s.comment||''}</div>
+   <div class="btns"><button class="btn buy" onclick="openModal('${s.sym}')">🟢 AL</button><button class="btn sell" onclick="openModal('${s.sym}')">🔴 SAT</button><button class="btn star" onclick="toggleFav('${s.sym}',event)">${isFav}</button></div></div>`
+ });
+ document.getElementById('list').innerHTML=html||'<p style="text-align:center;color:#848e9c;padding:30px">Bulunamadı</p>';
 }
-function closeModal(){
-  document.getElementById('modal').style.display='none';
-  if(modalOpen){ modalOpen = false; history.back(); }
-}
-window.addEventListener('popstate', function(){
-  document.getElementById('modal').style.display='none';
-  modalOpen = false;
-});
-loadData();
-setInterval(loadData,60000);
+function toggleFav(sym,e){e.stopPropagation();if(favs.includes(sym)) favs=favs.filter(x=>x!=sym);else favs.push(sym);save();render()}
+function openModal(sym){sel=DATA.find(x=>x.sym==sym);if(!sel)return;document.getElementById('mTitle').innerText=sel.sym+' - '+sel.price+' ₺';document.getElementById('mInfo').innerText=sel.signal+' • RSI '+sel.rsi+' • Nakit: '+cash.toLocaleString('tr-TR')+' ₺ • Elinde: '+(holds[sel.sym]?.qty||0)+' adet';document.getElementById('qty').value=10;updTotal();document.getElementById('modal').classList.add('open')}
+function updTotal(){let q=parseInt(document.getElementById('qty').value||0);document.getElementById('mTotal').innerText='Toplam: '+(q*(sel?.price||0)).toLocaleString('tr-TR')+' ₺'}
+document.getElementById('qty').addEventListener('input',updTotal);
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function doTrade(type){let q=parseInt(document.getElementById('qty').value||0);if(!q||q<=0)return alert('Adet gir');let cost=q*sel.price;
+ if(type=='buy'){if(cost>cash)return alert('Nakit yetersiz!');cash-=cost;if(!holds[sel.sym])holds[sel.sym]={qty:0,avg:sel.price};let old=holds[sel.sym];let newAvg=(old.avg*old.qty+cost)/(old.qty+q);holds[sel.sym]={qty:old.qty+q,avg:newAvg};alert('✅ '+q+' adet '+sel.sym+' ALINDI')}
+ else{if(!holds[sel.sym]||holds[sel.sym].qty<q)return alert('Elinde o kadar yok!');cash+=cost;holds[sel.sym].qty-=q;if(holds[sel.sym].qty==0)delete holds[sel.sym];alert('✅ '+q+' adet '+sel.sym+' SATILDI')}
+ save();closeModal();render()}
+load();setInterval(load,60000);
 </script></body></html>
