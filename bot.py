@@ -1,62 +1,94 @@
-import yfinance as yf, json
-from datetime import datetime, timezone, timedelta
+import yfinance as yf
+import pandas as pd
 import numpy as np
-TR = timezone(timedelta(hours=3))
-def now(): return datetime.now(TR).strftime("%H:%M")
+import json
+from datetime import datetime
 
-TICKS="AEFES,AGHOL,AHGAZ,AKBNK,AKCNS,AKSA,AKSEN,ALARK,ALFAS,ALBRK,ANHYT,ANSGR,ARCLK,ARDYZ,ASELS,ASTOR,BERA,BIMAS,BINHO,BRSAN,BRYAT,BTCIM,CANTE,CCOLA,CIMSA,CWENE,DOAS,DOHOL,ECILC,ECZYT,EGEEN,EGGUB,EKGYO,ENERY,ENJSA,ENKAI,EREGL,EUPWR,FENER,FROTO,GARAN,GENIL,GESAN,GLRMK,GOLTS,GUBRF,HALKB,HEKTS,ISCTR,ISDMR,ISMEN,KARSN,KCAER,KCHOL,KENT,KMPUR,KONTR,KOZAA,KOZAL,KRDMD,KTLEV,MAVI,MGROS,MIATK,MPARK,ODAS,OTKAR,OYAKC,PAHOL,PETKM,PGSUS,SAHOL,SASA,SDTTR,SELEC,SISE,SKBNK,SMRTG,SOKM,TABGD,TAVHL,TCELL,THYAO,TKFEN,TOASO,TSKB,TTKOM,TTRAK,TUPRS,TURSG,ULKER,VAKBN,VESTL,YKBNK,ZOREN,AGROT,AKFYE,ALTNY,CMENT,IEYHO".split(",")
+# BIST 100 - En çok işlem görenler
+SYMBOLS = ["THYAO.IS","ASELS.IS","BIMAS.IS","KCHOL.IS","SAHOL.IS","AKBNK.IS","GARAN.IS","YKBNK.IS","ISCTR.IS","SISE.IS","TUPRS.IS","EREGL.IS","FROTO.IS","TOASO.IS","TCELL.IS","TTKOM.IS","PGSUS.IS","ENKAI.IS","KOZAL.IS","SASA.IS","HEKTS.IS","GUBRF.IS","PETKM.IS","MGROS.IS","AKSEN.IS","ARCLK.IS","DOHOL.IS","KRDMD.IS","VAKBN.IS","HALKB.IS"]
 
-def rsi(c):
-    if len(c)<15: return 50
-    d=np.diff(c)
-    g=np.where(d>0,d,0)[-14:]; l=np.where(d<0,-d,0)[-14:]
-    ag=g.mean(); al=l.mean()
-    if al==0: return 100
-    return round(100-(100/(1+ag/al)),1)
+def rsi(series, period=14):
+    delta = series.diff()
+    gain = delta.where(delta>0,0).rolling(period).mean()
+    loss = -delta.where(delta<0,0).rolling(period).mean()
+    rs = gain/loss
+    return 100 - (100/(1+rs))
 
-def ema(c,n):
-    k=2/(n+1); e=c[0]
-    for v in c[1:]: e=v*k+e*(1-k)
-    return e
+def analyze(sym):
+    try:
+        df = yf.download(sym, period="6mo", interval="1d", progress=False, auto_adjust=True)
+        if df.empty or len(df)<30: return None
+        if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.get_level_values(0)
+        close = df['Close']
+        price = float(close.iloc[-1])
+        prev = float(close.iloc[-2])
+        ch = round((price/prev-1)*100, 2)
+        # Ortalamalar
+        ma20 = float(close.rolling(20).mean().iloc[-1])
+        ma50 = float(close.rolling(50).mean().iloc[-1])
+        ma200 = float(close.rolling(200).mean().iloc[-1]) if len(close)>=200 else ma50
+        # RSI
+        r = float(rsi(close).iloc[-1])
+        # MACD
+        ema12 = close.ewm(span=12).mean()
+        ema26 = close.ewm(span=26).mean()
+        macd = float((ema12-ema26).iloc[-1])
+        macd_sig = float((ema12-ema26).ewm(span=9).mean().iloc[-1])
+        # Hacim
+        vol = float(df['Volume'].iloc[-1])
+        vol_avg = float(df['Volume'].rolling(20).mean().iloc[-1])
+        vol_ratio = round(vol/vol_avg, 2) if vol_avg else 1
+        # Destek / Direnç (son 20 gün)
+        support = round(float(df['Low'].tail(20).min()),2)
+        resist = round(float(df['High'].tail(20).max()),2)
+        # Hedef / Stop
+        target = round(price*1.07,2)
+        stop = round(price*0.96,2)
+
+        # SKORLAMA - Tam Analiz
+        score = 50
+        reasons = []
+        if price > ma20: score+=8; reasons.append("Fiyat MA20 üstünde ✅")
+        else: score-=8; reasons.append("Fiyat MA20 altında ❌")
+        if price > ma50: score+=8; reasons.append("Fiyat MA50 üstünde ✅")
+        else: score-=8; reasons.append("Fiyat MA50 altında ❌")
+        if price > ma200: score+=5; reasons.append("Uzun vade trend YUKARI")
+        else: score-=5; reasons.append("Uzun vade trend AŞAĞI")
+        if r < 30: score+=12; reasons.append(f"RSI {r:.0f} - Aşırı satılmış, tepki gelebilir")
+        elif r < 45: score+=5; reasons.append(f"RSI {r:.0f} - Alım bölgesine yakın")
+        elif r > 70: score-=12; reasons.append(f"RSI {r:.0f} - Aşırı alınmış, dikkat!")
+        elif r > 60: score-=5; reasons.append(f"RSI {r:.0f} - Yorulma var")
+        else: reasons.append(f"RSI {r:.0f} - Nötr")
+        if macd > macd_sig: score+=10; reasons.append("MACD AL sinyali verdi")
+        else: score-=10; reasons.append("MACD SAT sinyali verdi")
+        if vol_ratio > 1.5: score+=7; reasons.append(f"Hacim %{int((vol_ratio-1)*100)} arttı - Güçlü hareket")
+        elif vol_ratio < 0.7: score-=3; reasons.append("Hacim düşük - Güçsüz")
+
+        score = max(0, min(100, score))
+        if score >= 70: signal="GÜÇLÜ AL 🟢"; action="AL - Kademeli al, stopa uy"
+        elif score >= 60: signal="AL 🟢"; action="AL - Küçük miktar dene"
+        elif score >= 45: signal="TUT / İZLE 🟡"; action="BEKLE - Destekten almayı düşün"
+        elif score >= 30: signal="ZAYIF 🔴"; action="SATMA / ALMA - Düşüşte"
+        else: signal="GÜÇLÜ SAT 🔴"; action="SAT / UZAK DUR"
+
+        comment = " | ".join(reasons)
+        return {
+            "sym": sym.replace(".IS",""), "price": round(price,2), "ch": ch,
+            "rsi": round(r,1), "score": score, "signal": signal, "action": action,
+            "ma20": round(ma20,2), "ma50": round(ma50,2), "ma200": round(ma200,2),
+            "macd": round(macd,2), "vol_ratio": vol_ratio,
+            "support": support, "resist": resist, "target": target, "stop": stop,
+            "comment": comment
+        }
+    except Exception as e:
+        print(sym, e); return None
 
 stocks=[]
-for t in TICKS:
-    try:
-        df1=yf.download(t+".IS", period="1d", interval="1m", progress=False)
-        if df1.empty: continue
-        price=round(float(df1['Close'].values.flatten()[-1]),2)
-        df=yf.download(t+".IS", period="6mo", interval="1d", progress=False)
-        if df.empty: continue
-        c=df['Close'].values.flatten(); v=df['Volume'].values.flatten()
-        prev=float(c[-2]) if len(c)>1 else price
-        ch=round((price-prev)/prev*100,2)
-        ma20=round(float(np.mean(c[-20:])),2); ma50=round(float(np.mean(c[-50:])),2)
-        r=rsi(list(c))
-        macd=round(ema(list(c),12)-ema(list(c),26),2)
-        vol=int(v[-1]); avgvol=int(np.mean(v[-20:]))
-        # Tahmini para akisi: hacim x fiyat
-        money=round(vol*price/1000000,1) # Milyon TL
-        money_trend="GİRİŞ" if vol>avgvol and ch>0 else "ÇIKIŞ" if vol>avgvol and ch<0 else "NÖTR"
-        support=round(float(np.min(c[-20:])),2); resist=round(float(np.max(c[-20:])),2)
-        # SKOR
-        score=50
-        if r<30: score+=20
-        elif r<40: score+=10
-        elif r>70: score-=20
-        elif r>60: score-=10
-        if price>ma20: score+=10
-        if price>ma50: score+=10
-        if macd>0: score+=10
-        else: score-=10
-        if ch>1: score+=5
-        if ch<-1: score-=5
-        if score>=75: sig="🟢 GÜÇLÜ AL"; yorum="RSI, trend ve MACD aynı anda güçlü. Alıcılar baskın. Destek üstünde kaldıkça yükseliş beklenebilir."
-        elif score>=60: sig="🟢 AL"; yorum="Göstergeler pozitife dönüyor. Kademeli alım düşünülebilir, destek altı stop olmalı."
-        elif score>=45: sig="🟡 NÖTR / BEKLE"; yorum="Net yön yok. Destek kırılırsa sat, direnç kırılırsa al tarafı güçlenir. Şu an izle."
-        elif score>=30: sig="🔴 SAT"; yorum="Göstergeler zayıflıyor. Tepki yükselişleri satış fırsatı olabilir."
-        else: sig="🔴 GÜÇLÜ SAT"; yorum="Tüm göstergeler satıcıda. Destek kırılmış, düşüş trendi sürüyor. Uzak dur."
-        stocks.append({"sym":t,"price":price,"ch":ch,"rsi":r,"ma20":ma20,"ma50":ma50,"macd":macd,"vol":vol,"avgvol":avgvol,"money":money,"money_trend":money_trend,"support":support,"resist":resist,"score":score,"signal":sig,"comment":yorum,"time":now()})
-    except: continue
+for s in SYMBOLS:
+    a=analyze(s)
+    if a: stocks.append(a); print(a["sym"], a["price"], a["signal"])
 
-open("data.json","w",encoding="utf-8").write(json.dumps({"updated":now(),"stocks":stocks},ensure_ascii=False))
-print("toplam",len(stocks))
+stocks=sorted(stocks, key=lambda x: x["score"], reverse=True)
+out={"updated": datetime.now().strftime("%H:%M"), "stocks": stocks}
+with open("data.json","w",encoding="utf-8") as f: json.dump(out,f,ensure_ascii=False,indent=2)
+print("OK", len(stocks))
