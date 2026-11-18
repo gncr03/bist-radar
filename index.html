@@ -18,14 +18,15 @@ body{background:#0f172a;color:#fff;padding:16px}
 .card small{color:#94a3b8;font-size:12px;display:block;margin-top:2px}
 .price{font-size:20px;font-weight:800;text-align:right}
 .badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block;margin-top:4px}
-.AL{background:#16a34a}.GÜÇLÜ{background:#16a34a}.SAT{background:#dc2626}.GÜÇLÜSAT{background:#dc2626}.TUT{background:#eab308;color:#000}.BEKLE{background:#64748b}.NÖTR{background:#64748b}
+.AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}.BEKLE{background:#64748b}.NÖTR{background:#64748b}
 .ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.6}
 .ai.open{display:block}
 .ai h4{font-size:14px;margin-bottom:6px}
 .ai .line{display:flex;justify-content:space-between;margin:4px 0}
-.ai .line b{font-size:13px}
 .hint{text-align:center;color:#94a3b8;font-size:12px;margin:12px 0}
 .disclaimer{font-size:11px;color:#94a3b8;text-align:center;margin-top:16px;line-height:1.5}
+.bar{height:8px;background:#334155;border-radius:99px;overflow:hidden;margin:6px 0 10px}
+.bar div{height:100%;background:#4ade80}
 </style>
 </head>
 <body>
@@ -33,87 +34,61 @@ body{background:#0f172a;color:#fff;padding:16px}
 <div id="status">Veriler yükleniyor...</div>
 <div class="hint">👆 Analiz için hisseye dokun</div>
 <div class="grid" id="list"></div>
-<div class="disclaimer">Bu panel eğitim amaçlıdır, yatırım tavsiyesi değildir.<br>Karar vermeden önce kendi araştırmanı yap.</div>
-
+<div class="disclaimer">Eğitim amaçlıdır, yatırım tavsiyesi değildir.<br>RSI + Hacim + Fiyat ile hesaplanır.</div>
 <script>
-let DATA=[];
 async function load(){
   try{
-    const res = await fetch('data.json?v=' + Date.now());
+    const res=await fetch('data.json?v='+Date.now());
     if(!res.ok) throw new Error('data.json bulunamadı');
-    const j = await res.json();
+    const j=await res.json();
     let arr=[];
     if(Array.isArray(j)) arr=j;
     else if(Array.isArray(j.hisseler)) arr=j.hisseler;
     else if(Array.isArray(j.stocks)) arr=j.stocks;
     else if(Array.isArray(j.data)) arr=j.data;
-    else if(typeof j==='object'){
-      const keys=Object.keys(j).filter(k=>!['Güncellendi','guncellendi','updated','time','tarih'].includes(k));
-      if(keys.length && typeof j[keys[0]]==='object') arr=keys.map(k=>({...j[k], sym:k}));
-    }
-    let rawTime=j.Güncellendi||j.guncellendi||j.updated||j.time||j.tarih||'';
-    let trTime=rawTime;
-    if(/^\d{1,2}:\d{2}/.test(rawTime)){
-      let p=rawTime.split(':'); let h=(parseInt(p[0])+3)%24;
-      trTime=String(h).padStart(2,'0')+':'+p[1];
-    }
-    document.getElementById('time').textContent='Son: '+trTime;
+    document.getElementById('time').textContent='Son: '+(j.Güncellendi||j.guncellendi||j.updated||'');
     if(!arr.length){document.getElementById('status').textContent='Veri boş';return;}
     document.getElementById('status').style.display='none';
-    DATA=arr;
     document.getElementById('list').innerHTML=arr.map((h,i)=>{
-      const sym=h.sym||h.sembol||h.symbol||h.code||h.hisse||h.ticker||'?';
-      const fiyat=parseFloat(h.fiyat??h.price??h.last??h.close??0)||0;
-      const sinyal=(h.sinyal||h.signal||h.yorum||h.durum||'TUT').toString().toUpperCase();
-      let cls='NÖTR';
+      const sym=h.sym||h.sembol||h.symbol||h.code||'?';
+      const fiyat=parseFloat(h.fiyat??h.price??h.last??0)||0;
+      const sinyal=(h.sinyal||h.signal||'TUT').toString().toUpperCase();
+      let cls='TUT';
       if(sinyal.includes('GÜÇLÜ AL')||sinyal==='AL') cls='AL';
       else if(sinyal.includes('GÜÇLÜ SAT')||sinyal==='SAT') cls='SAT';
-      else if(sinyal.includes('TUT')) cls='TUT';
-      else if(sinyal.includes('BEKLE')) cls='BEKLE';
-      const a=aiAnaliz(sym,fiyat,sinyal);
+      const rsi=h.rsi??'-';
+      const hacim=h.hacim||'-';
+      const skor=h.skor??50;
+      const destek=h.destek??(fiyat*0.98).toFixed(2);
+      const direnc=h.direnc??(fiyat*1.02).toFixed(2);
+      const hedef=h.hedef??(fiyat*1.04).toFixed(2);
+      const stop=h.stop??(fiyat*0.97).toFixed(2);
+      const degisim=h.degisim||'';
+      let yorum='';
+      if(sinyal.includes('GÜÇLÜ AL')) yorum=`${sym} için RSI ${rsi}, hacim ${hacim}. Alıcılar güçlü, momentum yukarı.`;
+      else if(sinyal.includes('AL')) yorum=`${sym} pozitif. RSI ${rsi} - yükseliş isteği var, hacim ${hacim}.`;
+      else if(sinyal.includes('SAT')) yorum=`${sym} için satıcılar baskın. RSI ${rsi}, hacim ${hacim}. Acele etme.`;
+      else yorum=`${sym} kararsız. RSI ${rsi} - sıkışma var, kırılım bekle.`;
+      let rsiYorum='';
+      if(rsi!=='-' && rsi<30) rsiYorum=' (Aşırı satım - tepki gelebilir)';
+      else if(rsi!=='-' && rsi>70) rsiYorum=' (Aşırı alım - dikkat!)';
       return `<div class="card" onclick="document.getElementById('ai-${i}').classList.toggle('open')">
-        <div class="row"><div><b>${sym}</b><small>Detay için dokun 👆</small></div><div><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal}</span></div></div>
+        <div class="row"><div><b>${sym}</b><small>RSI: ${rsi} | ${degisim} | Hacim: ${hacim}</small></div><div><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal}</span></div></div>
         <div class="ai" id="ai-${i}">
           <h4>🤖 ${sym} - AI Analizi</h4>
-          <div>${a.yorum}</div>
-          <div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${a.hedef}</b></div>
-          <div class="line"><span>🛑 Stop / Zarar Kes</span><b style="color:#f87171">${a.stop}</b></div>
-          <div class="line"><span>📊 Destek</span><b>${a.destek}</b></div>
-          <div class="line"><span>📈 Direnç</span><b>${a.direnc}</b></div>
-          <div class="line"><span>⚡ Güç Skoru</span><b>${a.skor} / 100</b></div>
-          <div class="line"><span>⚠️ Risk</span><b>${a.risk}</b></div>
-          <div style="margin-top:8px;color:#cbd5e1"><b>Strateji:</b> ${a.strateji}</div>
+          <div>${yorum}</div>
+          <div style="margin-top:8px"><b>Güç Skoru: ${skor} / 100</b><div class="bar"><div style="width:${skor}%"></div></div></div>
+          <div class="line"><span>📊 RSI (14)</span><b>${rsi}${rsiYorum}</b></div>
+          <div class="line"><span>📦 Hacim</span><b>${hacim} ${h.hacim_oran? '(x'+h.hacim_oran+')':''}</b></div>
+          <div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${hedef}</b></div>
+          <div class="line"><span>🛑 Stop</span><b style="color:#f87171">${stop}</b></div>
+          <div class="line"><span>📉 Destek</span><b>${destek}</b></div>
+          <div class="line"><span>📈 Direnç</span><b>${direnc}</b></div>
+          <div style="margin-top:8px;color:#cbd5e1"><b>Strateji:</b> ${sinyal.includes('AL')?'Kademeli al, stopa uy, hedefte kâr al.':sinyal.includes('SAT')?'Düşerken alma, destek kırılırsa uzak dur.':'İzle, direnç kırılırsa al, destek kırılırsa bekle.'}</div>
         </div>
       </div>`;
     }).join('');
   }catch(e){document.getElementById('status').textContent='Hata: '+e.message;}
-}
-function aiAnaliz(sym,fiyat,sinyal){
-  let yorum='',strateji='',skor=50,risk='Orta',carpanH=1.03,carpanS=0.97;
-  if(sinyal.includes('GÜÇLÜ AL')){
-    yorum=`${sym} için alıcılar çok güçlü. Momentum yukarı, trend pozitif. Kısa vadede yükseliş devam edebilir ama kâr realizasyonuna dikkat et.`;
-    strateji='Kademeli al, tek seferde tüm parayla girme. Hedefe yaklaşınca kârın bir kısmını al.';
-    skor=88; risk='Orta'; carpanH=1.05; carpanS=0.96;
-  }else if(sinyal.includes('AL')){
-    yorum=`${sym} pozitif bölgede. Alıcılar satıcılara üstün. Yükseliş isteği var ama henüz çok güçlü değil, hacmi izle.`;
-    strateji='Küçük pozisyonla başla, fiyat desteğin üstünde kalırsa ekle.';
-    skor=72; risk='Orta'; carpanH=1.04; carpanS=0.97;
-  }else if(sinyal.includes('GÜÇLÜ SAT')||sinyal==='SAT'){
-    yorum=`${sym} için satıcılar baskın, düşüş trendi var. Şu an almak riskli, tepki yükselişi gelmeden acele etme.`;
-    strateji='Elinde varsa stopa uy. Yoksa düşerken bıçak tutma, dip oluşmasını bekle.';
-    skor=25; risk='Yüksek'; carpanH=1.02; carpanS=0.94;
-  }else{
-    yorum=`${sym} kararsız bölgede. Ne alıcılar ne satıcılar net üstün. Sıkışma var, yön kırılımı beklemek daha mantıklı.`;
-    strateji='İzle, acele etme. Direnç kırılırsa AL, destek kırılırsa uzak dur.';
-    skor=50; risk='Düşük - Orta'; carpanH=1.03; carpanS=0.97;
-  }
-  return {
-    yorum, strateji, skor, risk,
-    hedef:(fiyat*carpanH).toFixed(2),
-    stop:(fiyat*carpanS).toFixed(2),
-    destek:(fiyat*0.98).toFixed(2),
-    direnc:(fiyat*1.02).toFixed(2)
-  };
 }
 load();
 </script>
