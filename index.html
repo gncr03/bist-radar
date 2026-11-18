@@ -18,6 +18,7 @@ body{background:#0f172a;color:#fff;padding:16px}
 .badge{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;display:inline-block}
 .AL{background:#16a34a}.SAT{background:#dc2626}.TUT{background:#eab308;color:#000}
 .star{position:absolute;top:8px;right:10px;font-size:22px}
+.mini{font-size:12px;color:#cbd5e1;background:#0f172a;border:1px solid #334155;border-radius:10px;padding:8px;margin-top:10px;line-height:1.5}
 .ai{display:none;margin-top:12px;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;font-size:13px;line-height:1.7}
 .ai.open{display:block}
 .ai .line{display:flex;justify-content:space-between;margin:4px 0}
@@ -28,72 +29,142 @@ body{background:#0f172a;color:#fff;padding:16px}
 .hint{text-align:center;color:#94a3b8;font-size:12px;margin:12px 0}
 .bar{height:8px;background:#334155;border-radius:99px;overflow:hidden;margin:6px 0}
 .bar div{height:100%;background:#4ade80}
+#ozet{background:#1e293b;border:1px solid #facc15;border-radius:16px;padding:12px;margin-bottom:12px;display:none}
+#ozet h3{font-size:14px;margin-bottom:8px}
+#ozet .item{font-size:12.5px;line-height:1.6;padding:6px 0;border-top:1px solid #334155}
+#alarmBanner{background:#dc2626;border-radius:16px;padding:14px;margin-bottom:12px;display:none;text-align:center}
+#alarmBanner b{font-size:16px}
+#alarmBanner button{margin-top:8px;padding:8px 14px;border-radius:99px;border:none;background:#fff;font-weight:700}
+.alarmRow{display:flex;gap:6px;margin-top:10px}
+.alarmRow input{flex:1;padding:8px;border-radius:10px;border:1px solid #334155;background:#1e293b;color:#fff}
+.alarmRow button{padding:8px 12px;border-radius:10px;border:none;background:#facc15;font-weight:700}
+.alarmList{font-size:12px;margin-top:8px;line-height:1.6}
+.alarmList span{background:#334155;padding:3px 8px;border-radius:99px;display:inline-block;margin:2px}
 </style>
 </head>
 <body>
 <div class="top"><h1>📈 BIST Radar</h1><span id="time">...</span></div>
+
+<div id="alarmBanner"><div>🔔 <b id="alarmText">ALARM!</b></div><div id="alarmSub" style="font-size:13px;margin-top:4px"></div><button onclick="kapatAlarm()">Tamam, Sustur</button></div>
+
+<div id="ozet"><h3>📰 Bugün Gelişme Olanlar</h3><div id="ozetIcerik"></div></div>
+
 <input id="search" placeholder="🔍 Hisse ara..." oninput="render()">
 <div class="tabs">
 <button class="tab active" id="tab-all" onclick="setTab('all')">Tümü</button>
 <button class="tab" id="tab-fav" onclick="setTab('fav')">⭐ Takip (<span id="favCount">0</span>)</button>
 <button class="tab" id="tab-strong" onclick="setTab('strong')">🔥 GÜÇLÜ AL</button>
+<button class="tab" id="tab-alarm" onclick="setTab('alarm')">🔔 Alarmlar</button>
 </div>
-<div class="hint">⭐ Yıldıza bas = Takibe al &nbsp;|&nbsp; 👆 Karta dokun = Detaylı Yorum</div>
+<div class="hint">⭐ Takip &nbsp;|&nbsp; 🔔 Alarm kur &nbsp;|&nbsp; 👆 Karta dokun = Detaylı Yorum</div>
 <div id="list">Yükleniyor...</div>
 <script>
-let ALL=[],TAB='all';
-let FAV=[];
-try{FAV=JSON.parse(localStorage.getItem('bist_fav')||'[]');}catch(e){FAV=[];}
-function setTab(t){TAB=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById(t==='all'?'tab-all':t==='fav'?'tab-fav':'tab-strong').classList.add('active');render();}
-function toggleFav(sym,ev){ev.stopPropagation();if(FAV.includes(sym))FAV=FAV.filter(s=>s!==sym);else FAV.push(sym);localStorage.setItem('bist_fav',JSON.stringify(FAV));render();}
+// --- GERİ TUŞU ATMASIN ---
+history.pushState({page:1},'','');
+window.addEventListener('popstate',function(){history.pushState({page:1},'','');});
 
+let ALL=[],TAB='all';
+let FAV=[], ALARMS=[];
+try{FAV=JSON.parse(localStorage.getItem('bist_fav')||'[]');}catch(e){FAV=[];}
+try{ALARMS=JSON.parse(localStorage.getItem('bist_alarms')||'[]');}catch(e){ALARMS=[];}
+
+function setTab(t){TAB=t;document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById(t==='all'?'tab-all':t==='fav'?'tab-fav':t==='strong'?'tab-strong':'tab-alarm').classList.add('active');render();}
+function toggleFav(sym,ev){ev.stopPropagation();if(FAV.includes(sym))FAV=FAV.filter(s=>s!==sym);else FAV.push(sym);localStorage.setItem('bist_fav',JSON.stringify(FAV));render();}
+function alarmKur(sym,ev){
+  ev.stopPropagation();
+  const inp=document.getElementById('alarm-input-'+sym);
+  const val=parseFloat(inp.value.replace(',','.'));
+  if(!val||val<=0){alert('Lütfen bir fiyat yaz, örn: 310');return;}
+  ALARMS=ALARMS.filter(a=>a.sym!==sym);
+  ALARMS.push({sym: sym, fiyat: val, yon: val > (ALL.find(h=>h.sym===sym)?.fiyat||0) ? 'yukari' : 'asagi'});
+  localStorage.setItem('bist_alarms',JSON.stringify(ALARMS));
+  alert(sym+' için alarm kuruldu: '+val+' TL');
+  render();
+}
+function alarmSil(sym,ev){if(ev)ev.stopPropagation();ALARMS=ALARMS.filter(a=>a.sym!==sym);localStorage.setItem('bist_alarms',JSON.stringify(ALARMS));render();}
+function kapatAlarm(){document.getElementById('alarmBanner').style.display='none';}
+function checkAlarms(){
+  let fired=[];
+  ALARMS.forEach(a=>{
+    const h=ALL.find(x=>x.sym===a.sym); if(!h) return;
+    const fiyat=parseFloat(h.fiyat)||0;
+    if(a.yon==='yukari' && fiyat>=a.fiyat) fired.push(a.sym+' '+fiyat+' TL oldu, hedefin '+a.fiyat+' idi (YUKARI kırdı) 🎉');
+    if(a.yon==='asagi' && fiyat<=a.fiyat) fired.push(a.sym+' '+fiyat+' TL oldu, hedefin '+a.fiyat+' idi (AŞAĞI kırdı) ⚠️');
+  });
+  if(fired.length){
+    document.getElementById('alarmBanner').style.display='block';
+    document.getElementById('alarmText').textContent='ALARM ÇALDI! ('+fired.length+')';
+    document.getElementById('alarmSub').innerHTML=fired.join('<br>');
+    try{navigator.vibrate([300,100,300]);}catch(e){}
+    try{new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{});}catch(e){}
+  }
+}
+function miniOzet(h){
+  const rsi=parseFloat(h.rsi)||50;
+  const sinyal=(h.sinyal||'TUT');
+  const deg=String(h.degisim||'');
+  if(sinyal.includes('GÜÇLÜ AL')) return '🔥 Güçlü AL - Momentum ve hacim pozitif, alıcılar önde.';
+  if(sinyal.includes('GÜÇLÜ SAT')) return '⛔ Güçlü SAT - Satıcılar baskın, şimdilik bekle.';
+  if(rsi<30) return '💡 RSI çok düşük, satılmış - tepki gelebilir ama acele etme.';
+  if(rsi>70) return '⚠️ RSI çok yüksek, şişmiş - düzeltme gelebilir, dikkat.';
+  if(sinyal.includes('AL')) return '🟢 Pozitif görünüm - Yükseliş isteği var, direnci izle.';
+  if(sinyal.includes('SAT')) return '🔴 Zayıf görünüm - Alıcılar isteksiz, izlemede kal.';
+  if(h.hacim && h.hacim.includes('Yüksek')) return '📦 Hacim yüksek - Hareket gerçek, ilgi var.';
+  if(h.hacim && h.hacim.includes('Düşük')) return '😴 Hacim düşük - Sakin, yön arıyor.';
+  return '🟡 Dengede - Ne alıcı ne satıcı önde, kırılım bekle. Bugün '+deg+'.';
+}
 function yorumUret(h){
-  const sym=h.sym, fiyat=h.fiyat, rsi=parseFloat(h.rsi)||50, degisim=String(h.degisim||'0'), hacim=h.hacim||'Normal', skor=h.skor||50, sinyal=(h.sinyal||'TUT');
+  const sym=h.sym, rsi=parseFloat(h.rsi)||50, degisim=String(h.degisim||'0'), hacim=h.hacim||'Normal', skor=h.skor||50, sinyal=(h.sinyal||'TUT');
   const degNum=parseFloat(degisim.replace('%','').replace(',','.'))||0;
   let rsiYorum='';
-  if(rsi<30) rsiYorum=`RSI ${rsi} ile <b>çok satılmış</b> bölgede. Yani herkes satmış, fiyat şişmiş değil, düşmüş. Genelde buradan tepki yükselişi gelir, ama tek başına al demek değil.`;
-  else if(rsi<40) rsiYorum=`RSI ${rsi} - <b>zayıf bölgeye yakın.</b> Alıcılar isteksiz, satıcılar biraz önde. Acele etme, dönüş işareti bekle.`;
-  else if(rsi<=60) rsiYorum=`RSI ${rsi} - <b>tam dengede.</b> Ne çok alınmış, ne çok satılmış. Hisse yön arıyor.`;
-  else if(rsi<=70) rsiYorum=`RSI ${rsi} - <b>güçlü bölge.</b> Alıcılar kontrolde, momentum yukarı. Ama fiyat biraz ısınmış, kademeli düşün.`;
-  else rsiYorum=`RSI ${rsi} ile <b>çok alınmış / şişmiş</b> bölgede. Herkes almış, fiyat hızlı yükselmiş. Buradan almak riskli, düzeltme gelebilir.`;
-
+  if(rsi<30) rsiYorum=`RSI ${rsi} ile <b>çok satılmış</b> bölgede. Herkes satmış, tepki yükselişi gelebilir.`;
+  else if(rsi<40) rsiYorum=`RSI ${rsi} - <b>zayıf bölgeye yakın.</b> Alıcılar isteksiz.`;
+  else if(rsi<=60) rsiYorum=`RSI ${rsi} - <b>tam dengede.</b> Hisse yön arıyor.`;
+  else if(rsi<=70) rsiYorum=`RSI ${rsi} - <b>güçlü bölge.</b> Alıcılar kontrolde.`;
+  else rsiYorum=`RSI ${rsi} ile <b>çok alınmış</b> bölgede. Düzeltme gelebilir.`;
   let hacimYorum='';
-  if(hacim.includes('Yüksek')) hacimYorum=`Hacim <b>yüksek 🔥</b> - Bugün herkes bu hisseyle ilgilenmiş. Hareket gerçek, boş değil.`;
-  else if(hacim.includes('Düşük')) hacimYorum=`Hacim <b>düşük</b> - Bugün ilgi az. Fiyat hareketi zayıf kalabilir, hacim artmadan güvenme.`;
-  else hacimYorum=`Hacim <b>normal</b> - Ortalama bir ilgi var, ne coşku ne kaçış.`;
-
+  if(hacim.includes('Yüksek')) hacimYorum=`Hacim <b>yüksek 🔥</b> - Hareket gerçek.`;
+  else if(hacim.includes('Düşük')) hacimYorum=`Hacim <b>düşük</b> - İlgi az.`;
+  else hacimYorum=`Hacim <b>normal</b> - Ortalama ilgi var.`;
   let degYorum='';
-  if(degNum>2) degYorum=`Bugün <b>%${degNum} yükselmiş</b>, güçlü bir gün geçirmiş.`;
-  else if(degNum>0) degYorum=`Bugün <b>%${degNum} hafif artıda</b>, pozitif ama coşku yok.`;
-  else if(degNum>-2) degYorum=`Bugün <b>%${degNum} hafif ekside</b>, küçük bir geri çekilme var.`;
-  else degYorum=`Bugün <b>%${degNum} düşmüş</b>, satıcılar bugün baskın.`;
-
+  if(degNum>2) degYorum=`Bugün <b>%${degNum} yükselmiş</b>, güçlü gün.`;
+  else if(degNum>0) degYorum=`Bugün <b>%${degNum} hafif artıda</b>.`;
+  else if(degNum>-2) degYorum=`Bugün <b>%${degNum} hafif ekside</b>.`;
+  else degYorum=`Bugün <b>%${degNum} düşmüş</b>, satıcılar baskın.`;
   let karar='', kararCls='tut', kararBaslik='';
-  if(sinyal.includes('GÜÇLÜ AL')){
-    kararCls='al'; kararBaslik='✅ ALINABİLİR - Güçlü Görünüm';
-    karar=`${sym} şu an radarın en güçlülerinden. RSI, hacim ve momentum aynı anda pozitif. <b>Ne yapmalı?</b> Kademeli alım düşünülebilir. Tek seferde tüm parayla girme, ${h.destek} altına stop koy. Hedefin ${h.hedef} olsun.`;
-  } else if(sinyal.includes('AL')){
-    kararCls='al'; kararBaslik='🟢 AL Düşünülebilir';
-    karar=`${sym} pozitif tarafta. <b>Ne yapmalı?</b> ${h.direnc} direnci kırılırsa alım güçlenir. Kırılmadan alırsan küçük gir, kırılırsa ekle. Stopun: ${h.stop}`;
-  } else if(sinyal.includes('GÜÇLÜ SAT')){
-    kararCls='sat'; kararBaslik='⛔ ŞİMDİ ALMA - Bekle';
-    karar=`${sym} şu an zayıf. <b>Ne yapmalı?</b> Elinde varsa ${h.destek} desteğini izle, kırılırsa satışı düşün. Elinde yoksa düşen bıçağı tutma, dibi görmeden alma. ${h.destek} üstünde tutunursa tekrar bak.`;
-  } else if(sinyal.includes('SAT')){
-    kararCls='sat'; kararBaslik='🔴 ZAYIF - Acele Etme';
-    karar=`${sym} satıcı baskısında. <b>Ne yapmalı?</b> Yeni alım için erken. ${h.destek} desteğinde tutunursa ve hacim artarsa o zaman düşün. Şimdilik izle.`;
-  } else {
-    kararCls='tut'; kararBaslik='🟡 TUT / İZLE - Kararsız';
-    karar=`${sym} yön arıyor. <b>Ne yapmalı?</b> Elinde varsa ${h.destek} altına inmedikçe tut. Yeni alacaksan ${h.direnc} üstünde kapanış bekle. ${h.direnc} kırılırsa AL, ${h.destek} kırılırsa SAT tarafına döner.`;
-  }
+  if(sinyal.includes('GÜÇLÜ AL')){kararCls='al';kararBaslik='✅ ALINABİLİR - Güçlü';karar=`${sym} radarın en güçlülerinden. Kademeli alım düşünülebilir. Tek seferde girme, ${h.destek} altına stop koy. Hedef: ${h.hedef}`;}
+  else if(sinyal.includes('AL')){kararCls='al';kararBaslik='🟢 AL Düşünülebilir';karar=`${sym} pozitif. ${h.direnc} kırılırsa güçlenir. Stopun: ${h.stop}`;}
+  else if(sinyal.includes('GÜÇLÜ SAT')){kararCls='sat';kararBaslik='⛔ ŞİMDİ ALMA - Bekle';karar=`${sym} zayıf. Düşen bıçağı tutma, ${h.destek} üstünde tutunursa tekrar bak.`;}
+  else if(sinyal.includes('SAT')){kararCls='sat';kararBaslik='🔴 ZAYIF - Acele Etme';karar=`${sym} satıcı baskısında. ${h.destek} tutunursa ve hacim artarsa düşün.`;}
+  else {kararCls='tut';kararBaslik='🟡 TUT / İZLE';karar=`${sym} yön arıyor. ${h.direnc} üstü AL, ${h.destek} altı SAT tarafına döner.`;}
   return {rsiYorum,hacimYorum,degYorum,karar,kararCls,kararBaslik};
 }
-
+function buildOzet(){
+  const items=[];
+  ALL.forEach(h=>{
+    const rsi=parseFloat(h.rsi)||50, deg=parseFloat(String(h.degisim||'0').replace('%','').replace(',','.'))||0, sinyal=h.sinyal||'';
+    if(sinyal.includes('GÜÇLÜ AL')) items.push(`🔥 <b>${h.sym}</b> GÜÇLÜ AL - Fiyat ${h.fiyat}, RSI ${rsi}`);
+    else if(sinyal.includes('GÜÇLÜ SAT')) items.push(`⛔ <b>${h.sym}</b> GÜÇLÜ SAT - Fiyat ${h.fiyat}, RSI ${rsi}`);
+    else if(rsi<30) items.push(`💡 <b>${h.sym}</b> RSI ${rsi} - Çok satılmış, tepki izle`);
+    else if(rsi>72) items.push(`⚠️ <b>${h.sym}</b> RSI ${rsi} - Çok alınmış, dikkat`);
+    else if(Math.abs(deg)>=3) items.push(`📈 <b>${h.sym}</b> Bugün %${deg} - Sert hareket`);
+    else if(h.hacim && h.hacim.includes('Yüksek') && deg>1) items.push(`📦 <b>${h.sym}</b> Hacim patladı, yükseliş hacimli`);
+  });
+  const ozetEl=document.getElementById('ozet');
+  if(items.length===0){ozetEl.style.display='none';return;}
+  ozetEl.style.display='block';
+  document.getElementById('ozetIcerik').innerHTML=items.slice(0,8).map(i=>`<div class="item">${i}</div>`).join('') + `<div style="font-size:11px;color:#94a3b8;margin-top:6px">Sadece gelişme olan hisseler gösteriliyor.</div>`;
+}
 function render(){
   const q=(document.getElementById('search').value||'').toUpperCase().trim();
   let arr=[...ALL];
   if(TAB==='fav')arr=arr.filter(h=>FAV.includes(h.sym));
   if(TAB==='strong')arr=arr.filter(h=>(h.sinyal||'').includes('GÜÇLÜ AL'));
-  if(q)arr=arr.filter(h=>(h.sym||'').includes(q));
+  if(TAB==='alarm'){
+    if(!ALARMS.length){document.getElementById('list').innerHTML='<div style="text-align:center;color:#94a3b8;padding:30px">Henüz alarmın yok.<br>Bir hisse kartındaki 🔔 kutusuna fiyat yaz, kur.</div>';return;}
+    arr=ALL.filter(h=>ALARMS.some(a=>a.sym===h.sym));
+  }
+  if(q && TAB!=='alarm')arr=arr.filter(h=>(h.sym||'').includes(q));
   document.getElementById('favCount').textContent=FAV.length;
   const el=document.getElementById('list');
   if(!arr.length){el.innerHTML='<div style="text-align:center;color:#94a3b8;padding:30px">Hisse bulunamadı.</div>';return;}
@@ -101,20 +172,25 @@ function render(){
     const sym=h.sym||'?';const fiyat=h.fiyat||0;const sinyal=(h.sinyal||'TUT');let cls='TUT';if(sinyal.includes('AL'))cls='AL';if(sinyal.includes('SAT'))cls='SAT';
     const isFav=FAV.includes(sym);
     const y=yorumUret(h);
+    const al=ALARMS.find(a=>a.sym===sym);
+    const alarmHtml=al?`<div class="alarmList"><span>🔔 Alarm: ${al.fiyat} TL ${al.yon==='yukari'?'⬆️':'⬇️'} <b style="cursor:pointer" onclick="alarmSil('${sym}',event)"> ✕ Sil</b></span></div>`:'';
     return `<div class="card" onclick="document.getElementById('ai-${sym}').classList.toggle('open')">
     <div class="star" onclick="toggleFav('${sym}',event)">${isFav?'⭐':'☆'}</div>
     <div class="row"><div><b>${sym}</b><br><small style="color:#94a3b8">RSI: ${h.rsi} | ${h.degisim} | ${h.hacim}</small></div><div style="padding-right:28px"><div class="price">${fiyat}</div><span class="badge ${cls}">${sinyal}</span></div></div>
+    <div class="mini">💬 ${miniOzet(h)}</div>
+    ${alarmHtml}
     <div class="ai" id="ai-${sym}">
       <b>🤖 ${sym} - Detaylı Yorum</b>
-      <div class="box">📊 <b>RSI Yorumu:</b><br>${y.rsiYorum}</div>
-      <div class="box">📦 <b>Hacim Yorumu:</b><br>${y.hacimYorum}</div>
-      <div class="box">📈 <b>Bugün Ne Oldu?</b><br>${y.degYorum} Güç skoru <b>${h.skor}/100</b>.<div class="bar"><div style="width:${h.skor}%"></div></div></div>
+      <div class="box">📊 <b>RSI:</b><br>${y.rsiYorum}</div>
+      <div class="box">📦 <b>Hacim:</b><br>${y.hacimYorum}</div>
+      <div class="box">📈 <b>Bugün:</b><br>${y.degYorum} Güç: <b>${h.skor}/100</b><div class="bar"><div style="width:${h.skor}%"></div></div></div>
       <div class="karar ${y.kararCls}">${y.kararBaslik}<br><span style="font-weight:400">${y.karar}</span></div>
       <div class="line"><span>🎯 Hedef</span><b style="color:#4ade80">${h.hedef}</b></div>
       <div class="line"><span>🛑 Stop</span><b style="color:#f87171">${h.stop}</b></div>
-      <div class="line"><span>📉 Destek - Kırılırsa düşer</span><b>${h.destek}</b></div>
-      <div class="line"><span>📈 Direnç - Kırılırsa yükselir</span><b>${h.direnc}</b></div>
-      <div style="font-size:11px;color:#94a3b8;margin-top:8px">Eğitim amaçlıdır, yatırım tavsiyesi değildir. Kendi araştırmanı da yap.</div>
+      <div class="line"><span>📉 Destek</span><b>${h.destek}</b></div>
+      <div class="line"><span>📈 Direnç</span><b>${h.direnc}</b></div>
+      <div style="margin-top:10px"><b>🔔 Fiyat Alarmı Kur</b><div class="alarmRow"><input id="alarm-input-${sym}" type="number" placeholder="Örn: ${fiyat} - Hedef fiyat yaz" onclick="event.stopPropagation()"><button onclick="alarmKur('${sym}',event)">Kur</button></div><div style="font-size:11px;color:#94a3b8;margin-top:4px">Fiyat buraya gelince panelde alarm çalacak. Sayfayı açık tutman yeterli.</div></div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:8px">Eğitim amaçlıdır, yatırım tavsiyesi değildir.</div>
     </div></div>`;
   }).join('');
 }
@@ -124,7 +200,7 @@ async function load(){
     const j=await res.json();
     const arr=j.hisseler||j;
     document.getElementById('time').textContent='Son: '+(j.Güncellendi||'');
-    ALL=arr; render();
+    ALL=arr; buildOzet(); checkAlarms(); render();
   }catch(e){document.getElementById('list').textContent='Hata: '+e.message;}
 }
 load();
