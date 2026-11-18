@@ -1,1 +1,53 @@
-[]
+{
+  "updated": "2026-11-18T07:57:30.747240",
+  "stocks": [
+    {
+      "symbol": "THYAO",
+      "price": 325.5,
+      "change": 0.62,
+      "prev": 323.5
+    },
+    {
+      "symbol": "ASELS",
+      "price": 347.75,
+      "change": -1.49,
+      "prev": 353.0
+    },
+    {
+      "symbol": "KCHOL",
+      "price": 201.3,
+      "change": -2.04,
+      "prev": 205.5
+    },
+    {
+      "symbol": "AKBNK",
+      "price": 68.6,
+      "change": -1.86,
+      "prev": 69.9
+    },
+    {
+      "symbol": "EREGL",
+      "price": 31.82,
+      "change": -1.24,
+      "prev": 32.22
+    },
+    {
+      "symbol": "SISE",
+      "price": 34.28,
+      "change": -1.61,
+      "prev": 34.84
+    },
+    {
+      "symbol": "TUPRS",
+      "price": 343.75,
+      "change": -3.44,
+      "prev": 356.0
+    },
+    {
+      "symbol": "BIMAS",
+      "price": 392.25,
+      "change": -0.57,
+      "prev": 394.5
+    }
+  ]
+}
