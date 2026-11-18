@@ -1,68 +1,18 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIST 100 Canlı</title>
-<style>
-body{font-family:Arial,sans-serif;background:#0f172a;color:white;margin:0;padding:12px}
-.top{position:sticky;top:0;background:#0f172a;padding:10px 0;z-index:10}
-h1{margin:0;font-size:22px}
-.sub{color:#94a3b8;font-size:13px;margin:6px 0}
-.btn{width:100%;padding:13px;background:#22c55e;color:white;border:none;border-radius:12px;font-size:17px;font-weight:bold;cursor:pointer}
-.btn:active{background:#16a34a}
-input{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;font-size:16px;box-sizing:border-box}
-table{width:100%;border-collapse:collapse;margin-top:10px;background:#1e293b;border-radius:12px;overflow:hidden}
-th,td{padding:10px 8px;text-align:left;font-size:14px}
-th{background:#334155}
-tr{border-bottom:1px solid #334155}
-.up{color:#22c55e;font-weight:bold}
-.down{color:#ef4444;font-weight:bold}
-.badge{padding:3px 8px;border-radius:8px;font-size:12px}
-</style>
-</head>
-<body>
+<html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>BIST 100 Canlı</title>
+<style>body{font-family:Arial;background:#0f172a;color:#fff;margin:0;padding:12px}.top{position:sticky;top:0;background:#0f172a;padding:10px 0;z-index:10}h1{margin:0;font-size:22px}.sub{color:#94a3b8;font-size:13px;margin:6px 0}.btn{width:100%;padding:13px;background:#22c55e;color:#fff;border:none;border-radius:12px;font-size:17px;font-weight:bold}input{width:100%;padding:12px;margin-top:10px;border-radius:10px;border:none;font-size:16px;box-sizing:border-box}table{width:100%;border-collapse:collapse;margin-top:10px;background:#1e293b;border-radius:12px;overflow:hidden}th,td{padding:10px 8px;text-align:left;font-size:14px}th{background:#334155}tr{border-bottom:1px solid #334155;cursor:pointer}.up{color:#22c55e;font-weight:bold}.down{color:#ef4444;font-weight:bold}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;overflow:auto}.box{background:#1e293b;margin:20px;padding:18px;border-radius:16px}.close{float:right;font-size:24px;cursor:pointer}.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #334155}.big{font-size:22px;font-weight:bold;text-align:center;padding:12px;border-radius:12px;margin:10px 0}.link{display:block;background:#334155;color:#fff;text-align:center;padding:12px;border-radius:10px;margin-top:8px;text-decoration:none}
+</style></head><body>
+<div class="top"><h1>📈 BIST 100 Canlı</h1><div class="sub">Son: <b id="updated">...</b> • Hisseye dokun = Analiz</div><button class="btn" onclick="loadData()">🔄 ŞİMDİ YENİLE</button><input id="search" placeholder="🔍 Hisse ara..." oninput="render()"></div>
+<table><thead><tr><th>Hisse</th><th>Fiyat</th><th>Değişim</th><th>RSI</th><th>Sinyal</th></tr></thead><tbody id="list"></tbody></table>
 
-<div class="top">
-<h1>📈 BIST 100 Canlı</h1>
-<div class="sub">Son Güncelleme: <b id="updated">Yükleniyor...</b> • Otomatik yenileme: Her 60 sn</div>
-<button class="btn" onclick="loadData()">🔄 ŞİMDİ YENİLE</button>
-<input id="search" placeholder="🔍 Hisse ara... Örn: THYAO" oninput="render()">
-</div>
-
-<table>
-<thead><tr><th>Hisse</th><th>Fiyat</th><th>Değişim</th><th>RSI</th></tr></thead>
-<tbody id="list"><tr><td colspan="4">Yükleniyor...</td></tr></tbody>
-</table>
+<div id="modal" class="modal"><div class="box"><span class="close" onclick="closeModal()">✕</span><h2 id="mSym"></h2><div id="mSignal" class="big"></div><p id="mComment" style="line-height:1.5"></p><div id="mRows"></div><a id="newsLink" class="link" target="_blank">📰 Bu Hisseyle İlgili Son Haberler</a><a id="kapLink" class="link" target="_blank">📄 KAP Bildirimleri</a></div></div>
 
 <script>
-let allData = [];
-async function loadData(){
-  try{
-    const res = await fetch('data.json?t=' + Date.now());
-    const data = await res.json();
-    document.getElementById('updated').innerText = data.updated || '-';
-    allData = data.stocks || [];
-    render();
-  }catch(e){
-    document.getElementById('list').innerHTML = '<tr><td colspan="4">Veri yüklenemedi</td></tr>';
-  }
-}
-function render(){
-  const q = document.getElementById('search').value.toUpperCase();
-  const filtered = allData.filter(s => s.sym.includes(q));
-  document.getElementById('list').innerHTML = filtered.map(s => {
-    const cls = s.ch >= 0 ? 'up' : 'down';
-    const sign = s.ch >= 0 ? '+' : '';
-    let rsiColor = '#22c55e';
-    if(s.rsi > 70) rsiColor = '#ef4444';
-    else if(s.rsi < 30) rsiColor = '#eab308';
-    return `<tr><td><b>${s.sym}</b></td><td>${s.price} ₺</td><td class="${cls}">${sign}%${s.ch}</td><td><span class="badge" style="background:${rsiColor}">${s.rsi}</span></td></tr>`;
-  }).join('') || '<tr><td colspan="4">Bulunamadı</td></tr>';
-}
-loadData();
-// OTOMATİK YENİLEME - 60 saniyede bir
-setInterval(loadData, 60000);
-</script>
-</body>
-</html>
+let all=[];
+async function loadData(){const r=await fetch('data.json?t='+Date.now());const d=await r.json();document.getElementById('updated').innerText=d.updated;all=d.stocks||[];render();}
+function render(){const q=document.getElementById('search').value.toUpperCase();document.getElementById('list').innerHTML=all.filter(s=>s.sym.includes(q)).map(s=>`<tr onclick="openDetail('${s.sym}')"><td><b>${s.sym}</b></td><td>${s.price} ₺</td><td class="${s.ch>=0?'up':'down'}">${s.ch>=0?'+':''}%${s.ch}</td><td>${s.rsi}</td><td>${s.signal}</td></tr>`).join('');}
+function openDetail(sym){const s=all.find(x=>x.sym===sym);if(!s)return;document.getElementById('mSym').innerText=sym+' - '+s.price+' ₺ (%'+s.ch+')';const el=document.getElementById('mSignal');el.innerText=s.signal+'  •  Skor: '+s.score+'/100';el.style.background=s.score>=60?'#22c55e':s.score>=45?'#eab308':'#ef4444';document.getElementById('mComment').innerText=s.comment;document.getElementById('mRows').innerHTML=`<div class="row"><span>RSI</span><b>${s.rsi}</b></div><div class="row"><span>MACD</span><b>${s.macd}</b></div><div class="row"><span>MA20</span><b>${s.ma20} ₺</b></div><div class="row"><span>MA50</span><b>${s.ma50} ₺</b></div><div class="row"><span>Destek</span><b>${s.support} ₺</b></div><div class="row"><span>Direnç</span><b>${s.resist} ₺</b></div><div class="row"><span>Hacim</span><b>${s.vol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Ort. Hacim</span><b>${s.avgvol.toLocaleString('tr-TR')}</b></div><div class="row"><span>Tahmini İşlem Hacmi</span><b>${s.money} Milyon ₺</b></div><div class="row"><span>Para Akışı (Tahmini)</span><b>${s.money_trend}</b></div>`;document.getElementById('newsLink').href='https://news.google.com/search?q='+sym+'%20hisse%20borsa&hl=tr&gl=TR';document.getElementById('kapLink').href='https://www.kap.org.tr/tr/Arama?query='+sym;document.getElementById('modal').style.display='block';}
+function closeModal(){document.getElementById('modal').style.display='none';}
+loadData();setInterval(loadData,60000);
+</script></body></html>
