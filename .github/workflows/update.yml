@@ -1,12 +1,12 @@
 name: BIST 100 Bot
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  update:
+  run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install yfinance pandas
-      - run: python .github/workflows/bot.py
+      - run: python bot.py
       - run: |
           git config user.name "bot"
           git config user.email "bot@bot.com"
